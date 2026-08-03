@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>How Spend Curve works — DAM Media Planner guide</title>
+<style>
+:root{
+  --ground:#F2F2F6; --surface:#FCFCFB; --raised:#FFFFFF; --sunken:#EBEBF1;
+  --ink:#16161F; --ink-2:#43434F; --ink-3:#71717F; --ink-4:#9A9AA6;
+  --rule:#E1E1E9; --rule-strong:#CBCBD6;
+  --accent:#5546E0; --accent-soft:#EEECFC;
+  --good:#1F8A55; --warn:#B5730F; --crit:#C2382B;
+  --good-bg:#E6F3EC; --warn-bg:#FBF0DE; --crit-bg:#FAE9E7;
+  --c1:#5546E0; --c2:#E90A79; --c3:#B8801E; --c4:#12907E; --c5:#A56BD6;
+  --shadow:0 1px 2px rgba(22,22,31,.05), 0 8px 24px -12px rgba(22,22,31,.14);
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#101010; --surface:#1A1A19; --raised:#212120; --sunken:#151514;
+    --ink:#F2F2EF; --ink-2:#C6C6C0; --ink-3:#93938C; --ink-4:#6E6E68;
+    --rule:#2E2E2C; --rule-strong:#414140;
+    --accent:#7B6BF0; --accent-soft:#22213A;
+    --good:#3FB47C; --warn:#D69A34; --crit:#E2685B;
+    --good-bg:#16281F; --warn-bg:#2A2115; --crit-bg:#2B1A18;
+    --c1:#7B6BF0; --c2:#EC4189; --c3:#B5852A; --c4:#1E9C8B; --c5:#A874D4;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:70px}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+
+/* ---------- shell ---------- */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.top .in{max-width:1180px;margin:0 auto;padding:11px 26px;display:flex;align-items:center;gap:14px}
+.brandmark{display:flex;align-items:center;gap:9px;font-weight:640;font-size:15px}
+.tick{width:4px;height:17px;border-radius:2px;background:var(--accent);display:inline-block}
+.top .sp{flex:1}
+.btn{font:inherit;font-size:12.5px;font-weight:560;text-decoration:none;color:var(--ink-2);
+  border:1px solid var(--rule-strong);background:var(--raised);padding:6px 12px;border-radius:var(--r)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 26px 90px;display:grid;
+  grid-template-columns:216px minmax(0,1fr);gap:44px;align-items:start}
+nav.toc{position:sticky;top:66px;padding-top:34px;font-size:13px}
+nav.toc .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-4);display:block;margin:0 0 9px 11px}
+nav.toc a{display:block;color:var(--ink-3);text-decoration:none;padding:4px 11px;border-left:2px solid var(--rule);line-height:1.4}
+nav.toc a:hover{color:var(--ink)}
+nav.toc a.sub{padding-left:22px;font-size:12.5px}
+nav.toc a.on{color:var(--accent);border-left-color:var(--accent);font-weight:560}
+
+main{padding-top:34px;min-width:0}
+.hero{padding:14px 0 6px}
+.hero h1{font-size:34px;line-height:1.15;letter-spacing:-.02em;margin:0 0 12px}
+.hero .lede{font-size:17px;color:var(--ink-2);max-width:62ch;margin:0}
+
+h2{font-size:23px;letter-spacing:-.015em;margin:0 0 4px;scroll-margin-top:70px}
+h3{font-size:15.5px;margin:26px 0 6px;letter-spacing:-.005em}
+section{padding:38px 0 4px;border-top:1px solid var(--rule);margin-top:34px}
+section:first-of-type{border-top:none;margin-top:0}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 7px}
+p{margin:0 0 13px;max-width:70ch}
+ul,ol{margin:0 0 14px;padding-left:20px;max-width:70ch}
+li{margin-bottom:6px}
+b,strong{font-weight:620}
+code{font-family:var(--mono);font-size:.88em;background:var(--sunken);padding:1.5px 5px;border-radius:4px;
+  border:1px solid var(--rule)}
+a{color:var(--accent)}
+
+figure{margin:20px 0 24px}
+figure img{width:100%;height:auto;display:block;border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);background:var(--raised)}
+figure img.narrow{max-width:400px}
+figcaption{font-size:12.5px;color:var(--ink-3);margin-top:9px;max-width:70ch}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0 24px}
+.two figure{margin:0}
+
+.note{display:flex;gap:11px;background:var(--surface);border:1px solid var(--rule);
+  border-left:3px solid var(--accent);border-radius:var(--r);padding:12px 15px;margin:18px 0;max-width:70ch}
+.note.warn{border-left-color:var(--warn)}
+.note p:last-child{margin-bottom:0}
+.note .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-4);flex:0 0 auto;padding-top:3px;width:44px}
+
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:16px 0 22px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;border-bottom-color:var(--rule-strong)}
+td.num,th.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.tw{overflow-x:auto}
+
+.formula{font-family:var(--mono);font-size:13px;background:var(--surface);border:1px solid var(--rule);
+  border-radius:var(--r);padding:13px 16px;margin:14px 0 18px;max-width:70ch;line-height:1.85}
+.formula em{color:var(--ink-3);font-style:normal}
+
+.steps{counter-reset:s;list-style:none;padding:0;max-width:70ch}
+.steps li{counter-increment:s;position:relative;padding-left:34px;margin-bottom:11px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:22px;height:22px;
+  border-radius:50%;background:var(--accent-soft);color:var(--accent);font-family:var(--mono);
+  font-size:11px;font-weight:600;display:grid;place-items:center}
+
+.pill{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.crit{background:var(--crit-bg);color:var(--crit)}
+
+footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--rule);
+  color:var(--ink-4);font-size:12.5px}
+
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 60px}
+  nav.toc{position:static;padding-top:24px}
+  nav.toc a{display:inline-block;border-left:none;border-bottom:2px solid var(--rule);margin:0 5px 5px 0}
+  .two{grid-template-columns:1fr}
+  .hero h1{font-size:27px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="in">
+    <span class="brandmark"><i class="tick"></i>Spend Curve</span>
+    <span style="color:var(--ink-4);font-size:13px">user guide</span>
+    <span class="sp"></span>
+    <a class="btn pri" href="../">Open the planner</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+<nav class="toc">
+  <span class="lbl">On this page</span>
+  <a href="#idea">The one idea</a>
+  <a href="#quickstart">Quick start</a>
+  <a href="#deck">The control deck</a>
+  <a href="#deck-vertical" class="sub">Client &amp; vertical</a>
+  <a href="#deck-budget" class="sub">Budget &amp; time</a>
+  <a href="#deck-econ" class="sub">Unit economics</a>
+  <a href="#deck-anchor" class="sub">The anchor</a>
+  <a href="#deck-channels" class="sub">Channel lines</a>
+  <a href="#deck-file" class="sub">Saving</a>
+  <a href="#plan">Tab 1 — Plan</a>
+  <a href="#curve">Tab 2 — Spend curve</a>
+  <a href="#months">Tab 3 — Month on month</a>
+  <a href="#compare">Tab 4 — Compare</a>
+  <a href="#maths">What the maths does</a>
+  <a href="#recipes">Recipes</a>
+  <a href="#gotchas">Gotchas</a>
+</nav>
+
+<main>
+
+<div class="hero">
+  <h1>How Spend Curve works</h1>
+  <p class="lede">A media planner that answers one question honestly: at this budget, on these rates,
+    what does the next rupee actually buy? This guide walks every lever, what it changes, and where
+    the numbers come from.</p>
+</div>
+
+<figure>
+  <img src="img/overview.png" alt="The Spend Curve planner: control deck on the left, plan read-out on the right">
+  <figcaption>Two halves. Everything you type lives in the deck on the left. Everything the tool
+    works out lives in the read-out on the right, across four tabs. Nothing is hidden in a menu.</figcaption>
+</figure>
+
+<!-- ============================================= -->
+<section id="idea">
+  <p class="eyebrow">Start here</p>
+  <h2>The one idea</h2>
+
+  <p>Most media plans are a spreadsheet where you type a budget, multiply by a rate you found
+    somewhere, and read off a number of leads. That plan is always wrong in the same direction:
+    it assumes the rate you quoted holds at any budget. It doesn't. Buy more of an audience and
+    you buy it more expensively.</p>
+
+  <p>Spend Curve models that. You tell it two things:</p>
+
+  <ul>
+    <li><b>The rates you researched</b> — a CPM for Meta, a CPC for Google, a click-through rate
+      and a conversion rate on every line.</li>
+    <li><b>The budget those rates were true at</b> — the <em>anchor</em>. Usually the budget you had
+      in mind when you pulled the benchmarks.</li>
+  </ul>
+
+  <p>Run the plan at the anchor and it uses your rates untouched. Run it above the anchor and every
+    rate degrades — costs climb, click-through slips, the extra audience converts worse — each channel
+    at its own pace. That degradation is the whole product. It's what turns "₹10L buys twice as many
+    leads as ₹5L" into an honest number.</p>
+
+  <div class="note">
+    <span class="k">Why</span>
+    <p>Search brand barely degrades: you're capped by how many people type your name, not by price.
+      Meta retargeting degrades fastest: the warm pool is small and you exhaust it. The tool knows the
+      difference and applies it per line.</p>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<section id="quickstart">
+  <p class="eyebrow">Five minutes</p>
+  <h2>Quick start</h2>
+
+  <ol class="steps">
+    <li>Type the <b>client name</b> and pick the <b>vertical</b>. That sets the funnel shape and loads
+      sensible Indian-market defaults you can edit.</li>
+    <li>Type the <b>monthly budget</b>. This also sets the anchor, so the plan starts "on rate".</li>
+    <li>Fill in <b>unit economics</b> — order value or deal value, the close rate, and the target cost
+      you won't cross.</li>
+    <li>Open each <b>channel line</b> and put in the rates you researched: CPM + CTR for Meta lines,
+      CPC + CTR for Google lines, plus the click-to-conversion rate.</li>
+    <li>Read the <b>Plan</b> tab, then the <b>Spend curve</b> tab. The curve tells you where this mix
+      stops paying for itself.</li>
+  </ol>
+
+  <p>Everything recalculates as you type. There is no save-and-run step, and nothing is stored on a
+    server — the whole tool runs in your browser.</p>
+</section>
+
+<!-- ============================================= -->
+<section id="deck">
+  <p class="eyebrow">The left half</p>
+  <h2>The control deck</h2>
+  <p>Six groups, top to bottom. Every field has a one-line explanation under it in the tool itself;
+    this section covers what each one <em>does to the model</em>.</p>
+
+  <h3 id="deck-vertical">Client &amp; vertical</h3>
+  <figure>
+    <img class="narrow" src="img/deck-vertical.png" alt="Client name field and the vertical selector">
+  </figure>
+  <p>The vertical decides how many steps sit between a click and money:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Vertical</th><th>Funnel</th><th>Value you enter</th></tr></thead>
+    <tbody>
+      <tr><td><b>E-commerce</b></td><td>click → order</td><td>Average order value</td></tr>
+      <tr><td><b>Lead gen</b></td><td>click → lead → customer</td><td>Deal value</td></tr>
+      <tr><td><b>Real estate</b></td><td>click → relevant lead → site visit → booking</td><td>Ticket size</td></tr>
+    </tbody>
+  </table></div>
+  <p>It also renames every label in the read-out, so a real-estate plan talks about site visits and
+    bookings rather than leads and customers.</p>
+  <div class="note warn">
+    <span class="k">Careful</span>
+    <p>Switching vertical <b>reloads that vertical's defaults</b> and discards your edits. Pick the
+      vertical first, or save your plan before switching.</p>
+  </div>
+
+  <h3 id="deck-budget">Monthly budget, growth, horizon, improvement</h3>
+  <figure>
+    <img class="narrow" src="img/deck-budget.png" alt="Budget box, slider, budget change, horizon and monthly improvement fields">
+  </figure>
+  <ul>
+    <li><b>Monthly budget</b> — month 1 spend across every line. <b>Typing here re-anchors your
+      rates</b> to the new number, because typing a budget means "this is the plan".</li>
+    <li><b>The slider</b> under it moves the budget <em>without</em> re-anchoring. That's how you
+      explore: hold the rates you researched still and see what a bigger or smaller month does to them.</li>
+    <li><b>Budget change %/mo</b> — compounding step for months 2 onward. Negative tapers.</li>
+    <li><b>Horizon</b> — 3, 6, 9 or 12 months of projection.</li>
+    <li><b>Monthly improvement %/mo</b> — how much better the account gets as it learns. One number
+      standing in for three: CPM falls by it, CTR rises by it, and the conversion rate creeps up at
+      half that pace. Set it to <code>0</code> for a flat plan that assumes no learning at all.</li>
+  </ul>
+
+  <h3 id="deck-econ">Unit economics</h3>
+  <figure>
+    <img class="narrow" src="img/deck-econ.png" alt="Deal value, lead to customer rate, and target cost per customer">
+  </figure>
+  <p>Value drives revenue and ROAS. The intermediate rates (lead → customer, or relevant lead →
+    site visit → booking) are how the ad-side numbers become business-side numbers.</p>
+  <p>The <b>target cost</b> is the line you won't cross. It draws the dashed ceiling on the spend
+    curve and marks the budget at which this mix stops paying for itself.</p>
+
+  <h3 id="deck-anchor">The anchor — "rates below are true at"</h3>
+  <figure>
+    <img class="narrow" src="img/deck-anchor.png" alt="Anchor budget field, spend-unit toggle and the allocation bar">
+  </figure>
+  <p>The single most important field in the tool, and the one people skip.</p>
+  <p>It says: <em>the CPMs and CPCs I typed below were benchmarked at this monthly budget.</em>
+    Run the plan at that number and your rates are used exactly as typed. Run it higher and everything
+    is marked up. The line under the field always tells you where you stand:</p>
+  <div class="note">
+    <span class="k">Reads</span>
+    <p><span style="font-family:var(--mono);font-size:12.5px">The plan is 55% above this, so costs are
+      marked up and conversion marked down to match.</span></p>
+  </div>
+  <p>Below it, <b>Share % / Rupees ₹</b> switches how you enter each line's spend. Shares always total
+    100%; in rupee mode you type the money and the shares are worked backwards. The allocation bar
+    turns amber with a <b>Normalise</b> button when the shares drift off 100.</p>
+
+  <h3 id="deck-channels">Channel lines</h3>
+  <p>Each line is one buying motion. Open one to edit it.</p>
+  <div class="two">
+    <figure>
+      <img src="img/chan-meta.png" alt="An expanded Meta channel line showing CPM and CTR inputs with a derived CPC">
+      <figcaption><b>Meta line</b> — you type CPM and CTR. CPC is derived and shown in the grey strip.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/chan-google.png" alt="An expanded Google channel line showing CPC and CTR inputs with a derived CPM">
+      <figcaption><b>Google line</b> — you type CPC and CTR. CPM is derived.</figcaption>
+    </figure>
+  </div>
+  <p>This split is deliberate. Meta sells impressions and publishes CPM; Google sells clicks and
+    publishes CPC. Those are the two numbers you can actually research, so those are the two the tool
+    asks for. The third — the one you'd have to invent — is computed:</p>
+  <div class="formula">
+    Meta &nbsp; CPC = CPM ÷ (CTR × 1,000)<br>
+    Google &nbsp; CPM = CPC × CTR × 1,000
+  </div>
+
+  <p><b>The name of the line is not decoration.</b> It picks both the platform and how hard the line
+    resists more money:</p>
+  <div class="tw"><table>
+    <thead><tr><th>If the name contains</th><th>It becomes</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td><code>retarget</code> <code>remarket</code> <code>rtg</code> <code>dpa</code> <code>catalog</code></td>
+          <td>Meta retargeting</td><td><span class="pill crit">saturates fastest</span></td></tr>
+      <tr><td><code>brand</code> (but not <code>non-brand</code>)</td>
+          <td>Google brand search</td><td><span class="pill good">barely scales</span></td></tr>
+      <tr><td><code>pmax</code> <code>performance max</code> <code>shopping</code> <code>demand gen</code></td>
+          <td>Performance Max</td><td><span class="pill good">scales steadily</span></td></tr>
+      <tr><td><code>search</code> <code>keyword</code> <code>non-brand</code></td>
+          <td>Google generic search</td><td><span class="pill good">scales steadily</span></td></tr>
+      <tr><td><code>display</code> <code>youtube</code> <code>video</code> <code>banner</code> <code>gdn</code></td>
+          <td>Display</td><td><span class="pill warn">tires quickly</span></td></tr>
+      <tr><td>anything else</td><td>Meta prospecting</td><td><span class="pill good">scales steadily</span></td></tr>
+    </tbody>
+  </table></div>
+  <p>The label at the bottom of each open line tells you which one it landed on. Rename a line and the
+    inputs flip to match — a line renamed from "Meta — Conversions" to "Search — Generic" starts asking
+    for a CPC instead of a CPM.</p>
+
+  <h3 id="deck-file">Saving and resetting</h3>
+  <figure>
+    <img class="narrow" src="img/deck-file.png" alt="Save plan, open plan and reset buttons">
+  </figure>
+  <p><b>Save plan</b> writes a <code>.json</code> to your machine — the whole plan plus any captured
+    comparison scenarios. <b>Open plan</b> reads one back. Send the file to a colleague and they see
+    exactly your numbers. Plans saved before the CPM/CPC change still open; their CTR is worked out
+    from the old rate pair.</p>
+</section>
+
+<!-- ============================================= -->
+<section id="plan">
+  <p class="eyebrow">Tab 1</p>
+  <h2>Plan — what month 1 looks like</h2>
+
+  <figure>
+    <img src="img/topbar.png" alt="The four tabs, theme toggle and Client PDF button">
+    <figcaption>Four tabs. <b>Theme</b> flips light/dark. <b>Client PDF</b> opens your browser's print
+      dialogue with a layout built for it — the control deck and buttons drop away, the cards stay.
+      It prints the tab you're currently on, on white.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="img/plan-kpis.png" alt="KPI row: monthly spend, leads, cost per lead, customers, cost per customer, revenue and ROAS">
+    <figcaption>The headline row. The small line under each number is where it lands in the final
+      month of the horizon, so you can see the direction of travel at a glance.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="img/plan-table.png" alt="Month 1 plan table with a row per channel and Meta and Google subtotals">
+    <figcaption>One row per line, with Meta and Google subtotals and a blended total.</figcaption>
+  </figure>
+
+  <p>Every rate in this table is the <b>effective</b> rate at this budget — what you'd actually pay,
+    not what you typed. When the plan sits exactly on the anchor they're identical. Above it they're
+    worse. The <b>Headroom</b> column says how hard each line is being pushed:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Badge</th><th>Meaning</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill good">headroom</span></td><td>under 85% of its anchor share</td><td>cheapest place to put the next rupee</td></tr>
+      <tr><td><span class="pill good">on rate</span></td><td>85–125%</td><td>working as quoted</td></tr>
+      <tr><td><span class="pill warn">stretched</span></td><td>125–180%</td><td>paying a premium; watch it</td></tr>
+      <tr><td><span class="pill crit">over-funded</span></td><td>above 180%</td><td>move money out before raising the total</td></tr>
+    </tbody>
+  </table></div>
+
+  <figure>
+    <img src="img/plan-charts.png" alt="Funnel chart and channel efficiency scatter">
+    <figcaption><b>Where the money goes</b> is the funnel with the drop-off at each step.
+      <b>Which channel earns its share</b> plots cost against volume — bubble size is spend, and
+      anything right of the dashed line is dragging the blended cost up.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="img/plan-headroom.png" alt="Headroom by channel bars with saturation ticks">
+    <figcaption>The tick on each bar marks what that line gets at the anchor budget. Bars past their
+      tick are buying inventory above the rate you typed. The notes underneath name the specific lines
+      to shift money between.</figcaption>
+  </figure>
+</section>
+
+<!-- ============================================= -->
+<section id="curve">
+  <p class="eyebrow">Tab 2</p>
+  <h2>Spend curve — where the money stops working</h2>
+
+  <figure>
+    <img src="img/curve-main.png" alt="Cost per outcome plotted against monthly budget, with a target line and ceiling marker">
+    <figcaption>Cost per outcome against monthly budget, holding your channel mix fixed.</figcaption>
+  </figure>
+
+  <p>Read it left to right: as budget grows, cost per lead and cost per customer rise, because the mix
+    is buying past the rates it was quoted at. Three things are marked:</p>
+  <ul>
+    <li><b>The accent vertical line</b> — where your plan sits right now.</li>
+    <li><b>The dashed horizontal line</b> — your target cost from unit economics.</li>
+    <li><b>The ceiling</b> — the budget where the curve crosses that target. Past it, this mix costs
+      more per customer than you said you could pay.</li>
+  </ul>
+
+  <div class="note">
+    <span class="k">Note</span>
+    <p>The chart is <b>read-only</b>. To move the marker, use the budget slider in the deck — it walks
+      the curve without touching your quoted rates, which is exactly what makes the curve mean
+      anything.</p>
+  </div>
+
+  <figure>
+    <img src="img/curve-extras.png" alt="Return on the next lakh chart and the doubling-the-budget panel">
+    <figcaption><b>Return on the next ₹1 lakh</b> is the marginal view — how many extra customers each
+      additional lakh buys at that budget level. When it flattens, more money has stopped being the
+      answer. <b>Doubling the budget</b> spells out the same thing in a sentence.</figcaption>
+  </figure>
+</section>
+
+<!-- ============================================= -->
+<section id="months">
+  <p class="eyebrow">Tab 3</p>
+  <h2>Month on month — the projection</h2>
+
+  <figure>
+    <img src="img/months-budget.png" alt="Per-month budget entry boxes with flat and reset buttons">
+    <figcaption>Every month is editable. Blank months follow the growth rate; type into one and it
+      overrides. <b>Flat</b> holds month 1's number across the horizon; <b>Reset to growth rate</b>
+      clears the overrides.</figcaption>
+  </figure>
+
+  <p>This is where a plan stops being one month and becomes a commitment. Two forces pull against
+    each other across the horizon:</p>
+  <ul>
+    <li><b>Growth pushes costs up</b> — each bigger month is further past the anchor.</li>
+    <li><b>Monthly improvement pulls them down</b> — the account learns.</li>
+  </ul>
+  <p>Whichever wins is visible in the trend cards.</p>
+
+  <figure>
+    <img src="img/months-stack.png" alt="Spend by channel stacked area and cumulative payback chart">
+    <figcaption><b>Spend by channel</b> holds the mix as the total grows. <b>Payback</b> stacks
+      cumulative revenue against cumulative media spend, with media shown as a share of revenue.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="img/months-trends.png" alt="Cost per lead, cost per customer and ROAS trend charts">
+    <figcaption>One card per headline metric, month 1 to the end of the horizon. Hover any point for
+      the exact value.</figcaption>
+  </figure>
+</section>
+
+<!-- ============================================= -->
+<section id="compare">
+  <p class="eyebrow">Tab 4</p>
+  <h2>Compare — what more money actually buys</h2>
+
+  <p>Three slots. Capture the same plan into two or three of them, then give each a different monthly
+    budget. Because every slot keeps the rates you quoted and the anchor you set, the difference
+    between them is purely the effect of budget.</p>
+
+  <figure>
+    <img src="img/compare-slots.png" alt="Three scenario slots at 5, 10 and 15 lakh per month">
+    <figcaption>Capture, then edit the budget on each slot. <b>Load</b> pulls a slot back into the deck
+      as the live plan; <b>Re-capture</b> overwrites it with whatever the deck holds now.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="img/compare-charts.png" alt="Bar charts comparing cost per lead, customers, cost per customer and ROAS across scenarios">
+    <figcaption>The dot marks the winner on each metric — and it is rarely the same scenario twice.
+      More budget usually buys more customers <em>and</em> a worse cost per customer.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="img/compare-table.png" alt="Side by side table with deltas against the first scenario">
+    <figcaption>Deltas are measured against slot A. This is the table to put in front of a client
+      arguing for a bigger budget: doubling spend here buys 44% more customers at 39% worse
+      efficiency.</figcaption>
+  </figure>
+</section>
+
+<!-- ============================================= -->
+<section id="maths">
+  <p class="eyebrow">Under the hood</p>
+  <h2>What the maths actually does</h2>
+
+  <p>Nothing here is a black box. Four steps, applied to every channel line, every month.</p>
+
+  <h3>1. Load — how far past the anchor is this line?</h3>
+  <div class="formula">
+    load = this line's spend ÷ this line's share of the anchor budget<br>
+    multiplier = load <sup>alpha</sup> &nbsp; <em>(clamped between 0.80 and 5)</em>
+  </div>
+  <p>Each archetype carries three alphas — one for cost, one for click-through, one for conversion.
+    A higher alpha means the line fights back harder when you push money through it. You never type
+    these; the line's name picks the row.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Archetype</th><th class="num">Cost exp.</th><th class="num">CTR exp.</th><th class="num">Conv. exp.</th><th>Reading</th></tr></thead>
+    <tbody>
+      <tr><td>Meta prospecting</td><td class="num">0.30</td><td class="num">0.18</td><td class="num">0.10</td><td>scales steadily</td></tr>
+      <tr><td>Meta retargeting</td><td class="num">0.42</td><td class="num">0.24</td><td class="num">0.20</td><td>smallest pool, saturates first</td></tr>
+      <tr><td>Search — brand</td><td class="num">0.08</td><td class="num">0.04</td><td class="num">0.04</td><td>capped by query volume, not price</td></tr>
+      <tr><td>Search — generic</td><td class="num">0.28</td><td class="num">0.10</td><td class="num">0.14</td><td>scales steadily</td></tr>
+      <tr><td>Performance Max</td><td class="num">0.22</td><td class="num">0.10</td><td class="num">0.14</td><td>scales steadily</td></tr>
+      <tr><td>Display / video</td><td class="num">0.16</td><td class="num">0.20</td><td class="num">0.16</td><td>tires quickly</td></tr>
+    </tbody>
+  </table></div>
+  <p>Worked example: a Meta prospecting line running at double its anchor share gets a cost multiplier
+    of 2<sup>0.30</sup> ≈ 1.23 — a 23% markup on CPM. A brand search line at the same load gets
+    2<sup>0.08</sup> ≈ 1.06. Six per cent. That gap is the point.</p>
+
+  <h3>2. Drift — the account learns</h3>
+  <p>Monthly improvement <code>i</code> compounds over the horizon:</p>
+  <div class="formula">
+    CPM &nbsp;×= (1 − i)<sup>month</sup><br>
+    CTR &nbsp;×= (1 + i)<sup>month</sup><br>
+    conversion rate &nbsp;×= (1 + i/2)<sup>month</sup>
+  </div>
+  <p>Because CPC is derived from CPM and CTR, it improves roughly twice as fast as either — which is
+    what a maturing account actually looks like.</p>
+
+  <h3>3. Rates — the quoted one leads, the other follows</h3>
+  <div class="formula">
+    CTR &nbsp;= typed CTR × drift ÷ CTR multiplier<br>
+    Meta &nbsp;&nbsp;&nbsp;CPM = typed CPM × cost multiplier × drift, &nbsp; then CPC = CPM ÷ (CTR × 1,000)<br>
+    Google &nbsp;CPC = typed CPC × cost multiplier × drift, &nbsp; then CPM = CPC × CTR × 1,000
+  </div>
+  <p>The rate the platform actually sells you is the one that carries the load. The other is whatever
+    CTR makes of it — so on Meta, pushing budget raises the click price twice over: once through the
+    CPM, again through the CTR decay.</p>
+
+  <h3>4. Volume — down the funnel</h3>
+  <div class="formula">
+    clicks = spend ÷ CPC<br>
+    impressions = clicks ÷ CTR<br>
+    leads = clicks × conversion rate<br>
+    customers = leads × close rate &nbsp; <em>(× site-visit rate for real estate)</em><br>
+    revenue = customers × value &nbsp;&nbsp; ROAS = revenue ÷ spend
+  </div>
+</section>
+
+<!-- ============================================= -->
+<section id="recipes">
+  <p class="eyebrow">In practice</p>
+  <h2>Recipes</h2>
+
+  <h3>"What budget should we recommend?"</h3>
+  <p>Set the target cost in unit economics. Go to the Spend curve tab and read the ceiling — the budget
+    where the curve crosses your target. Recommend somewhere below it, and use the marginal chart to
+    show where the returns start flattening.</p>
+
+  <h3>"The client wants to double spend. Is that sensible?"</h3>
+  <p>Capture the current plan into slot A. Capture again into slot B and set double the budget. The
+    side-by-side table gives you the honest answer in one row: more volume, worse efficiency, by
+    exactly this much.</p>
+
+  <h3>"Which line should get the next rupee?"</h3>
+  <p>Plan tab → Headroom by channel. Anything showing <span class="pill good">headroom</span> is
+    cheaper than anything showing <span class="pill warn">stretched</span>. Shift shares before you
+    raise the total.</p>
+
+  <h3>"We only have benchmarks at a small test budget"</h3>
+  <p>Put the test budget in <b>rates below are true at</b>, then use the slider to raise the plan to the
+    real number. The tool marks everything up from your small-budget rates — which is the correct
+    direction, and the reason the anchor exists.</p>
+
+  <h3>"Build the client deck"</h3>
+  <p>Open the tab you want, then hit <b>Client PDF</b> and print to PDF. Two things to know: it prints
+    <b>only the tab you're on</b>, and it always prints on white regardless of your theme. So for a
+    full pack, print each tab in turn and merge.</p>
+</section>
+
+<!-- ============================================= -->
+<section id="gotchas">
+  <p class="eyebrow">Read before you present</p>
+  <h2>Gotchas</h2>
+
+  <ul>
+    <li><b>Typing a budget re-anchors; the slider doesn't.</b> If every line reads
+      <span class="pill good">on rate</span> no matter what number you type, you're re-anchoring each
+      time. Use the slider to explore.</li>
+    <li><b>Switching vertical wipes your edits</b> and reloads defaults. Save first.</li>
+    <li><b>The name drives the model.</b> A line called "Awareness" is treated as Meta prospecting.
+      If you meant YouTube, put <code>youtube</code> in the name.</li>
+    <li><b>Shares must total 100%.</b> The allocation bar goes amber and offers Normalise when they
+      don't.</li>
+    <li><b>CTR is a real input now.</b> If a derived CPC or CPM looks wrong for the channel, the CTR
+      is the number to fix — not the rate you researched.</li>
+    <li><b>Defaults are Indian-market starting points</b>, not researched rates for your client.
+      Replace them.</li>
+    <li><b>Nothing is saved automatically.</b> Close the tab and the plan is gone. Use Save plan.</li>
+  </ul>
+
+  <div class="note">
+    <span class="k">Model</span>
+    <p>The saturation alphas are calibrated judgement, not measured constants for any one account.
+      They're deliberately conservative. Treat the shape of the curve as the insight and the exact
+      rupee at the third decimal as an estimate.</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+  Spend Curve · Digital Advantage Media · <a href="../">open the planner</a>
+</footer>
+
+<script>
+// Highlight the section currently in view in the sidebar.
+const links=[...document.querySelectorAll('nav.toc a')];
+const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+const seen=new Set();
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>e.isIntersecting?seen.add(e.target.id):seen.delete(e.target.id));
+  const first=[...document.querySelectorAll('section[id], h3[id]')].find(el=>seen.has(el.id));
+  links.forEach(a=>a.classList.remove('on'));
+  if(first && map.has(first.id)) map.get(first.id).classList.add('on');
+},{rootMargin:'-70px 0px -55% 0px'});
+document.querySelectorAll('section[id], h3[id]').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
