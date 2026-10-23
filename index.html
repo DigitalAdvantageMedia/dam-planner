@@ -327,12 +327,22 @@ svg{display:block;max-width:100%;overflow:visible}
   .deck,.bar,.noprint{display:none!important}
   .app{display:block;height:auto}
   .readout{height:auto;overflow:visible;display:block}
+  /* Client PDF carries every tab, not just the one on screen: beforeprint fills all
+     views, so anything with content prints, each tab starting on a fresh page. */
   .view{display:none!important;padding:0;gap:14px}
-  .view.on{display:flex!important}
+  .view:not(:empty){display:flex!important}
+  .view:not(:empty) ~ .view:not(:empty){break-before:page}
   body{background:#fff;font-size:11px}
   .card{break-inside:avoid;box-shadow:none;border-color:#d5d5dd}
   .printonly{display:block}
   .grid2,.grid3{gap:12px}
+  /* Wide tables (the month-on-month detail carries 13 columns on 3-stage verticals)
+     must fit A4 landscape without clipping — nothing scrolls on paper. */
+  .tw{overflow-x:visible;margin:0;padding:0}
+  table{font-size:10px;min-width:0;table-layout:auto}
+  th{font-size:8px;letter-spacing:.04em}
+  th+th,td+td{padding-left:8px}
+  td{padding:6px 0}
   :root{--ground:#fff;--surface:#fff;--raised:#fff}
 }
 </style>
@@ -492,11 +502,11 @@ const VERT = {
     label:"Lead gen", value:"Deal value", valueHint:"₹ per closed customer",
     valueHelp:"What one closed customer is worth. Drives revenue and ROAS.",
     targetHelp:"The most you can pay to win a customer and still make money.",
-    stages:[{key:"s0",label:"Leads",short:"Leads"},{key:"s1",label:"Customers",short:"Customers"}],
-    leadLabel:"Leads", saleLabel:"Customers",
-    cplLabel:"Cost per lead", cacLabel:"Cost per customer",
-    econ:[{k:"r1", label:"Lead → customer rate", hint:"%", pct:true,
-            help:"Of the leads the ads deliver, the share sales actually closes."}]
+    stages:[{key:"s0",label:"Relevant leads",short:"Rel. leads"},{key:"s1",label:"Customers",short:"Customers"}],
+    leadLabel:"Relevant leads", saleLabel:"Customers",
+    cplLabel:"Cost per relevant lead", cacLabel:"Cost per customer",
+    econ:[{k:"r1", label:"Rel. lead → customer rate", hint:"%", pct:true,
+            help:"Of the qualified enquiries the ads deliver, the share sales actually closes."}]
   },
   realestate: {
     label:"Real estate", value:"Ticket size", valueHint:"₹ per booking",
@@ -507,6 +517,10 @@ const VERT = {
             {key:"s2",label:"Bookings",short:"Bookings"}],
     leadLabel:"Relevant leads", saleLabel:"Bookings",
     cplLabel:"Cost per relevant lead", cacLabel:"Cost per booking",
+    // Mid-funnel cost-per. Only 3-stage verticals have one; where it exists it
+    // replaces ROAS in the month-on-month view, because a booking-cycle client
+    // reads the site-visit price long before they read a revenue multiple.
+    midLabel:"Cost per site visit",
     econ:[{k:"r1",label:"Rel. lead → site visit",hint:"%",pct:true,
             help:"Of the qualified enquiries, the share that actually turns up at site."},
           {k:"r2",label:"Site visit → booking",hint:"%",pct:true,
@@ -583,6 +597,7 @@ const chanAmt   = ch => S.budget * chanShare(ch)/100;
 let S = normPlan(defaults("leadgen"));
 let scenarios = [null,null,null];
 let tab = "plan";
+let printAll = false;   // true while printing: render() fills every tab
 
 /* ---------- the engine ---------- */
 const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
@@ -667,7 +682,7 @@ function runMonth(cfg, monthIdx, totalBudget){
   return {monthIdx, lines, spend, impr, clicks, s0, s1, s2, sales, revenue,
     cpm: impr>0?spend/impr*1000:0, cpc: clicks>0?spend/clicks:0,
     ctr: impr>0?clicks/impr:0, cvr: clicks>0?s0/clicks:0,
-    cpl: s0>0?spend/s0:0, cac: sales>0?spend/sales:0,
+    cpl: s0>0?spend/s0:0, cac: sales>0?spend/sales:0, cps1: s1>0?spend/s1:0,
     roas: spend>0?revenue/spend:0, profit: revenue-spend};
 }
 
@@ -1217,7 +1232,7 @@ function viewPlan(plan){
     const ls=m.lines.filter(l=>chPlat(l.ch)===p); if(!ls.length) return null;
     const sp=ls.reduce((s,l)=>s+l.spend,0), im=ls.reduce((s,l)=>s+l.impr,0),
           ck=ls.reduce((s,l)=>s+l.clicks,0), s0=ls.reduce((s,l)=>s+l.s0,0);
-    return {p, sp, im, ck, s0};
+    return {p, sp, im, ck, s0, li: ls.some(l=>/linkedin/i.test(l.ch.n))};
   }).filter(Boolean);
 
   const table = `<div class="tw"><table>
@@ -1231,7 +1246,7 @@ function viewPlan(plan){
       <td>${num(l.clicks)}</td><td>${pct(l.cr,2)}</td><td>${num(l.s0)}</td>
       <td>${inr(l.s0>0?l.spend/l.s0:NaN)}</td><td>${satPill(l.load)}</td></tr>`).join("")}
       ${platforms.map(x=>`<tr class="sub">
-        <td style="padding-left:17px">${x.p==="meta"?"Meta subtotal":"Google subtotal"}</td>
+        <td style="padding-left:17px">${x.p==="meta"?(x.li?"Meta &amp; LinkedIn subtotal":"Meta subtotal"):"Google subtotal"}</td>
         <td>${inr(x.sp)}</td><td>${(x.sp/m.spend*100).toFixed(0)}%</td><td>${num(x.im)}</td>
         <td>${pct(x.im>0?x.ck/x.im:0,2)}</td><td>${inrFull(x.ck>0?x.sp/x.ck:0)}</td>
         <td>${inrFull(x.im>0?x.sp/x.im*1000:0)}</td><td>${num(x.ck)}</td>
@@ -1375,15 +1390,22 @@ function viewCurve(plan){
 function viewMonths(plan){
   const V=VERT[S.vertical], m1=plan[0], mn=plan[plan.length-1];
   const two=V.stages.length>1;   // single-stage verticals would repeat every column
+  // 3-stage verticals carry a mid-funnel stage (real estate: site visits). In the
+  // month-on-month table that stage replaces ROAS — a booking-cycle client reads the
+  // site-visit count long before a revenue multiple, and the blended ROAS is already
+  // in the KPI strip above.
+  const mid=V.stages.length>2, midStage=V.stages[1];
   const totSpend=plan.reduce((s,x)=>s+x.spend,0), totRev=plan.reduce((s,x)=>s+x.revenue,0),
-        totSales=plan.reduce((s,x)=>s+x.sales,0), totLeads=plan.reduce((s,x)=>s+x.s0,0);
+        totSales=plan.reduce((s,x)=>s+x.sales,0), totLeads=plan.reduce((s,x)=>s+x.s0,0),
+        totMid=plan.reduce((s,x)=>s+x.s1,0);
 
   const rows=plan.map((m,i)=>`<tr>
     <td><span class="cellname">Month ${i+1}</span></td><td>${inr(m.spend)}</td>
     <td>${num(m.impr)}</td><td>${num(m.clicks)}</td><td>${inrFull(m.cpc)}</td>
     <td>${num(m.s0)}</td><td>${inr(m.cpl)}</td>
+    ${mid?`<td>${num(m.s1)}</td><td>${inr(m.cps1)}</td>`:""}
     ${two?`<td>${num(m.sales)}</td><td>${inr(m.cac)}</td>`:""}
-    <td>${inr(m.revenue)}</td><td>${xx(m.roas)}</td></tr>`).join("");
+    <td>${inr(m.revenue)}</td>${mid?"":`<td>${xx(m.roas)}</td>`}</tr>`).join("");
 
   const nOver = overrideCount(S);
   const budgetRow = `
@@ -1439,9 +1461,12 @@ function viewMonths(plan){
     :`<div class="card"><div class="card-hd"><div><h2>${esc(V.saleLabel)} per month</h2>
       <p>M1 ${num(m1.sales)} → M${plan.length} ${num(mn.sales)}</p></div></div>
       ${chartMonths(plan,"sales","var(--c2)",num,430,215,V.saleLabel)}</div>`}
-    <div class="card"><div class="card-hd"><div><h2>ROAS</h2>
+    ${V.midLabel?`<div class="card"><div class="card-hd"><div><h2>${esc(V.midLabel)}</h2>
+      <p>M1 ${inr(m1.cps1)} → M${plan.length} ${inr(mn.cps1)}</p></div></div>
+      ${chartMonths(plan,"cps1","var(--c4)",inr,430,215,V.midLabel)}</div>`
+    :`<div class="card"><div class="card-hd"><div><h2>ROAS</h2>
       <p>M1 ${xx(m1.roas)} → M${plan.length} ${xx(mn.roas)}</p></div></div>
-      ${chartMonths(plan,"roas","var(--c4)",xx,430,215,"ROAS")}</div>
+      ${chartMonths(plan,"roas","var(--c4)",xx,430,215,"ROAS")}</div>`}
   </div>
   <div class="card">
     <div class="card-hd"><div><h2>Month-on-month detail</h2>
@@ -1451,14 +1476,16 @@ function viewMonths(plan){
     <div class="tw"><table>
       <thead><tr><th>Period</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>CPC</th>
         <th>${esc(V.leadLabel)}</th><th>${esc(V.cplLabel)}</th>
+        ${mid?`<th>${esc(midStage.short||midStage.label)}</th><th>${esc(V.midLabel)}</th>`:""}
         ${two?`<th>${esc(V.saleLabel)}</th><th>${esc(V.cacLabel)}</th>`:""}
-        <th>Revenue</th><th>ROAS</th></tr></thead>
+        <th>Revenue</th>${mid?"":"<th>ROAS</th>"}</tr></thead>
       <tbody>${rows}<tr class="tot"><td>Total</td><td>${inr(totSpend)}</td>
         <td>${num(plan.reduce((s,x)=>s+x.impr,0))}</td><td>${num(plan.reduce((s,x)=>s+x.clicks,0))}</td>
         <td>${inrFull(totSpend/plan.reduce((s,x)=>s+x.clicks,0))}</td><td>${num(totLeads)}</td>
         <td>${inr(totSpend/totLeads)}</td>
+        ${mid?`<td>${num(totMid)}</td><td>${inr(totSpend/totMid)}</td>`:""}
         ${two?`<td>${num(totSales)}</td><td>${inr(totSpend/totSales)}</td>`:""}
-        <td>${inr(totRev)}</td><td>${xx(totRev/totSpend)}</td></tr></tbody></table></div>
+        <td>${inr(totRev)}</td>${mid?"":`<td>${xx(totRev/totSpend)}</td>`}</tr></tbody></table></div>
   </div>`;
 }
 
@@ -1550,10 +1577,12 @@ function render(rebuildDeck=true){
     $("#anchorNote").innerHTML=anchorNote();
     renderAlloc();
   }
-  $("#v-plan").innerHTML    = tab==="plan"    ? viewPlan(plan)    : "";
-  $("#v-curve").innerHTML   = tab==="curve"   ? viewCurve(plan)   : "";
-  $("#v-months").innerHTML  = tab==="months"  ? viewMonths(plan)  : "";
-  $("#v-compare").innerHTML = tab==="compare" ? viewCompare()     : "";
+  const on=t=>printAll || tab===t;
+  $("#v-plan").innerHTML    = on("plan")    ? viewPlan(plan)    : "";
+  $("#v-curve").innerHTML   = on("curve")   ? viewCurve(plan)   : "";
+  $("#v-months").innerHTML  = on("months")  ? viewMonths(plan)  : "";
+  // Compare only earns a page once a scenario has been captured
+  $("#v-compare").innerHTML = (printAll ? scenarios.some(Boolean) : tab==="compare") ? viewCompare() : "";
   bindReadout();
 }
 
@@ -1647,6 +1676,9 @@ $("#fileIn").onchange=e=>{
   r.readAsText(f); e.target.value="";
 };
 $("#pdfBtn").onclick=()=>window.print();
+// Hooked to the print events, not the button, so Cmd+P gets the full PDF too.
+addEventListener("beforeprint",()=>{ printAll=true; render(false); });
+addEventListener("afterprint", ()=>{ printAll=false; render(false); });
 $("#themeBtn").onclick=()=>{
   const cur=document.documentElement.getAttribute("data-theme")
     || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
