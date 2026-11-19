@@ -487,7 +487,25 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
 .plat[aria-pressed="true"] .ck svg{opacity:1}
 .plat.nope{animation:nope .38s cubic-bezier(.3,1.6,.5,1)}
 @keyframes nope{25%{transform:translateX(-4px)}55%{transform:translateX(3px)}80%{transform:translateX(-1px)}}
-.splitbar{display:flex;height:8px;border-radius:999px;overflow:hidden;margin:12px 0 8px;gap:2px;
+.splitwrap{position:relative;margin:14px 0 10px;touch-action:none}
+.splitwrap.drag .splitbar i{transition:none}
+.splithandle{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;cursor:ew-resize;
+  background:#fff;box-shadow:0 0 0 1px rgba(36,22,165,.18),0 4px 10px -2px rgba(36,22,165,.45);z-index:2;
+  transition:transform .35s cubic-bezier(.3,1.6,.5,1);touch-action:none}
+.splithandle::before{content:"";position:absolute;inset:7px 9px;border-left:1.5px solid #9A9AB0;border-right:1.5px solid #9A9AB0}
+.splithandle:hover,.splitwrap.drag .splithandle.on{transform:scale(1.18)}
+.splithandle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.splitrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.splitrow:empty{display:none}
+.sp-cell{display:flex;flex-direction:column;gap:4px;padding:8px 9px;border-radius:12px;background:var(--glass-lo);
+  box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.sp-cell label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-2)}
+.sp-cell label i{width:8px;height:8px;border-radius:50%}
+.sp-cell .sp-in{display:flex;align-items:center;gap:4px}
+.sp-cell input{padding:5px 7px;font-size:13px;font-weight:600}
+.sp-cell .sp-in span{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.sp-cell .sp-amt{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.splitbar{display:flex;height:12px;border-radius:999px;overflow:hidden;margin:0;gap:2px;
   background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge)}
 .splitbar i{display:block;height:100%;border-radius:999px;transition:flex-grow .6s cubic-bezier(.3,1.3,.5,1)}
 .splitbar i[data-p="meta"]{background:linear-gradient(90deg,#0866FF,#7B8CFF)}
@@ -653,10 +671,15 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
     <div class="grp">
       <span class="lbl">Platforms</span>
       <div class="plats" id="platPick" role="group" aria-label="Platforms"></div>
-      <div class="splitbar" id="platBar" aria-hidden="true"><i data-p="meta"></i><i data-p="google"></i><i data-p="linkedin"></i></div>
+      <div class="splitwrap">
+        <div class="splitbar" id="platBar" aria-hidden="true"><i data-p="meta"></i><i data-p="google"></i><i data-p="linkedin"></i></div>
+        <div id="platHandles"></div>
+      </div>
+      <div class="splitrow" id="platSplit"></div>
       <p class="hintline" id="platNote" style="margin:0"></p>
-      <p class="fh" style="margin-top:7px">Tap to add or drop a platform. The budget splits equally across the ones
-        you pick; inside each platform the lines keep their ratio. Fine-tune any line below.</p>
+      <p class="fh" style="margin-top:7px">Tap to add or drop a platform. Picking one splits the budget equally;
+        then drag the handles on the bar or type a % to weight it. The other platforms make up the difference,
+        and inside each platform the lines keep their ratio.</p>
     </div>
 
     <div class="grp">
@@ -1447,6 +1470,98 @@ function togglePlat(p, btn){
   evenSplit(S); render();
 }
 
+// Set one platform's share of the budget; the other picked platforms absorb the
+// difference in proportion to what they had. Lines inside a platform keep their ratio.
+function setPlatShares(map){
+  const tot=pctTotal();
+  PLATS.forEach(p=>{
+    if(!(p in map)) return;
+    const ls=S.channels.filter(c=>chPlat(c)===p), t=ls.reduce((a,c)=>a+(+c.pct||0),0);
+    ls.forEach(c=>c.pct=+((t>0?(+c.pct||0)/t:1/ls.length)*map[p]).toFixed(6));
+  });
+  // shares not in the map were % of the old total — keep them as-is on a 100 scale
+  PLATS.filter(p=>!(p in map)).forEach(p=>S.channels.filter(c=>chPlat(c)===p).forEach(c=>c.pct=+((+c.pct||0)*100/tot).toFixed(6)));
+}
+function setPlatShare(p, target){
+  const on=PLATS.filter(platOn); if(on.length<2) return;
+  const others=on.filter(x=>x!==p), MIN=1;
+  target=clamp(+target||0, MIN, 100-MIN*others.length);
+  const rest=100-target, cur=others.map(platShare), ct=cur.reduce((a,b)=>a+b,0);
+  const map={[p]:target};
+  others.forEach((x,i)=>map[x]=ct>0 ? cur[i]/ct*rest : rest/others.length);
+  // keep every other platform above the floor
+  others.forEach(x=>{ if(map[x]<MIN) map[x]=MIN; });
+  const over=Object.values(map).reduce((a,b)=>a+b,0)-100;
+  if(over>0) map[p]-=over;
+  setPlatShares(map);
+}
+
+// Draggable dividers between neighbouring platforms on the split bar.
+let dragRaf=0;
+function bindHandles(){
+  const wrap=$(".splitwrap"), hosts=$("#platHandles");
+  const on=PLATS.filter(platOn);
+  if(hosts.childElementCount!==Math.max(0,on.length-1) || hosts.dataset.k!==on.join()){
+    hosts.dataset.k=on.join();
+    hosts.innerHTML=on.slice(0,-1).map((p,i)=>`<i class="splithandle" role="slider" tabindex="0" data-a="${p}" data-b="${on[i+1]}"
+      aria-label="Split between ${PLAT[p].label} and ${PLAT[on[i+1]].label}" aria-valuemin="1" aria-valuemax="99"></i>`).join("");
+    hosts.querySelectorAll(".splithandle").forEach(h=>{
+      const a=h.dataset.a, b=h.dataset.b;
+      const moveTo=leftPct=>{
+        const before=on.slice(0,on.indexOf(a)).reduce((t,x)=>t+platShare(x),0);
+        const pair=platShare(a)+platShare(b);
+        const na=clamp(leftPct-before, 1, pair-1);
+        const map={}; on.forEach(x=>map[x]=platShare(x)); map[a]=na; map[b]=pair-na;
+        setPlatShares(map);
+        if(!dragRaf) dragRaf=requestAnimationFrame(()=>{ dragRaf=0; render(false); });
+      };
+      h.onpointerdown=e=>{
+        if(e.button!==0) return; e.preventDefault(); h.setPointerCapture(e.pointerId);
+        wrap.classList.add("drag"); h.classList.add("on");
+        const r=wrap.getBoundingClientRect();
+        h.onpointermove=ev=>moveTo((ev.clientX-r.left)/r.width*100);
+        const end=()=>{ h.onpointermove=null; wrap.classList.remove("drag"); h.classList.remove("on"); render(); };
+        h.onpointerup=end; h.onpointercancel=end;
+      };
+      h.onkeydown=e=>{
+        const d={ArrowLeft:-1,ArrowRight:1,ArrowDown:-1,ArrowUp:1}[e.key]; if(!d) return;
+        e.preventDefault();
+        const before=on.slice(0,on.indexOf(a)).reduce((t,x)=>t+platShare(x),0);
+        moveTo(before+platShare(a)+d*(e.shiftKey?5:1));
+      };
+    });
+  }
+  let acc=0;
+  hosts.querySelectorAll(".splithandle").forEach(h=>{
+    acc=on.slice(0,on.indexOf(h.dataset.a)+1).reduce((t,x)=>t+platShare(x),0);
+    h.style.left=acc+"%";
+    h.setAttribute("aria-valuenow", Math.round(platShare(h.dataset.a)));
+    h.setAttribute("aria-valuetext", `${PLAT[h.dataset.a].label} ${platShare(h.dataset.a).toFixed(0)}%, ${PLAT[h.dataset.b].label} ${platShare(h.dataset.b).toFixed(0)}%`);
+  });
+}
+
+// Per-platform share inputs. A focused input is never overwritten mid-typing.
+function renderSplitRow(){
+  const row=$("#platSplit"), on=PLATS.filter(platOn);
+  if(on.length<2){ row.innerHTML=""; row.dataset.k=""; return; }
+  if(row.dataset.k!==on.join()){
+    row.dataset.k=on.join();
+    row.innerHTML=on.map(p=>`<div class="sp-cell"><label for="ps-${p}"><i style="background:${PLAT_DOT[p]}"></i>${PLAT[p].label}</label>
+      <div class="sp-in"><input id="ps-${p}" type="number" min="1" max="99" step="1" data-ps="${p}"><span>%</span></div>
+      <span class="sp-amt" data-pa="${p}"></span></div>`).join("");
+    row.querySelectorAll("[data-ps]").forEach(el=>{
+      el.onchange=()=>{ setPlatShare(el.dataset.ps, el.value); render(); };
+      el.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); el.blur(); } };
+    });
+  }
+  on.forEach(p=>{
+    const el=row.querySelector(`[data-ps="${p}"]`), sh=platShare(p);
+    if(document.activeElement!==el) el.value=+sh.toFixed(1);
+    row.querySelector(`[data-pa="${p}"]`).textContent=inr(S.budget*sh/100)+"/mo";
+  });
+}
+const PLAT_DOT={meta:"#0866FF", google:"#EA4335", linkedin:"#0A66C2"};
+
 // Built once, then only attributes and text change — so the split bar and the
 // check marks animate between states instead of being swapped out.
 function renderPlat(){
@@ -1474,9 +1589,10 @@ function renderPlat(){
   $("#platNote").innerHTML = on.length===1
     ? `All of ${inr(S.budget)} goes to <b>${list}</b>. Add a platform to split it.`
     : even
-      ? `${inr(S.budget)} split equally — <b>${inr(S.budget/on.length)}</b> each to ${list}.`
-      : `Split is uneven after your edits. <button class="evenbtn" id="evenBtn">Split equally again</button>`;
+      ? `Split equally — <b>${inr(S.budget/on.length)}</b> each. Drag the handles or type a % to change it.`
+      : `Custom split across ${list} — drag the handles or type a %. <button class="evenbtn" id="evenBtn">Split equally</button>`;
   const eb=$("#evenBtn"); if(eb) eb.onclick=()=>{ evenSplit(S); render(); };
+  bindHandles(); renderSplitRow();
 }
 
 // Budget readouts that move with every keystroke and slider step.
