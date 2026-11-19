@@ -1,3 +1,5 @@
+<!doctype html>
+<html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
@@ -425,6 +427,8 @@ input[type=text]:focus,input[type=number]:focus,select:focus{outline:none;border
   box-shadow:var(--glass-shadow);align-items:center}
 .budget-big input{font-size:25px;box-shadow:none;border:none;background:none}
 .budget-big input:focus{box-shadow:none}
+.budget-big:focus-within{box-shadow:var(--glass-shadow),0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+.card-hd + .tw{margin-top:16px}
 .budget-big .bf{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;
   color:#fff;background:var(--grad);white-space:nowrap}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
@@ -536,6 +540,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
   background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge),inset 0 1px 3px rgba(22,22,60,.06);
   overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
+@media (max-width:560px){.tabs{-webkit-mask:linear-gradient(90deg,#000 88%,transparent);mask:linear-gradient(90deg,#000 88%,transparent)}}
 .tabs button{position:relative;z-index:1;padding:7px 15px;margin:0;border:none;border-radius:999px;white-space:nowrap}
 .tabs button[aria-selected="true"]{background:var(--raised);box-shadow:var(--shadow)}
 .barbtn{border:none;border-radius:999px;padding:7px 13px;background:var(--glass-lo);
@@ -601,6 +606,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
 /* ============ PRINT ============ */
 @media print{
   body::before{display:none}
+  input,select{background:#fff!important;color:#16161F!important;border:1px solid #d5d5dd!important;box-shadow:none!important}
   :root,:root[data-theme="dark"]{--ink:#16161F;--ink-2:#43434F;--ink-3:#71717F;--ink-4:#9A9AA6;
     --rule:#E1E1E9;--rule-strong:#CBCBD6;--sunken:#EBEBF1;--grid:#E7E7EE;--axis:#C4C4D0;
     --good-bg:#E6F3EC;--warn-bg:#FBF0DE;--crit-bg:#FAE9E7;--accent:#5546E0}
@@ -638,7 +644,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
     <div class="deck-head">
       <div class="row">
         <div class="brandmark"><i class="tick"></i><h1>Spend Curve</h1></div>
-        <label class="tipsw" title="Show the help text under every field"><button class="switch" id="tipsBtn" aria-pressed="false" aria-label="Show tips"></button>Tips</label>
+        <label class="tipsw" title="Show the help text under every field"><button class="switch" id="tipsBtn" aria-pressed="false" aria-labelledby="tipsLbl"></button><span id="tipsLbl">Tips</span></label>
       </div>
       <p>Pick your platforms, set a budget, see what the next rupee actually buys.</p>
     </div>
@@ -661,7 +667,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
 
     <div class="grp">
       <span class="lbl">Monthly budget — month 1</span>
-      <div class="budget-big"><span>₹</span><input type="number" id="budget" step="10000" min="0" aria-label="Monthly budget"><b class="bf" id="budFmt"></b></div>
+      <div class="budget-big"><span>₹</span><input type="number" id="budget" step="10000" min="0" max="1000000000" aria-label="Monthly budget"><b class="bf" id="budFmt"></b></div>
       <div class="chips" id="budChips" role="group" aria-label="Quick budgets">
         <button data-b="100000">₹1L</button><button data-b="200000">₹2L</button><button data-b="300000">₹3L</button>
         <button data-b="500000">₹5L</button><button data-b="1000000">₹10L</button><button data-b="2500000">₹25L</button>
@@ -669,16 +675,16 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
       <input type="range" id="budgetRange" min="0" max="100" step="0.5" aria-label="Budget slider">
       <p class="fh">Total media spend in month 1, across every channel below.</p>
       <div class="row2" style="margin-top:12px">
-        <div class="field"><label>Budget change <span class="hint">%/mo</span></label>
-          <input type="number" id="growth" step="1">
+        <div class="field"><label for="growth">Budget change <span class="hint">%/mo</span></label>
+          <input type="number" id="growth" step="1" min="-99" max="500">
           <p class="fh">Step up or down each month. 6 makes month 2 six per cent bigger. Use a negative to taper.</p></div>
-        <div class="field"><label>Horizon <span class="hint">months</span></label>
+        <div class="field"><label for="horizon">Horizon <span class="hint">months</span></label>
           <select id="horizon"><option>3</option><option>6</option><option>9</option><option>12</option></select>
           <p class="fh">How far the plan projects.</p></div>
       </div>
       <p class="hintline" id="growthNote"></p>
-      <div class="field"><label>Monthly improvement <span class="hint">%/mo as campaigns learn</span></label>
-        <input type="number" id="improve" step="1">
+      <div class="field"><label for="improve">Monthly improvement <span class="hint">%/mo as campaigns learn</span></label>
+        <input type="number" id="improve" step="1" min="-50" max="50">
         <p class="fh">Rates getting better with optimisation: pulls cost down, CTR and conversion up.
           Set 0 for a flat plan that assumes no learning.</p></div>
     </div>
@@ -704,8 +710,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
 
     <div class="grp">
       <span class="lbl">Channel lines</span>
-      <div class="field"><label>Rates below are true at <span class="hint">₹ / month</span></label>
-        <input type="number" id="anchor" step="10000">
+      <div class="field"><label for="anchor">Rates below are true at <span class="hint">₹ / month</span></label>
+        <input type="number" id="anchor" step="10000" min="0">
         <p class="fh">The budget your researched rates came from. At this number the plan uses your rates
           untouched; spend more than it and costs rise, less and they ease. Typing a new budget above
           resets this; moving the budget slider does not.</p></div>
@@ -740,20 +746,20 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
   <main class="readout">
     <div class="bar noprint">
       <div class="tabs" role="tablist">
-        <button role="tab" data-t="plan" aria-selected="true">Plan</button>
-        <button role="tab" data-t="curve" aria-selected="false">Spend curve</button>
-        <button role="tab" data-t="months" aria-selected="false">Month on month</button>
-        <button role="tab" data-t="compare" aria-selected="false">Compare</button>
+        <button role="tab" id="t-plan" data-t="plan" aria-selected="true" aria-controls="v-plan" tabindex="0">Plan</button>
+        <button role="tab" id="t-curve" data-t="curve" aria-selected="false" aria-controls="v-curve" tabindex="-1">Spend curve</button>
+        <button role="tab" id="t-months" data-t="months" aria-selected="false" aria-controls="v-months" tabindex="-1">Month on month</button>
+        <button role="tab" id="t-compare" data-t="compare" aria-selected="false" aria-controls="v-compare" tabindex="-1">Compare</button>
       </div>
       <a class="barbtn" id="guideBtn" href="guide/">Guide</a>
       <button class="barbtn" id="themeBtn">Theme</button>
       <button class="barbtn pri" id="pdfBtn">Client PDF</button>
     </div>
 
-    <section class="view on" id="v-plan"></section>
-    <section class="view" id="v-curve"></section>
-    <section class="view" id="v-months"></section>
-    <section class="view" id="v-compare"></section>
+    <section role="tabpanel" aria-labelledby="t-plan" class="view on" id="v-plan"></section>
+    <section role="tabpanel" aria-labelledby="t-curve" class="view" id="v-curve"></section>
+    <section role="tabpanel" aria-labelledby="t-months" class="view" id="v-months"></section>
+    <section role="tabpanel" aria-labelledby="t-compare" class="view" id="v-compare"></section>
   </main>
 </div>
 <div class="tip" id="tip" role="status" aria-live="polite"></div>
@@ -928,6 +934,9 @@ function syncRates(ch){
 }
 // Plans saved before CTR was typed carry a CPM/CPC pair instead — read the CTR out of it.
 function normChan(ch){
+  // hand-edited or truncated files: any missing number becomes 0 rather than "undefined"
+  ["pct","cpm","cpc","cr"].forEach(k=>{ if(!isFinite(+ch[k])) ch[k]=0; else ch[k]=+ch[k]; });
+  if(typeof ch.n!=="string") ch.n=String(ch.n||"Line");
   if(ch.rq==null || !isFinite(+ch.rq)) ch.rq = 100;   // plans saved before the lead stage
   if(ch.ctr==null || !isFinite(+ch.ctr) || +ch.ctr<=0)
     ch.ctr = (+ch.cpc>0 && +ch.cpm>0) ? +((+ch.cpm)/(10*(+ch.cpc))).toFixed(3) : 1;
@@ -1075,7 +1084,7 @@ function inr(x){
   if(v>=1e7) return s+"₹"+(v/1e7).toFixed(v/1e7>=100?0:2)+"Cr";
   if(v>=1e5) return s+"₹"+(v/1e5).toFixed(v/1e5>=100?0:2)+"L";
   if(v>=1000) return s+"₹"+Math.round(v).toLocaleString("en-IN");
-  return s+"₹"+(v>=10?Math.round(v):v.toFixed(1));
+  return s+"₹"+(v>=10||Number.isInteger(v)?Math.round(v):v.toFixed(1));
 }
 function inrFull(x){ return isFinite(x) ? "₹"+Math.round(x).toLocaleString("en-IN") : "—"; }
 // Derived rates can land under ₹10, where rounding to the rupee hides the number.
@@ -1173,6 +1182,7 @@ function area(pts,F,dx,dy,base){
 }
 // A value label in a rounded pill, so it reads over gridlines and fills.
 function pillLabel(x,y,text,fill,anchor="middle"){
+  if(!(isFinite(x)&&isFinite(y))) return "";
   const w=String(text).length*6.7+14, h=19;
   const x0 = anchor==="end" ? x-w : anchor==="start" ? x : x-w/2;
   return `<g><rect x="${x0.toFixed(1)}" y="${(y-h/2).toFixed(1)}" width="${w.toFixed(1)}" height="${h}" rx="9.5" fill="${fill}"/>
@@ -1183,7 +1193,7 @@ function grad(id,colour,top=.30,bot=0){
     <stop offset="0" stop-color="${colour}" stop-opacity="${top}"/>
     <stop offset="1" stop-color="${colour}" stop-opacity="${bot}"/></linearGradient>`;
 }
-const dotAt=(x,y,c,r=5)=>`<circle class="halo" cx="${x}" cy="${y}" r="${r+5}" fill="${c}"/><circle class="dot" cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
+const dotAt=(x,y,c,r=5)=>!(isFinite(x)&&isFinite(y)) ? "" : `<circle class="halo" cx="${x}" cy="${y}" r="${r+5}" fill="${c}"/><circle class="dot" cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
 
 /* tooltip */
 const TIP=document.getElementById("tip");
@@ -1389,6 +1399,7 @@ function chartPayback(plan, W, H){
   <div class="li"><i class="sw" style="background:var(--c4)"></i>Cumulative revenue — <span class="num">${inr(cr)}</span></div>
   <div class="li"><i class="sw" style="background:var(--c3)"></i>Cumulative media spend — <span class="num">${inr(cs)}</span></div>
   <div class="li" style="color:var(--ink-3)">Media is <span class="num">${cr>0?(cs/cr*100).toFixed(1):"—"}%</span> of revenue</div>
+  ${cr<cs?`<div class="li" style="color:var(--crit);font-weight:600">Not paid back within ${plan.length} months — revenue covers ${cs>0?(cr/cs*100).toFixed(0):0}% of spend</div>`:""}
 </div>`;
 }
 
@@ -1512,7 +1523,10 @@ function renderAlloc(){
     : `<span>Allocated ${sum.toFixed(1)}%</span>`
       + (off?`<button id="normBtn">Normalise</button>`:`<span class="pill good">balanced</span>`);
   const nb=$("#normBtn");
-  if(nb) nb.onclick=()=>{ const t=sum||1; S.channels.forEach(c=>c.pct=+((c.pct/t)*100).toFixed(1)); render(); };
+  if(nb) nb.onclick=()=>{
+    if(sum<=0){ S.channels.forEach(c=>c.pct=1); evenSplit(S); }   // every line at 0%: start from an equal split
+    else S.channels.forEach(c=>c.pct=+((c.pct/sum)*100).toFixed(3));
+    render(); };
 }
 
 /* ---------- platform picker ---------- */
@@ -1623,7 +1637,9 @@ function renderSplitRow(){
       <div class="sp-in"><input id="ps-${p}" type="number" min="1" max="99" step="1" data-ps="${p}"><span>%</span></div>
       <span class="sp-amt" data-pa="${p}"></span></div>`).join("");
     row.querySelectorAll("[data-ps]").forEach(el=>{
-      el.onchange=()=>{ setPlatShare(el.dataset.ps, el.value); render(); };
+      el.onchange=()=>{
+        if(el.value.trim()==="" || !isFinite(+el.value)){ render(false); return; }   // blank = keep what it was
+        setPlatShare(el.dataset.ps, el.value); render(); };
       el.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); el.blur(); } };
     });
   }
@@ -1658,7 +1674,7 @@ function renderPlat(){
   });
   const even = on.every(p=>Math.abs(platShare(p)-100/on.length)<0.6);
   const names = on.map(p=>PLAT[p].label);
-  const list = names.length>1 ? names.slice(0,-1).join(", ")+" and "+names[names.length-1] : names[0];
+  const list = names.length>1 ? names.slice(0,-1).join(", ")+" and "+names[names.length-1] : (names[0]||"no platform");
   $("#platNote").innerHTML = on.length===1
     ? `All of ${inr(S.budget)} goes to <b>${list}</b>. Add a platform to split it.`
     : even
@@ -1675,6 +1691,12 @@ function renderBudgetBits(){
   const r=$("#budgetRange"); r.style.setProperty("--fill", r.value+"%");
 }
 
+function growthNoteHtml(){
+  const nOv=overrideCount(S);
+  return nOv
+    ? `<b>${nOv} month${nOv>1?"s":""}</b> set by hand on the Month-on-month tab — those override this rate.`
+    : `Month ${S.horizon} budget lands at ${inr(monthBudget(S,S.horizon-1))}.`;
+}
 function renderDeck(){
   const V=VERT[S.vertical];
   $("#clientName").value=S.client;
@@ -1684,24 +1706,22 @@ function renderDeck(){
   $("#growth").value=S.growth; $("#horizon").value=S.horizon;
   $("#improve").value=S.improve; $("#anchor").value=Math.round(S.anchor);
   const nOv=overrideCount(S);
-  $("#growthNote").innerHTML = nOv
-    ? `<b>${nOv} month${nOv>1?"s":""}</b> set by hand on the Month-on-month tab — those override this rate.`
-    : `Month ${S.horizon} budget lands at ${inr(monthBudget(S,S.horizon-1))}.`;
+  $("#growthNote").innerHTML = growthNoteHtml();
   $("#anchorNote").innerHTML=anchorNote();
 
   $("#econFields").innerHTML =
-    `<div class="field"><label>${esc(V.value)} <span class="hint">${esc(V.valueHint)}</span></label>
-       <input type="number" id="aov" step="100" value="${Math.round(S.aov)}">
+    `<div class="field"><label for="aov">${esc(V.value)} <span class="hint">${esc(V.valueHint)}</span></label>
+       <input type="number" id="aov" step="100" min="0" value="${Math.round(S.aov)}">
        <p class="fh">${esc(V.valueHelp)}</p></div>`
-    + V.econ.map(e=>`<div class="field"><label>${esc(e.label)} <span class="hint">${esc(e.hint)}</span></label>
-       <input type="number" id="${e.k}" step="0.5" value="${S[e.k]}">
+    + V.econ.map(e=>`<div class="field"><label for="${e.k}">${esc(e.label)} <span class="hint">${esc(e.hint)}</span></label>
+       <input type="number" id="${e.k}" step="0.5" min="0" max="100" value="${S[e.k]}">
        <p class="fh">${esc(e.help)}</p></div>`).join("")
-    + `<div class="field"><label>Target ${esc(V.cacLabel.toLowerCase())} <span class="hint">the line you won't cross</span></label>
-       <input type="number" id="target" step="100" value="${Math.round(S.target||0)}">
+    + `<div class="field"><label for="target">Target ${esc(V.cacLabel.toLowerCase())} <span class="hint">the line you won't cross</span></label>
+       <input type="number" id="target" step="100" min="0" value="${Math.round(S.target||0)}">
        <p class="fh">${esc(V.targetHelp)} Marks the ceiling on the spend curve — the most this mix can carry before it breaks that number.</p></div>`;
-  $("#aov").oninput=e=>{S.aov=+e.target.value||0; render(false);};
-  $("#target").oninput=e=>{S.target=+e.target.value||0; render(false);};
-  V.econ.forEach(e=>{ const el=$("#"+e.k); if(el) el.oninput=ev=>{S[e.k]=+ev.target.value||0; render(false);}; });
+  $("#aov").oninput=e=>{S.aov=clamp(+e.target.value||0,0,1e12); render(false);};
+  $("#target").oninput=e=>{S.target=clamp(+e.target.value||0,0,1e12); render(false);};
+  V.econ.forEach(e=>{ const el=$("#"+e.k); if(el) el.oninput=ev=>{S[e.k]=clamp(+ev.target.value||0,0,100); render(false);}; });
 
   [...$("#unitSeg").children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.u===S.spendMode));
   renderAlloc(); renderPlat(); renderBudgetBits();
@@ -1768,7 +1788,7 @@ function renderDeck(){
   $("#chanList").querySelectorAll("[data-f]").forEach(el=>{
     const i=+el.closest(".chan").dataset.i, f=el.dataset.f;
     el.oninput=e=>{
-      const v=e.target.value;
+      const v=e.target.value, prevPlat=chPlat(S.channels[i]);
       if(f==="amt"){
         // Rupees typed here become this line's share of the month-1 budget,
         // leaving the other lines' shares untouched.
@@ -1780,16 +1800,28 @@ function renderDeck(){
         const tot=S.channels.reduce((t,c)=>t+(+c.pct||0),0);
         if(tot>0) S.channels.forEach(c=>c.pct=+((+c.pct||0)*100/tot).toFixed(1));
       } else {
-        S.channels[i][f] = f==="n" ? v : (+v||0);
+        const cap = {pct:100, ctr:100, cr:100, rq:100}[f] ?? 1e9;
+        S.channels[i][f] = f==="n" ? v : clamp(+v||0, 0, cap);
       }
       // A rename can flip the line's platform, which flips which rate is typed —
       // so recompute the derived one on every edit, not just on cpm/cpc/ctr.
       syncRates(S.channels[i]);
-      render(f==="n"||f==="amt");
+      // Rebuilding the deck replaces the inputs, so only do it when a rename moved the
+      // line to another platform (the rate field flips) — and then reopen the line and
+      // put the caret back. Every other edit updates in place, so typing never stalls.
+      if(f==="n" && chPlat(S.channels[i])!==prevPlat){
+        const open=[...document.querySelectorAll("#chanList .chan[open]")].map(d=>d.dataset.i);
+        const caret=el.selectionStart;
+        render(true);
+        open.forEach(k=>{ const d=$(`.chan[data-i="${k}"]`); if(d) d.open=true; });
+        const ne=$(`.chan[data-i="${i}"] [data-f="n"]`); if(ne){ ne.focus(); try{ ne.setSelectionRange(caret,caret); }catch(err){} }
+      } else render(false);
     };
   });
   $("#chanList").querySelectorAll("[data-del]").forEach(b=>b.onclick=e=>{
-    e.preventDefault(); S.channels.splice(+b.dataset.del,1); render();
+    e.preventDefault();
+    if(S.channels.length<2){ $("#platNote").textContent="A plan needs at least one line — add another before removing this one."; return; }
+    S.channels.splice(+b.dataset.del,1); render();
   });
 }
 
@@ -1845,13 +1877,13 @@ function viewPlan(plan){
       <th>${esc(V.cplLabel.replace(/^Cost per /,"CP "))}</th><th>Headroom</th></tr></thead>
     <tbody>${m.lines.map((l,i)=>`<tr>
       <td><span class="cellname"><i class="swatch" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</span></td>
-      <td>${inr(l.spend)}</td><td>${(l.spend/m.spend*100).toFixed(0)}%</td>
+      <td>${inr(l.spend)}</td><td>${(m.spend>0?l.spend/m.spend*100:0).toFixed(0)}%</td>
       <td>${num(l.impr)}</td><td>${pct(l.ctr,2)}</td><td>${inrFull(l.cpc)}</td><td>${inrFull(l.cpm)}</td>
       <td>${num(l.clicks)}</td><td>${pct(l.cr,2)}</td>${V.rawLabel?`<td>${num(l.leads)}</td><td>${inr(l.leads>0?l.spend/l.leads:NaN)}</td><td>${pct(l.rq,0)}</td>`:""}<td>${num(l.s0)}</td>
       <td>${inr(l.s0>0?l.spend/l.s0:NaN)}</td><td>${satPill(l.load)}</td></tr>`).join("")}
       ${platforms.map(x=>`<tr class="sub">
         <td style="padding-left:17px">${PLAT[x.p].label} subtotal</td>
-        <td>${inr(x.sp)}</td><td>${(x.sp/m.spend*100).toFixed(0)}%</td><td>${num(x.im)}</td>
+        <td>${inr(x.sp)}</td><td>${(m.spend>0?x.sp/m.spend*100:0).toFixed(0)}%</td><td>${num(x.im)}</td>
         <td>${pct(x.im>0?x.ck/x.im:0,2)}</td><td>${inrFull(x.ck>0?x.sp/x.ck:0)}</td>
         <td>${inrFull(x.im>0?x.sp/x.im*1000:0)}</td><td>${num(x.ck)}</td>
         <td>${pct(x.ck>0?x.ld/x.ck:0,2)}</td>${V.rawLabel?`<td>${num(x.ld)}</td><td>${inr(x.ld>0?x.sp/x.ld:NaN)}</td><td>${pct(x.ld>0?x.s0/x.ld:0,0)}</td>`:""}<td>${num(x.s0)}</td>
@@ -1922,6 +1954,8 @@ function viewPlan(plan){
 /* ---------- CURVE ---------- */
 function viewCurve(plan){
   const V=VERT[S.vertical], cur=S.budget;
+  if(!(cur>0)) return `<div class="card"><div class="card-hd"><div><h2>What the next rupee costs</h2>
+    <p>Set a monthly budget in the panel to draw the spend curve.</p></div></div></div>`;
   const sw=sweep(S, Math.max(cur*0.15, 10000), cur*2.8, 70);
   // exact at each budget, not the nearest sweep sample (which put "current plan" at ₹4.91L for ₹5L)
   const at=b=>Object.assign({budget:b}, runMonth(S,0,b));
@@ -1939,6 +1973,7 @@ function viewCurve(plan){
   const cplJump=(dbl.cpl-now.cpl)/(now.cpl||1)*100;
   const cacJump=(dbl.cac-now.cac)/(now.cac||1)*100;
   const salesJump=(dbl.sales-now.sales)/(now.sales||1)*100;
+  const canJudge = now.sales>0 && isFinite(now.cac) && isFinite(dbl.cac);
 
   const ceil=ceilingAt(sw, S.target);
   let ceilNote="";
@@ -1981,15 +2016,17 @@ function viewCurve(plan){
       <div class="card-hd"><div><h2>Doubling the budget</h2>
         <p>From ${inr(cur)} to ${inr(cur*2)} per month, holding the mix.</p></div></div>
       <div class="kpis" style="border-radius:var(--r)">
-        ${kpi(V.saleLabel, "+"+salesJump.toFixed(0)+"%", `${num(now.sales)} → ${num(dbl.sales)}`)}
-        ${kpi(V.cplLabel, (cplJump>=0?"+":"")+cplJump.toFixed(0)+"%", `${inr(now.cpl)} → ${inr(dbl.cpl)}`)}
+        ${kpi(V.saleLabel, canJudge?"+"+salesJump.toFixed(0)+"%":"—", `${num(now.sales)} → ${num(dbl.sales)}`)}
+        ${kpi(V.cplLabel, isFinite(cplJump)&&now.cpl>0?(cplJump>=0?"+":"")+cplJump.toFixed(0)+"%":"—", `${inr(now.cpl)} → ${inr(dbl.cpl)}`)}
         ${kpi("ROAS", xx(dbl.roas), `from ${xx(now.roas)}`,"inv")}
       </div>
+      ${!canJudge?`<div class="note warn" style="margin-top:14px"><i class="k"></i><div>
+        This plan buys no ${esc(V.saleLabel.toLowerCase())} at the moment — set a budget and the conversion rates in the panel to see what doubling does.</div></div>`:`
       <div class="note ${cacJump>35?"crit":cacJump>15?"warn":""}" style="margin-top:14px"><i class="k"></i><div>
         Twice the money buys <b>${salesJump.toFixed(0)}% more ${esc(V.saleLabel.toLowerCase())}</b>, not 100% more.
         ${esc(V.cacLabel)} moves ${cacJump>=0?"up":"down"} <b>${Math.abs(cacJump).toFixed(0)}%</b> to ${inr(dbl.cac)}.
         ${cacJump>25?"That is the honest ceiling of the current mix — the fix is new channels or better creative, not a bigger number.":"The mix still has room; scaling here is efficient."}
-      </div></div>
+      </div></div>`}
     </div>
   </div>
   <div class="card">
@@ -2059,7 +2096,7 @@ function viewMonths(plan){
   </div>
   <div class="grid2">
     <div class="card"><div class="card-hd"><div><h2>Spend by channel</h2>
-      <p>${overrideCount(S) ? "Budgets set by hand where you typed them" : `Budget grows ${S.growth}% a month`}; the mix holds.</p></div></div>
+      <p>${overrideCount(S) ? "Budgets set by hand where you typed them" : (S.growth>0?`Budget grows ${S.growth}% a month`:S.growth<0?`Budget shrinks ${-S.growth}% a month`:"Budget holds flat")}; the mix holds.</p></div></div>
       ${chartStack(plan, 620, 280)}
       <div class="legend">${plan[0].lines.map((l,i)=>`<div class="li"><i class="sw" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</div>`).join("")}</div>
     </div>
@@ -2089,7 +2126,7 @@ function viewMonths(plan){
     <div class="card-hd"><div><h2>Month-on-month detail</h2>
       <p>Two forces pull against each other here: ${overrideCount(S)
         ? "the monthly budgets you set above push each line past the rates it was quoted at whenever spend rises"
-        : `the budget changing ${S.growth>=0?"+":""}${S.growth}% a month pushes every line further past the rates it was quoted at`}, while ${S.improve}% monthly improvement pulls costs back down and CTR up as the campaigns learn.</p></div></div>
+        : `the budget changing ${S.growth>=0?"+":""}${S.growth}% a month pushes every line further past the rates it was quoted at`}, ${S.improve>0?`while ${S.improve}% monthly improvement pulls costs back down and CTR up as the campaigns learn`:S.improve<0?`and a ${-S.improve}% monthly decline (fatigue) pushes costs up further`:"with no learning assumed"}.</p></div></div>
     <div class="tw"><table>
       <thead><tr><th>Period</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>CPC</th>
         ${V.rawLabel?`<th>${esc(V.rawLabel)}</th><th>${esc(V.rawCpl)}</th>`:""}<th>${esc(V.leadLabel)}</th><th>${esc(V.cplLabel)}</th>
@@ -2117,22 +2154,30 @@ function makeScenario(i, cfg, budget){
 }
 
 function viewCompare(){
-  const V=VERT[S.vertical], two=V.stages.length>1;
   const live=scenarios.map((s,i)=>s?Object.assign({},s,{slot:i}):null).filter(Boolean);
+  // Labels come from the scenarios, not the editor: a lead-gen scenario stays "customers"
+  // even after you switch the editor to real estate. Mixed verticals get neutral labels.
+  const verts=[...new Set(live.map(s=>s.cfg.vertical))];
+  const mixed=verts.length>1;
+  const V = mixed ? {cplLabel:"Cost per qualified lead", saleLabel:"Outcomes", cacLabel:"Cost per outcome",
+                     leadLabel:"Qualified leads"}
+                  : VERT[verts[0]||S.vertical];
+  const two = (verts.length?verts:[S.vertical]).every(v=>VERT[v].stages.length>1);
   const boxes=scenarios.map((s,i)=>{
     if(!s) return `<div class="scnbox empty">
       <h3><span class="tag" style="background:${cvar(i)}">${"ABC"[i]}</span>Empty slot</h3>
       <div class="meta">Capture the plan, then type a budget to test it at.</div>
       <div class="acts"><button class="barbtn" data-cap="${i}">Capture current plan</button></div></div>`;
+    const Vc=VERT[s.cfg.vertical], twoC=Vc.stages.length>1;
     return `<div class="scnbox">
       <h3><span class="tag" style="background:${cvar(i)}">${"ABC"[i]}</span>${esc(s.name)}</h3>
       <div class="meta">${s.cfg.horizon} mo · ${esc(VERT[s.cfg.vertical].label)} · rates set at ${inr(s.cfg.anchor)}</div>
       <div class="mini" style="margin-bottom:9px"><span>Budget / month ₹</span>
         <input data-scnb="${i}" type="number" step="25000" value="${Math.round(s.budget)}"></div>
-      ${two?`<div class="tr" style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px">
-        <span style="color:var(--ink-3)">${esc(V.cplLabel)}</span><b>${inr(s.k.cpl)}</b></div>`:""}
+      ${twoC?`<div class="tr" style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px">
+        <span style="color:var(--ink-3)">${esc(Vc.cplLabel)}</span><b>${inr(s.k.cpl)}</b></div>`:""}
       <div class="tr" style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px">
-        <span style="color:var(--ink-3)">${esc(V.cacLabel)}</span><b>${inr(s.k.cac)}</b></div>
+        <span style="color:var(--ink-3)">${esc(Vc.cacLabel)}</span><b>${inr(s.k.cac)}</b></div>
       <div class="tr" style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px">
         <span style="color:var(--ink-3)">ROAS</span><b>${xx(s.k.roas)}</b></div>
       <div class="acts noprint">
@@ -2144,7 +2189,10 @@ function viewCompare(){
   let body=`<div class="note noprint"><i class="k"></i><div>Capture the same plan into two or three slots, then give each one a different monthly budget. Each slot keeps the rates you quoted, so the difference between them is purely <b>what more money actually buys</b>.</div></div>`;
   if(live.length>=2){
     const base=live[0];
-    body = `<div class="grid2">
+    body = `${mixed?`<div class="note warn"><i class="k"></i><div>These scenarios use <b>different verticals</b>
+      (${verts.map(v=>esc(VERT[v].label)).join(", ")}), so an "outcome" means a different thing in each —
+      read the costs as indicative, not like-for-like.</div></div>`:""}
+    <div class="grid2">
       ${two?`<div class="card"><div class="card-hd"><div><h2>${esc(V.cplLabel)}</h2>
         <p>Lower is better. ★ marks the cheapest.</p></div></div>
         ${chartCompare(live,"cpl",inr,V.cplLabel,640,250,false)}</div>`:""}
@@ -2187,11 +2235,15 @@ function render(rebuildDeck=true){
       const el=$(`.chan[data-i="${i}"] .chan-pc`); if(el) el.textContent=(+c.pct||0).toFixed(0)+"%";
       // keep the derived rate live while a rate or CTR is being typed
       const dv=$(`.chan[data-i="${i}"] [data-rate]`);
-      if(dv) dv.textContent=rate(chPlat(c)==="meta" ? c.cpc : c.cpm);
+      if(dv) dv.textContent = chCtr(c)>0 ? rate(chPlat(c)==="meta" ? c.cpc : c.cpm) : "—";
+      const nm=$(`.chan[data-i="${i}"] .chan-nm`); if(nm) nm.textContent=c.n;
+      const tg=$(`.chan[data-i="${i}"] .chan-tag`); if(tg) tg.textContent=PLAT[chPlat(c)].label;
+      const am=$(`.chan[data-i="${i}"] [data-f="amt"]`); if(am && document.activeElement!==am) am.value=Math.round(chanAmt(c));
     });
     $("#budget").value=Math.round(S.budget);
     $("#anchor").value=Math.round(S.anchor);
     $("#anchorNote").innerHTML=anchorNote();
+    $("#growthNote").innerHTML=growthNoteHtml();
     $("#budgetRange").value = clamp(Math.log10(Math.max(10000,S.budget)/10000)/Math.log10(500)*100,0,100);
     renderAlloc(); renderPlat(); renderBudgetBits();
   }
@@ -2228,7 +2280,7 @@ function bindReadout(){
   document.querySelectorAll("[data-scnb]").forEach(el=>{
     el.onchange=e=>{
       const i=+el.dataset.scnb, sc=scenarios[i];
-      scenarios[i]=makeScenario(i, sc.cfg, +e.target.value||0);
+      scenarios[i]=makeScenario(i, sc.cfg, clamp(+e.target.value||0, 0, 1e9));
       render(false);
     };
     el.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); el.blur(); } };
@@ -2241,8 +2293,8 @@ function bindReadout(){
   document.querySelectorAll("[data-mb]").forEach(el=>{
     el.onchange=e=>{
       const i=+el.dataset.mb, v=e.target.value;
-      if(i===0){ S.budget=+v||0; S.anchor=S.budget; }
-      else { S.monthly[i] = (v===""||!isFinite(+v)) ? null : +v; }
+      if(i===0){ S.budget=clamp(+v||0,0,1e9); S.anchor=S.budget; }
+      else { S.monthly[i] = (v===""||!isFinite(+v)||+v<0) ? null : Math.min(+v,1e9); }
       render();
     };
     el.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); el.blur(); } };
@@ -2266,7 +2318,8 @@ $("#vertSeg").onclick=e=>{
   S=normPlan(defaults(v));
   S.channels=on.flatMap(p=>defaultLines(v,p).map(c=>normChan(Object.assign({},c))));
   if(!S.channels.length) S.channels=normPlan(defaults(v)).channels;
-  if(keep.client && !/client$/i.test(keep.client)) S.client=keep.client;
+  const autoNames=["ecommerce","leadgen","realestate"].map(x=>rawDefaults(x).client);
+  if(keep.client && !autoNames.includes(keep.client)) S.client=keep.client;
   stash={}; evenSplit(S); render();
 };
 $("#budChips").onclick=e=>{
@@ -2286,22 +2339,25 @@ document.querySelectorAll(".deck .grp").forEach((g,i)=>g.style.setProperty("--i"
 // The slider deliberately does not — it is the way to walk the curve away from the
 // anchor, which is what the curve is for. (It took over that job from the handle
 // that used to sit on the chart.)
-$("#budget").oninput=e=>{S.budget=+e.target.value||0; S.anchor=S.budget; render(false);};
+$("#budget").oninput=e=>{S.budget=clamp(+e.target.value||0,0,1e9); S.anchor=S.budget; render(false);};
 $("#budgetRange").oninput=e=>{
   S.budget=Math.round(10000*Math.pow(500, e.target.value/100)/1000)*1000;
   render(false);
   e.target.value=clamp(Math.log10(Math.max(10000,S.budget)/10000)/Math.log10(500)*100,0,100);
 };
-$("#growth").oninput=e=>{S.growth=+e.target.value||0; render(false);};
+$("#growth").oninput=e=>{S.growth=clamp(+e.target.value||0,-99,500); render(false);};
 $("#horizon").onchange=e=>{S.horizon=+e.target.value; render(false);};
-$("#improve").oninput=e=>{S.improve=+e.target.value||0; render(false);};
-$("#anchor").oninput=e=>{S.anchor=+e.target.value||0; render(false);};
+$("#improve").oninput=e=>{S.improve=clamp(+e.target.value||0,-50,50); render(false);};
+$("#anchor").oninput=e=>{S.anchor=clamp(+e.target.value||0,0,1e9); render(false);};
 $("#unitSeg").onclick=e=>{
   const b=e.target.closest("[data-u]"); if(!b) return;
   S.spendMode=b.dataset.u; render();
 };
 $("#addChan").onclick=()=>{
   const p=PLATS.find(platOn)||"meta";
+  // the new line takes 10% and every other line gives up its share pro rata, so the total stays 100
+  const tot=S.channels.reduce((t,c)=>t+(+c.pct||0),0)||100;
+  S.channels.forEach(c=>c.pct=(+c.pct||0)*90/tot);
   S.channels.push(normChan(Object.assign({pct:10}, PLAT[p].add, S.vertical==="ecommerce"?{rq:100}:{})));
   S.channels.sort((a,b)=>platOrder(a)-platOrder(b));
   render();
@@ -2311,17 +2367,51 @@ $("#saveBtn").onclick=()=>{
   const blob=new Blob([JSON.stringify({v:1,plan:S,scenarios},null,2)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download=(S.client||"media-plan").replace(/[^a-z0-9]+/gi,"-").toLowerCase()+".json";
+  const slug=String(S.client||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9]+/gi,"-").replace(/^-+|-+$/g,"").toLowerCase().slice(0,60);
+  a.download=(slug||"media-plan")+".json";
   a.click(); URL.revokeObjectURL(a.href);
 };
 $("#loadBtn").onclick=()=>$("#fileIn").click();
+// Everything is validated and built in temporaries first; S and scenarios are only
+// replaced once the whole file has been read cleanly, so a bad file can't half-load.
+function planFromFile(raw){
+  if(!raw || typeof raw!=="object" || Array.isArray(raw)) return null;
+  const v=VERT[raw.vertical] ? raw.vertical : "leadgen";
+  const base=freshPlan(v), out=Object.assign({}, base);
+  out.vertical=v;
+  out.client = typeof raw.client==="string" ? raw.client : base.client;
+  for(const [k,lo,hi] of [["budget",0,1e9],["anchor",0,1e9],["growth",-99,500],["improve",-50,50],
+                          ["aov",0,1e12],["r1",0,100],["r2",0,100],["target",0,1e12]])
+    out[k] = isFinite(+raw[k]) && raw[k]!==null && raw[k]!=="" ? clamp(+raw[k],lo,hi) : base[k];
+  out.horizon = [3,6,9,12].includes(+raw.horizon) ? +raw.horizon : base.horizon;
+  out.monthly = Array.isArray(raw.monthly) ? raw.monthly.map(x=>x==null||x===""||!isFinite(+x)||+x<0?null:Math.min(+x,1e9)) : [];
+  out.spendMode = raw.spendMode==="abs" ? "abs" : "pct";
+  const ch = Array.isArray(raw.channels) ? raw.channels.filter(c=>c && typeof c==="object") : [];
+  out.channels = ch.length ? ch.map(c=>Object.assign({}, c)) : base.channels;
+  normPlan(out);
+  if(!(out.channels.reduce((t,c)=>t+c.pct,0)>0)){ out.channels.forEach(c=>c.pct=1); evenSplit(out); }
+  return out;
+}
 $("#fileIn").onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
-  r.onload=()=>{ try{
+  r.onload=()=>{
+    let next, nextSc;
+    try{
       const d=JSON.parse(r.result);
-      if(d.plan){ S=normPlan(d.plan); stash={}; scenarios=(d.scenarios||[null,null,null]).map((s,i)=>s&&s.cfg ? makeScenario(i, normPlan(s.cfg), +s.budget||+s.cfg.budget||0) : null); render(); }
-    }catch(err){ alert("That file isn't a saved plan."); } };
+      next=planFromFile(d && d.plan);
+      if(!next) throw new Error("no plan");
+      const sc=Array.isArray(d.scenarios) ? d.scenarios.slice(0,3) : [];
+      nextSc=[0,1,2].map(i=>{
+        const x=sc[i]; if(!x || !x.cfg) return null;
+        const cfg=planFromFile(x.cfg); if(!cfg) return null;
+        return makeScenario(i, cfg, clamp(+x.budget||+cfg.budget||0, 0, 1e9));
+      });
+      runMonth(next,0);   // prove it computes before committing
+    }catch(err){ alert("That file isn't a saved plan — nothing was changed."); return; }
+    S=next; scenarios=nextSc; stash={}; render();
+  };
   r.readAsText(f); e.target.value="";
 };
 $("#pdfBtn").onclick=()=>window.print();
@@ -2350,13 +2440,22 @@ $("#themeBtn").onclick=e=>{
   v.finished.finally(()=>ROOT.classList.remove("theme-swap"));
 };
 const STILL = matchMedia("(prefers-reduced-motion: reduce)");
+// Arrow keys move between tabs (WAI-ARIA tabs pattern); only the selected tab is in the Tab order.
+$(".tabs").addEventListener("keydown",e=>{
+  const bs=[...document.querySelectorAll(".tabs button")], i=bs.indexOf(document.activeElement);
+  if(i<0) return;
+  const k={ArrowRight:1,ArrowLeft:-1,Home:-i,End:bs.length-1-i}[e.key]; if(k==null) return;
+  e.preventDefault(); const nb=bs[(i+k+bs.length)%bs.length]; nb.focus(); nb.click();
+});
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   if(tab===b.dataset.t) return;
   tab=b.dataset.t;
-  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected", x===b));
+  document.querySelectorAll(".tabs button").forEach(x=>{ x.setAttribute("aria-selected", x===b); x.tabIndex = x===b?0:-1; });
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("on", v.id==="v-"+tab));
   render(false);
   const v=$("#v-"+tab);
+  // stacked layout (tablet/phone): the results sit below the whole panel, so bring them into view
+  if(matchMedia("(max-width:1080px)").matches) $(".readout").scrollIntoView({behavior:STILL.matches?"auto":"smooth", block:"start"});
   if(!STILL.matches && v.animate) v.animate([{opacity:0,transform:"translateY(6px)"},{opacity:1,transform:"none"}],
     {duration:200,easing:"cubic-bezier(.2,.8,.2,1)"});
 });
