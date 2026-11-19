@@ -929,13 +929,16 @@ const VERT = {
 // Lead-gen verticals count every form fill as a lead, then the share that is
 // actually relevant. The calibrated defaults were click → relevant lead, so the raw
 // click → lead rate is backed out of them: relevant-lead output stays the same.
-const RQ_DEFAULT = {meta:55, google:75, linkedin:70};
+// Raw click → lead rates were backed out at these per-platform relevance rates; they stay as the
+// raw-rate calibration. The default share of leads that are relevant is set per vertical.
+const RQ_CALIB = {meta:55, google:75, linkedin:70};
+const RQ_VERT  = {leadgen:50, realestate:25, ecommerce:100};
 function qualify(v, lines){
   if(v==="ecommerce") return lines.map(c=>Object.assign(c,{rq:100}));
   return lines.map(c=>{
     if(c.rq!=null) return c;
-    const rq=RQ_DEFAULT[inferPlatform(c.n)];
-    return Object.assign(c,{rq, cr:+(c.cr*100/rq).toFixed(1)});
+    const calib=RQ_CALIB[inferPlatform(c.n)];
+    return Object.assign(c,{rq:RQ_VERT[v], cr:+(c.cr*100/calib).toFixed(1)});
   });
 }
 function defaults(v){ const d=rawDefaults(v); d.channels=qualify(v,d.channels); return d; }
@@ -1864,7 +1867,7 @@ function renderDeck(){
             <p class="fh" id="crh-${i}">Of the people who click, the share that fill the form. Your landing page or lead form rate.</p></div>
           <div class="mini"><label for="rq-${i}"><span>Lead → relevant %</span></label>
             <input id="rq-${i}" data-f="rq" type="number" step="1" min="0" max="100" value="${c.rq}" aria-describedby="rqh-${i}">
-            <p class="fh" id="rqh-${i}">Of those leads, the share sales calls relevant — right budget, location, intent. Meta forms run lower than search.</p></div>
+            <p class="fh" id="rqh-${i}">Of those leads, the share sales calls relevant — right budget, location, intent. Default ${RQ_VERT[S.vertical]}% for ${esc(VERT[S.vertical].label.toLowerCase())}.</p></div>
         </div>
         <div class="derived"><span>Cost per lead <b class="num" data-cpl>—</b></span><span>per relevant <b class="num" data-cprl>—</b></span></div>`
         : `<div class="mini"><span>Click → ${esc(VERT[S.vertical].stages[0].short)} %</span>
@@ -2559,7 +2562,7 @@ $("#addChan").onclick=()=>{
   // the new line takes 10% and every other line gives up its share pro rata, so the total stays 100
   const tot=S.channels.reduce((t,c)=>t+(+c.pct||0),0)||100;
   S.channels.forEach(c=>c.pct=(+c.pct||0)*90/tot);
-  S.channels.push(normChan(Object.assign({pct:10}, PLAT[p].add, S.vertical==="ecommerce"?{rq:100}:{})));
+  S.channels.push(normChan(Object.assign({pct:10}, PLAT[p].add, {rq:RQ_VERT[S.vertical]??50})));
   S.channels.sort((a,b)=>platOrder(a)-platOrder(b));
   render();
 };
