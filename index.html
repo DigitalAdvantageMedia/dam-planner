@@ -1406,29 +1406,47 @@ function chartPayback(plan, W, H){
 /* --- 4f. Funnel --- */
 function chartFunnel(m, W){
   const V=VERT[S.vertical];
-  const steps=[{l:"Impressions",v:m.impr},{l:"Clicks",v:m.clicks}];
-  if(V.rawLabel) steps.push({l:V.rawLabel, v:m.leads});
-  steps.push({l:V.stages[0].label, v:m.s0});
-  if(V.stages.length>1) steps.push({l:V.stages[1].label, v:m.s1});
-  if(V.stages.length>2) steps.push({l:V.stages[2].label, v:m.s2});
-  const RH=56, L=128, PADR=96;
-  const H=steps.length*RH+24, bw=W-L-PADR-70, top=steps[0].v||1;
-  const scale=v=>Math.max(6, Math.pow(Math.max(v,0)/top, 0.34)*bw);
-  const defs=steps.map((s,i)=>`<linearGradient id="fn${i}${uid}" x1="0" x2="1"><stop offset="0" stop-color="${cvar(i)}"/><stop offset="1" stop-color="${cvar(i)}" stop-opacity=".55"/></linearGradient>`).join("");
-  const gid=uid; nid();
+  const steps=[{l:"Impressions",v:m.impr,u:"per 1,000"},{l:"Clicks",v:m.clicks,u:"per click"}];
+  if(V.rawLabel) steps.push({l:V.rawLabel, v:m.leads, u:"per lead"});
+  steps.push({l:V.stages[0].label, v:m.s0, u:"each"});
+  if(V.stages.length>1) steps.push({l:V.stages[1].label, v:m.s1, u:"each"});
+  if(V.stages.length>2) steps.push({l:V.stages[2].label, v:m.s2, u:"each"});
+  // A centred funnel. Widths follow a compressed scale (impressions dwarf bookings by
+  // 10^5) with a floor wide enough to hold the count, so late steps never shrink to dots.
+  const L=118, R=92, BH=34, GAP=30, PITCH=BH+GAP, top=steps[0].v||1;
+  const fw=W-L-R, cx=L+fw/2, wMin=Math.max(78, fw*0.2), wMax=fw;
+  const wOf=v=>wMin+(wMax-wMin)*Math.pow(clamp(Math.max(v,0)/top,0,1),0.28);
+  const H=steps.length*PITCH-GAP+28;
+  const g=uid; nid();
+  const defs=steps.map((s_,i)=>`<linearGradient id="fb${i}${g}" x1="0" x2="1">
+      <stop offset="0" stop-color="${cvar(i)}" stop-opacity=".78"/><stop offset=".5" stop-color="${cvar(i)}"/>
+      <stop offset="1" stop-color="${cvar(i)}" stop-opacity=".78"/></linearGradient>
+    <linearGradient id="fc${i}${g}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${cvar(i)}" stop-opacity=".26"/><stop offset="1" stop-color="${cvar(i+1)}" stop-opacity=".14"/></linearGradient>`).join("");
+  const rows=steps.map((st,i)=>{
+    const y=24+i*PITCH, w=wOf(st.v), x=cx-w/2, unit=st.v>0?m.spend/st.v:NaN;
+    const cost=i===0?inr(unit*1000):inr(unit);
+    let conn="";
+    if(i<steps.length-1){
+      const n=steps[i+1], w2=wOf(n.v), y2=y+PITCH, rate=st.v>0?n.v/st.v:0;
+      const lab=pct(rate, rate<0.01?2:1), cw=lab.length*6.6+16, my=y+BH+GAP/2;
+      conn=`<path d="M${x+6} ${y+BH} L${x+w-6} ${y+BH} L${cx+w2/2-6} ${y2} L${cx-w2/2+6} ${y2} Z" fill="url(#fc${i}${g})"/>
+        <rect x="${cx-cw/2}" y="${my-9}" width="${cw}" height="18" rx="9" fill="var(--surface)" stroke="var(--rule-strong)" stroke-width="1"/>
+        <text class="axis-t" x="${cx}" y="${my+3.6}" text-anchor="middle" style="fill:var(--ink-2);font-weight:650">↓ ${lab}</text>`;
+    }
+    return `${conn}
+      <text x="0" y="${y+BH/2+4.5}" style="font-size:12.5px;font-weight:600;fill:var(--ink-2)">${esc(st.l)}</text>
+      <rect x="${x}" y="${y}" width="${w}" height="${BH}" rx="11" fill="url(#fb${i}${g})"
+        style="filter:drop-shadow(0 6px 10px color-mix(in srgb,${cvar(i)} 28%,transparent))"
+        data-tip="${esc(`<div class='th'>${st.l}</div><div class='tr'><span class='l'>Volume</span><b>${num(st.v)}</b></div><div class='tr'><span class='l'>Cost ${st.u}</span><b>${cost}</b></div>`)}"/>
+      <text class="dlab" x="${cx}" y="${y+BH/2+4}" text-anchor="middle" style="fill:#fff;font-size:12.5px;pointer-events:none">${num(st.v)}</text>
+      <text class="dlab" x="${W}" y="${y+BH/2}" text-anchor="end" fill="var(--ink)" style="font-size:12.5px">${cost}</text>
+      <text class="axis-t" x="${W}" y="${y+BH/2+13}" text-anchor="end" style="fill:var(--ink-4);font-size:9.5px">${st.u}</text>`;
+  }).join("");
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Funnel from impressions to ${esc(V.saleLabel)}">
   <defs>${defs}</defs>
-  <text class="axis-l" x="${W}" y="12" text-anchor="end">Cost each</text>
-  ${steps.map((s,i)=>{
-    const y=i*RH+24, w=scale(s.v), prev=i?steps[i-1].v:null;
-    const rate=prev?(prev>0?s.v/prev:0):null;
-    const unit = s.v>0 ? m.spend/s.v : NaN;
-    return `<text x="0" y="${y+19}" style="font-size:12px;font-weight:600;fill:var(--ink-2)">${esc(s.l)}</text>
-      <rect x="${L}" y="${y+4}" width="${w}" height="24" rx="12" fill="url(#fn${i}${gid})"/>
-      <text class="dlab" x="${L+w+10}" y="${y+20}" fill="var(--ink)">${num(s.v)}</text>
-      ${pillLabel(W, y+16, i===0?inr(unit*1000)+"/k":inr(unit), cvar(i), "end")}
-      ${rate!=null?`<text class="axis-t" x="${L}" y="${y-5}" style="fill:var(--ink-4);font-size:10px">↳ ${pct(rate,rate<0.01?2:1)} carry through</text>`:""}`;
-  }).join("")}
+  <text class="axis-l" x="${W}" y="10" text-anchor="end">Cost</text>
+  ${rows}
 </svg>`;
 }
 
