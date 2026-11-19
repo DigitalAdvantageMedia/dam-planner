@@ -145,6 +145,7 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
   <a href="#deck">The control deck</a>
   <a href="#deck-vertical" class="sub">Client &amp; vertical</a>
   <a href="#deck-budget" class="sub">Budget &amp; time</a>
+  <a href="#deck-platforms" class="sub">Platforms</a>
   <a href="#deck-econ" class="sub">Unit economics</a>
   <a href="#deck-anchor" class="sub">The anchor</a>
   <a href="#deck-channels" class="sub">Channel lines</a>
@@ -186,8 +187,8 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
   <p>Spend Curve models that. You tell it two things:</p>
 
   <ul>
-    <li><b>The rates you researched</b> — a CPM for Meta, a CPC for Google, a click-through rate
-      and a conversion rate on every line.</li>
+    <li><b>The rates you researched</b> — a CPM for Meta, a CPC for Google and LinkedIn, a click-through
+      rate, a click → lead rate and the share of leads that are relevant, on every line.</li>
     <li><b>The budget those rates were true at</b> — the <em>anchor</em>. Usually the budget you had
       in mind when you pulled the benchmarks.</li>
   </ul>
@@ -213,13 +214,16 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
   <ol class="steps">
     <li>Type the <b>client name</b> and pick the <b>vertical</b>. That sets the funnel shape and loads
       sensible Indian-market defaults you can edit.</li>
-    <li>Type the <b>monthly budget</b>. This also sets the anchor, so the plan starts "on rate".</li>
+    <li>Type the <b>monthly budget</b>, or tap a quick chip (₹1L–₹25L). This also sets the anchor, so
+      the plan starts "on rate".</li>
+    <li>Pick your <b>platforms</b> — Meta, Google, LinkedIn. The budget splits equally across the ones
+      you pick.</li>
     <li>Fill in <b>unit economics</b> — order value or deal value, the close rate, and the target cost
       you won't cross.</li>
     <li>Open each <b>channel line</b> and put in the rates you researched: CPM + CTR for Meta lines,
-      CPC + CTR for Google lines, plus the click-to-conversion rate.</li>
-    <li>Read the <b>Plan</b> tab, then the <b>Spend curve</b> tab. The curve tells you where this mix
-      stops paying for itself.</li>
+      CPC + CTR for Google and LinkedIn lines, then <b>click → lead %</b> and <b>lead → relevant %</b>.</li>
+    <li>Read the <b>Plan</b> tab — the "In plain words" line at the top says what the money buys — then
+      the <b>Spend curve</b> tab. The curve tells you where this mix stops paying for itself.</li>
   </ol>
 
   <p>Everything recalculates as you type. There is no save-and-run step, and nothing is stored on a
@@ -230,8 +234,9 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
 <section id="deck">
   <p class="eyebrow">The left half</p>
   <h2>The control deck</h2>
-  <p>Six groups, top to bottom. Every field has a one-line explanation under it in the tool itself;
-    this section covers what each one <em>does to the model</em>.</p>
+  <p>Six numbered groups, top to bottom. Each field's explanation appears when you click into it; flip
+    <b>Tips</b> at the top of the deck to show every explanation at once (the tool remembers your choice).
+    This section covers what each one <em>does to the model</em>.</p>
 
   <h3 id="deck-vertical">Client &amp; vertical</h3>
   <figure>
@@ -242,16 +247,16 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
     <thead><tr><th>Vertical</th><th>Funnel</th><th>Value you enter</th></tr></thead>
     <tbody>
       <tr><td><b>E-commerce</b></td><td>click → order</td><td>Average order value</td></tr>
-      <tr><td><b>Lead gen</b></td><td>click → lead → customer</td><td>Deal value</td></tr>
-      <tr><td><b>Real estate</b></td><td>click → relevant lead → site visit → booking</td><td>Ticket size</td></tr>
+      <tr><td><b>Lead gen</b></td><td>click → lead → relevant lead → customer</td><td>Deal value</td></tr>
+      <tr><td><b>Real estate</b></td><td>click → lead → relevant lead → site visit → booking</td><td>Ticket size</td></tr>
     </tbody>
   </table></div>
   <p>It also renames every label in the read-out, so a real-estate plan talks about site visits and
     bookings rather than leads and customers.</p>
   <div class="note warn">
     <span class="k">Careful</span>
-    <p>Switching vertical <b>reloads that vertical's defaults</b> and discards your edits. Pick the
-      vertical first, or save your plan before switching.</p>
+    <p>Switching vertical <b>reloads that vertical's defaults</b> and discards your rate edits. It keeps
+      the client name and the platforms you picked. Pick the vertical first, or save your plan before switching.</p>
   </div>
 
   <h3 id="deck-budget">Monthly budget, growth, horizon, improvement</h3>
@@ -261,6 +266,7 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
   <ul>
     <li><b>Monthly budget</b> — month 1 spend across every line. <b>Typing here re-anchors your
       rates</b> to the new number, because typing a budget means "this is the plan".</li>
+    <li><b>Quick chips</b> (₹1L, ₹2L, ₹3L, ₹5L, ₹10L, ₹25L) set the budget in one tap — same as typing it.</li>
     <li><b>The slider</b> under it moves the budget <em>without</em> re-anchoring. That's how you
       explore: hold the rates you researched still and see what a bigger or smaller month does to them.</li>
     <li><b>Budget change %/mo</b> — compounding step for months 2 onward. Negative tapers.</li>
@@ -270,12 +276,31 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
       half that pace. Set it to <code>0</code> for a flat plan that assumes no learning at all.</li>
   </ul>
 
+  <h3 id="deck-platforms">Platforms — Meta, Google, LinkedIn</h3>
+  <figure>
+    <img class="narrow" src="img/deck-platforms.png" alt="Three platform cards — Meta, Google and LinkedIn — with the split bar under them">
+  </figure>
+  <p>Tap a card to add or drop a platform. <b>The budget always splits equally across the platforms you
+    pick</b>: two platforms get 50% each, three get 33.3% each. Inside a platform its lines keep their
+    ratio — Meta's prospecting-to-retargeting split survives the reshuffle.</p>
+  <ul>
+    <li>Each card shows its rupees and share for month 1; the bar underneath shows the split.</li>
+    <li>Adding a platform loads its default lines for the vertical. Dropping one and adding it back
+      restores <em>your</em> edited lines, not the defaults (until you switch vertical, reset or open a plan).</li>
+    <li>At least one platform must stay on — the card shakes if you try to drop the last one.</li>
+    <li>Edit a line's share by hand and the split goes uneven; the note under the bar then offers
+      <b>Split equally again</b>.</li>
+  </ul>
+  <p>LinkedIn is priced on CPC (₹80–150 for Indian B2B is the default range) and has its own saturation
+    curve: small professional audiences get expensive quickly as you push budget.</p>
+
   <h3 id="deck-econ">Unit economics</h3>
   <figure>
     <img class="narrow" src="img/deck-econ.png" alt="Deal value, lead to customer rate, and target cost per customer">
   </figure>
-  <p>Value drives revenue and ROAS. The intermediate rates (lead → customer, or relevant lead →
-    site visit → booking) are how the ad-side numbers become business-side numbers.</p>
+  <p>Value drives revenue and ROAS. The intermediate rates (relevant lead → customer, or relevant lead →
+    site visit → booking) are how the ad-side numbers become business-side numbers. The lead → relevant
+    rate lives on each channel line instead, because it differs by platform.</p>
   <p>The <b>target cost</b> is the line you won't cross. It draws the dashed ceiling on the spend
     curve and marks the budget at which this mix stops paying for itself.</p>
 
@@ -305,7 +330,7 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
     </figure>
     <figure>
       <img src="img/chan-google.png" alt="An expanded Google channel line showing CPC and CTR inputs with a derived CPM">
-      <figcaption><b>Google line</b> — you type CPC and CTR. CPM is derived.</figcaption>
+      <figcaption><b>Google line</b> — you type CPC and CTR. CPM is derived. LinkedIn lines work the same way.</figcaption>
     </figure>
   </div>
   <p>This split is deliberate. Meta sells impressions and publishes CPM; Google sells clicks and
@@ -313,14 +338,26 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
     asks for. The third — the one you'd have to invent — is computed:</p>
   <div class="formula">
     Meta &nbsp; CPC = CPM ÷ (CTR × 1,000)<br>
-    Google &nbsp; CPM = CPC × CTR × 1,000
+    Google, LinkedIn &nbsp; CPM = CPC × CTR × 1,000
   </div>
+
+  <p><b>Leads, then relevant leads.</b> Lead-gen and real-estate lines carry two conversion rates:</p>
+  <ul>
+    <li><b>Click → lead %</b> — every form fill or enquiry. This gives <b>Leads</b> and <b>Cost per lead</b>.</li>
+    <li><b>Lead → relevant %</b> — the share sales would call relevant (right budget, location, intent).
+      This gives <b>Relevant leads</b> and <b>Cost per relevant lead</b>, and it's what flows on to customers
+      or site visits. Defaults: Meta 55%, Google 75%, LinkedIn 70% — instant forms bring volume, search brings intent.</li>
+  </ul>
+  <p>The strip under the two rates shows that line's live cost per lead and cost per relevant lead as you type.
+    E-commerce has no lead step, so those lines keep a single click → order rate.</p>
 
   <p><b>The name of the line is not decoration.</b> It picks both the platform and how hard the line
     resists more money:</p>
   <div class="tw"><table>
     <thead><tr><th>If the name contains</th><th>It becomes</th><th>Behaviour</th></tr></thead>
     <tbody>
+      <tr><td><code>linkedin</code></td>
+          <td>LinkedIn (retargeting if it also says <code>retarget</code>)</td><td><span class="pill warn">pricey to scale</span></td></tr>
       <tr><td><code>retarget</code> <code>remarket</code> <code>rtg</code> <code>dpa</code> <code>catalog</code></td>
           <td>Meta retargeting</td><td><span class="pill crit">saturates fastest</span></td></tr>
       <tr><td><code>brand</code> (but not <code>non-brand</code>)</td>
@@ -345,7 +382,8 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
   <p><b>Save plan</b> writes a <code>.json</code> to your machine — the whole plan plus any captured
     comparison scenarios. <b>Open plan</b> reads one back. Send the file to a colleague and they see
     exactly your numbers. Plans saved before the CPM/CPC change still open; their CTR is worked out
-    from the old rate pair.</p>
+    from the old rate pair. Plans saved before the lead step open with lead → relevant at 100%, so
+    their numbers come out exactly as before.</p>
 </section>
 
 <!-- ============================================= -->
@@ -357,18 +395,26 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
     <img src="img/topbar.png" alt="The four tabs, theme toggle and Client PDF button">
     <figcaption>Four tabs. <b>Theme</b> flips light/dark. <b>Client PDF</b> opens your browser's print
       dialogue with a layout built for it — the control deck and buttons drop away, the cards stay.
-      It prints the tab you're currently on, on white.</figcaption>
+      It prints every tab (Compare only if you captured a scenario), each on a fresh page, on white.</figcaption>
+  </figure>
+
+  <p>The tab opens with <b>In plain words</b> — one sentence saying what the month-1 budget buys on the
+    platforms you picked: leads and cost per lead, relevant leads and cost per relevant lead, then
+    customers or bookings. Read that out loud to a client before you show them a single chart.</p>
+  <figure>
+    <img src="img/plan-summary.png" alt="In plain words: what the monthly budget buys in leads, relevant leads and customers">
   </figure>
 
   <figure>
-    <img src="img/plan-kpis.png" alt="KPI row: monthly spend, leads, cost per lead, customers, cost per customer, revenue and ROAS">
-    <figcaption>The headline row. The small line under each number is where it lands in the final
+    <img src="img/plan-kpis.png" alt="KPI tiles: monthly spend, leads, cost per lead, relevant leads, cost per relevant lead, customers, cost per customer, revenue and ROAS">
+    <figcaption>The headline tiles — leads and cost per lead sit before relevant leads and cost per relevant lead. The small line under each number is where it lands in the final
       month of the horizon, so you can see the direction of travel at a glance.</figcaption>
   </figure>
 
   <figure>
     <img src="img/plan-table.png" alt="Month 1 plan table with a row per channel and Meta and Google subtotals">
-    <figcaption>One row per line, with Meta and Google subtotals and a blended total.</figcaption>
+    <figcaption>One row per line, a subtotal per platform (Meta, Google, LinkedIn) and a blended total.
+      Lead-gen plans add <b>Leads</b>, <b>CPL</b> and <b>Rel. %</b> columns before relevant leads.</figcaption>
   </figure>
 
   <p>Every rate in this table is the <b>effective</b> rate at this budget — what you'd actually pay,
@@ -549,8 +595,9 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
   <div class="formula">
     clicks = spend ÷ CPC<br>
     impressions = clicks ÷ CTR<br>
-    leads = clicks × conversion rate<br>
-    customers = leads × close rate &nbsp; <em>(× site-visit rate for real estate)</em><br>
+    leads = clicks × click → lead rate<br>
+    relevant leads = leads × lead → relevant rate<br>
+    customers = relevant leads × close rate &nbsp; <em>(× site-visit rate for real estate)</em><br>
     revenue = customers × value &nbsp;&nbsp; ROAS = revenue ÷ spend
   </div>
 </section>
@@ -581,9 +628,8 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
     direction, and the reason the anchor exists.</p>
 
   <h3>"Build the client deck"</h3>
-  <p>Open the tab you want, then hit <b>Client PDF</b> and print to PDF. Two things to know: it prints
-    <b>only the tab you're on</b>, and it always prints on white regardless of your theme. So for a
-    full pack, print each tab in turn and merge.</p>
+  <p>Hit <b>Client PDF</b> and print to PDF. It prints every tab in one go, each starting on a new page,
+    always on white regardless of your theme. Compare is included only when you've captured a scenario.</p>
 </section>
 
 <!-- ============================================= -->
@@ -595,7 +641,11 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
     <li><b>Typing a budget re-anchors; the slider doesn't.</b> If every line reads
       <span class="pill good">on rate</span> no matter what number you type, you're re-anchoring each
       time. Use the slider to explore.</li>
-    <li><b>Switching vertical wipes your edits</b> and reloads defaults. Save first.</li>
+    <li><b>Switching vertical wipes your rate edits</b> and reloads defaults (platforms are kept). Save first.</li>
+    <li><b>Ticking a platform rebalances the whole split.</b> Hand-tuned shares are reset to an equal
+      split across platforms. Pick platforms first, tune shares after.</li>
+    <li><b>Lead → relevant is per line.</b> If cost per relevant lead looks too good, check the Meta
+      lines' relevant % — form leads are rarely above 60% relevant.</li>
     <li><b>The name drives the model.</b> A line called "Awareness" is treated as Meta prospecting.
       If you meant YouTube, put <code>youtube</code> in the name.</li>
     <li><b>Shares must total 100%.</b> The allocation bar goes amber and offers Normalise when they

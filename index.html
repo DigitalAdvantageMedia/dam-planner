@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Spend Curve — DAM Media Planner</title>
 <style>
@@ -321,8 +322,259 @@ svg{display:block;max-width:100%;overflow:visible}
 .printonly{display:none}
 .foot{font-size:11px;color:var(--ink-4);line-height:1.6;max-width:78ch}
 
+/* ============ LIQUID GLASS ============ */
+/* Glass needs something behind it to bend, so the page sits on slow-drifting brand
+   glows. Only the deck, the top bar and the small spring lenses blur; cards are
+   high-alpha fills, because a backdrop-filter on every card is what makes glass UIs lag. */
+:root{
+  --r:10px;
+  --glass:rgba(255,255,255,.58); --glass-hi:rgba(255,255,255,.80); --glass-lo:rgba(255,255,255,.46);
+  --glass-line:rgba(255,255,255,.85); --glass-edge:rgba(36,22,165,.09);
+  --glass-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 1px var(--glass-edge),
+    0 18px 40px -24px rgba(36,22,165,.30),0 2px 6px -2px rgba(36,22,165,.08);
+  --blob1:rgba(85,70,224,.26); --blob2:rgba(233,10,121,.15); --blob3:rgba(255,201,105,.30);
+  --grad:linear-gradient(120deg,#5546E0 0%,#9B3BD8 52%,#E90A79 100%);
+  --grad-text:linear-gradient(110deg,#3D2FD0,#B01AA8 60%,#E90A79);
+  --lens-fill:radial-gradient(90% 80% at var(--hx) var(--hy),rgba(255,255,255,.95),rgba(255,255,255,.62) 55%,rgba(255,255,255,.42)),
+    linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,.32));
+  --lens-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(255,255,255,.45),0 8px 20px -8px rgba(36,22,165,.38),0 2px 5px rgba(36,22,165,.12);
+  --lens-rim-base:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.25));
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B0B14; --rule:#26263A; --rule-strong:#35354C; --sunken:rgba(255,255,255,.045); --raised:rgba(255,255,255,.06);
+    --glass:rgba(20,20,34,.55); --glass-hi:rgba(30,30,48,.72); --glass-lo:rgba(255,255,255,.05);
+    --glass-line:rgba(255,255,255,.10); --glass-edge:rgba(255,255,255,.07);
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px var(--glass-edge),0 22px 46px -26px rgba(0,0,0,.85);
+    --blob1:rgba(110,92,255,.30); --blob2:rgba(236,65,137,.20); --blob3:rgba(255,201,105,.08);
+    --grad-text:linear-gradient(110deg,#A99CFF,#F07BC0 60%,#FFC969);
+    --lens-fill:radial-gradient(90% 80% at var(--hx) var(--hy),rgba(255,255,255,.24),rgba(255,255,255,.08) 60%,rgba(255,255,255,.04)),
+      linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.03) 55%,rgba(255,255,255,.08));
+    --lens-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.10),inset 0 0 14px rgba(255,255,255,.08),
+      0 10px 24px -6px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.3);
+    --lens-rim-base:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,.06));
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B0B14; --rule:#26263A; --rule-strong:#35354C; --sunken:rgba(255,255,255,.045); --raised:rgba(255,255,255,.06);
+  --glass:rgba(20,20,34,.55); --glass-hi:rgba(30,30,48,.72); --glass-lo:rgba(255,255,255,.05);
+  --glass-line:rgba(255,255,255,.10); --glass-edge:rgba(255,255,255,.07);
+  --glass-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px var(--glass-edge),0 22px 46px -26px rgba(0,0,0,.85);
+  --blob1:rgba(110,92,255,.30); --blob2:rgba(236,65,137,.20); --blob3:rgba(255,201,105,.08);
+  --grad-text:linear-gradient(110deg,#A99CFF,#F07BC0 60%,#FFC969);
+  --lens-fill:radial-gradient(90% 80% at var(--hx) var(--hy),rgba(255,255,255,.24),rgba(255,255,255,.08) 60%,rgba(255,255,255,.04)),
+    linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.03) 55%,rgba(255,255,255,.08));
+  --lens-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.10),inset 0 0 14px rgba(255,255,255,.08),
+    0 10px 24px -6px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.3);
+  --lens-rim-base:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,.06));
+}
+
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+  background:radial-gradient(38% 34% at 14% 10%,var(--blob1),transparent 70%),
+    radial-gradient(34% 30% at 88% 14%,var(--blob2),transparent 70%),
+    radial-gradient(44% 40% at 66% 96%,var(--blob3),transparent 70%),var(--ground);
+  animation:drift 38s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate3d(-2.5%,2%,0) scale(1.06)}}
+
+.deck{background:var(--glass);border-right:1px solid var(--glass-line);
+  -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);counter-reset:step}
+.deck-head{background:var(--glass-hi);border-bottom:1px solid var(--glass-line);padding:18px 20px 14px;
+  -webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%)}
+.deck-head .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brandmark .tick{width:9px;height:18px;border-radius:5px;background:var(--grad);transform:translateY(2px)}
+.brandmark h1{font-size:18px}
+.grp{border-bottom:1px solid var(--glass-line);padding:18px 20px;animation:rise .5s cubic-bezier(.2,.9,.3,1.15) backwards;
+  animation-delay:calc(var(--i,0) * 45ms + 60ms)}
+@keyframes rise{from{opacity:0;transform:translateY(8px) scale(.985)}}
+.grp>.lbl:not(.sub){display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--ink-2);margin-bottom:13px}
+.grp>.lbl:not(.sub)::before{counter-increment:step;content:counter(step);width:19px;height:19px;border-radius:50%;
+  display:inline-grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:0;color:#fff;background:var(--grad);
+  box-shadow:0 3px 8px -3px rgba(233,10,121,.55)}
+
+/* help text: shown for the field you are in, or everywhere with Tips on */
+.deck .fh{display:none}
+.deck.tips .fh,.deck .field:focus-within .fh,.deck .mini:focus-within .fh{display:block;animation:fhIn .18s ease-out}
+@keyframes fhIn{from{opacity:0;transform:translateY(-2px)}}
+.tipsw{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-3);cursor:pointer;user-select:none}
+.tipsw .switch{width:32px;height:18px}
+.tipsw .switch::after{width:14px;height:14px}
+.tipsw .switch[aria-pressed="true"]::after{transform:translateX(14px)}
+.switch[aria-pressed="true"]{background:var(--grad)}
+
+input[type=text],input[type=number],select{background:var(--glass-hi);border:1px solid var(--glass-edge);
+  border-radius:var(--r);padding:8px 10px;box-shadow:inset 0 1px 2px rgba(22,22,60,.06);transition:border-color .15s,box-shadow .15s}
+input[type=text]:focus,input[type=number]:focus,select:focus{outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.mcell input{border-radius:var(--r)}
+.budget-big{background:var(--glass-hi);border:1px solid var(--glass-edge);border-radius:14px;padding:10px 14px;
+  box-shadow:var(--glass-shadow);align-items:center}
+.budget-big input{font-size:25px;box-shadow:none;border:none;background:none}
+.budget-big input:focus{box-shadow:none}
+.budget-big .bf{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;
+  color:#fff;background:var(--grad);white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chips button{border:none;background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge);border-radius:999px;
+  padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--ink-2);cursor:pointer;
+  transition:transform .3s cubic-bezier(.3,1.6,.5,1),background .15s,color .15s}
+.chips button:hover{transform:translateY(-1px);color:var(--ink)}
+.chips button:active{transform:scale(.94);transition-duration:.1s}
+.chips button[aria-pressed="true"]{background:var(--grad);color:#fff;box-shadow:0 4px 12px -5px rgba(233,10,121,.6)}
+
+input[type=range]{--fill:50%;margin-top:6px}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border:none;border-radius:3px;
+  background:linear-gradient(90deg,#5546E0,#E90A79) 0/var(--fill) 100% no-repeat,var(--sunken);
+  box-shadow:inset 0 0 0 1px var(--glass-edge)}
+input[type=range]::-webkit-slider-thumb{width:20px;height:20px;margin-top:-7px;background:#fff;border:none;
+  box-shadow:0 0 0 1px rgba(36,22,165,.15),0 4px 10px -2px rgba(36,22,165,.45),inset 0 -2px 3px rgba(36,22,165,.08);
+  transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:linear-gradient(90deg,#5546E0,#E90A79)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;border:none;box-shadow:0 3px 9px -2px rgba(36,22,165,.45)}
+
+.seg{position:relative;border:none;border-radius:999px;padding:3px;background:var(--glass-lo);
+  box-shadow:inset 0 0 0 1px var(--glass-edge),inset 0 1px 3px rgba(22,22,60,.06)}
+.seg button{position:relative;z-index:1;border-radius:999px;padding:7px 6px;font-size:12px}
+.seg button:hover{color:var(--ink-2)}
+
+/* channel lines */
+.chan{background:var(--glass-hi);border:none;border-radius:12px;box-shadow:var(--glass-shadow);margin-bottom:9px;
+  transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
+.chan-hd{padding:10px 12px}
+.chan-hd::after{content:"";width:7px;height:7px;border-right:1.5px solid var(--ink-4);border-bottom:1.5px solid var(--ink-4);
+  transform:rotate(-45deg);transition:transform .25s cubic-bezier(.3,1.5,.5,1);margin-left:2px}
+.chan[open] .chan-hd::after{transform:rotate(45deg)}
+.chan[open] .chan-hd{border-bottom-color:var(--glass-edge)}
+.chan .swatch{width:10px;height:10px;border-radius:50%}
+.chan-tag{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
+  padding:1px 6px;border-radius:999px;background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.derived{background:var(--glass-lo);border:none;box-shadow:inset 0 0 0 1px var(--glass-edge);border-radius:8px}
+.alloc{border:none;border-radius:10px;background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.alloc.off{background:var(--warn-bg);box-shadow:inset 0 0 0 1px var(--warn)}
+.linkbtn.add{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:600;color:var(--accent);
+  padding:7px 12px;border-radius:999px;background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge);
+  transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.linkbtn.add:hover{transform:translateY(-1px)}
+
+/* platform picker */
+.plats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.plat{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:11px 10px 10px;
+  border:none;border-radius:14px;cursor:pointer;text-align:left;background:var(--glass-lo);
+  box-shadow:inset 0 0 0 1px var(--glass-edge);color:var(--ink);
+  transition:transform .4s cubic-bezier(.3,1.6,.5,1),box-shadow .25s,background .25s,opacity .25s}
+.plat:hover{transform:translateY(-2px)}
+.plat:active{transform:scale(.95);transition-duration:.12s}
+.plat[aria-pressed="false"]{opacity:.72}
+.plat[aria-pressed="false"] .ic{filter:grayscale(1) opacity(.6)}
+.plat[aria-pressed="true"]{background:var(--glass-hi);box-shadow:var(--glass-shadow)}
+.plat::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:var(--prim);opacity:0;
+  transition:opacity .25s;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.plat[aria-pressed="true"]::before{opacity:1}
+.plat[data-p="meta"]{--prim:linear-gradient(135deg,#0866FF,#6A8DFF 60%,#B25BFF);--pc:#0866FF}
+.plat[data-p="google"]{--prim:linear-gradient(135deg,#4285F4,#EA4335 35%,#FBBC05 65%,#34A853);--pc:#EA4335}
+.plat[data-p="linkedin"]{--prim:linear-gradient(135deg,#0A66C2,#3FA0FF);--pc:#0A66C2}
+.plat .ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;transition:filter .25s}
+.plat .ic svg{width:18px;height:18px}
+.plat .pn{font-size:12.5px;font-weight:650;letter-spacing:-.01em}
+.plat .ps{font-size:10px;color:var(--ink-4);line-height:1.3}
+.plat .pa{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink-2);margin-top:2px;font-variant-numeric:tabular-nums}
+.plat[aria-pressed="false"] .pa{color:var(--ink-4);font-weight:500}
+.plat .ck{position:absolute;top:9px;right:9px;width:17px;height:17px;border-radius:50%;
+  box-shadow:inset 0 0 0 1.5px var(--rule-strong);display:grid;place-items:center;
+  transition:transform .4s cubic-bezier(.3,1.8,.5,1),background .2s,box-shadow .2s}
+.plat .ck svg{width:10px;height:10px;opacity:0;transition:opacity .15s}
+.plat[aria-pressed="true"] .ck{background:var(--pc);box-shadow:0 3px 8px -2px var(--pc);transform:scale(1.08)}
+.plat[aria-pressed="true"] .ck svg{opacity:1}
+.plat.nope{animation:nope .38s cubic-bezier(.3,1.6,.5,1)}
+@keyframes nope{25%{transform:translateX(-4px)}55%{transform:translateX(3px)}80%{transform:translateX(-1px)}}
+.splitbar{display:flex;height:8px;border-radius:999px;overflow:hidden;margin:12px 0 8px;gap:2px;
+  background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.splitbar i{display:block;height:100%;border-radius:999px;transition:flex-grow .6s cubic-bezier(.3,1.3,.5,1)}
+.splitbar i[data-p="meta"]{background:linear-gradient(90deg,#0866FF,#7B8CFF)}
+.splitbar i[data-p="google"]{background:linear-gradient(90deg,#4285F4,#EA4335,#FBBC05,#34A853)}
+.splitbar i[data-p="linkedin"]{background:linear-gradient(90deg,#0A66C2,#3FA0FF)}
+.evenbtn{border:none;background:none;color:var(--accent);font-weight:600;font-size:11px;cursor:pointer;padding:0;
+  text-decoration:underline;text-underline-offset:2px}
+
+/* top bar + tabs */
+.bar{background:var(--glass);border-bottom:1px solid var(--glass-line);height:62px;gap:10px;
+  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.tabs{flex:0 1 auto;margin-right:auto;position:relative;padding:4px;border-radius:999px;gap:2px;
+  background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge),inset 0 1px 3px rgba(22,22,60,.06);
+  overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{position:relative;z-index:1;padding:7px 15px;margin:0;border:none;border-radius:999px;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--raised);box-shadow:var(--shadow)}
+.barbtn{border:none;border-radius:999px;padding:7px 13px;background:var(--glass-lo);
+  box-shadow:inset 0 0 0 1px var(--glass-edge);transition:transform .3s cubic-bezier(.3,1.6,.5,1),color .15s}
+.barbtn:hover{transform:translateY(-1px);color:var(--accent);border-color:transparent}
+.barbtn:active{transform:scale(.95);transition-duration:.1s}
+.barbtn.pri{background:var(--grad);color:#fff;box-shadow:0 6px 16px -6px rgba(233,10,121,.55),inset 0 1px 0 rgba(255,255,255,.35)}
+.barbtn.pri:hover{color:#fff;filter:brightness(1.07)}
+
+/* the lens — one per control, springs between items (see glassLens in the script) */
+.lens{position:absolute;left:0;top:0;z-index:0;pointer-events:none;border-radius:999px;opacity:0;
+  will-change:transform,opacity;transform-origin:50% 50%;--hx:50%;--hy:20%;
+  background:var(--lens-fill);box-shadow:var(--lens-shadow);
+  -webkit-backdrop-filter:blur(8px) saturate(150%) brightness(1.04);backdrop-filter:blur(8px) saturate(150%) brightness(1.04)}
+.lens::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:var(--lens-rim,var(--lens-rim-base));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.lens::after{content:"";position:absolute;inset:1px;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.4),transparent 45%);mix-blend-mode:screen;opacity:.75}
+.lens[data-state="on"]{--lens-rim:linear-gradient(120deg,#5546E0,#E90A79 60%,#FFC969)}
+.has-lens>button[aria-selected="true"],.has-lens>button[aria-pressed="true"]{
+  background:var(--grad-text)!important;-webkit-background-clip:text!important;background-clip:text!important;
+  color:transparent!important;box-shadow:none!important;font-weight:650}
+@media (prefers-reduced-transparency:reduce),(forced-colors:active){
+  .lens{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--raised)}
+  .deck,.bar{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--surface)}
+}
+@media (prefers-reduced-motion:reduce){body::before{animation:none}.grp{animation:none}}
+
+/* read-out */
+.summary{position:relative;padding:16px 20px;border-radius:18px;background:var(--glass-hi);box-shadow:var(--glass-shadow);overflow:hidden}
+.summary::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;
+  background:linear-gradient(120deg,#5546E0,#E90A79 60%,#FFC969);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.summary .sum-k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+  background:var(--grad-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+.summary p{margin:5px 0 0;font-size:15px;line-height:1.55;color:var(--ink-2);text-wrap:pretty}
+.summary b{color:var(--ink);font-weight:650;font-family:var(--mono);font-size:14px}
+.view{padding:24px 26px 60px}
+.card{background:var(--glass-hi);border:none;border-radius:18px;box-shadow:var(--glass-shadow);padding:18px 20px 16px}
+.card-hd h2{font-size:15px}
+.kpis{gap:12px;background:none;border:none;border-radius:0;overflow:visible}
+.kpi{background:var(--glass-hi);border-radius:16px;box-shadow:var(--glass-shadow);padding:14px 16px 15px;
+  position:relative;overflow:hidden}
+.kpi:first-child::after{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--grad)}
+.kpi .v{font-size:23px}
+.note{background:var(--glass-lo);border:none;border-radius:12px;box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.scnbox{background:var(--glass-lo);border:none;border-radius:12px;box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.scnbox.empty{box-shadow:inset 0 0 0 1px var(--rule-strong);background:none}
+.sattrack{border:none;background:var(--sunken);box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.tip{background:var(--glass-hi);border:none;border-radius:12px;box-shadow:var(--glass-shadow);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%)}
+@media (max-width:1080px){
+  .deck{border-right:none;border-bottom:1px solid var(--glass-line)}
+  .bar{padding:0 16px}
+  .view{padding:18px 16px 48px}
+}
+@media (max-width:560px){
+  .bar{height:auto;flex-wrap:wrap;padding:10px 16px;gap:8px}
+  .tabs{flex:1 1 100%;margin-right:0}
+  .grp,.deck-head{padding-left:16px;padding-right:16px}
+}
+
 /* ============ PRINT ============ */
 @media print{
+  body::before{display:none}
+  :root,:root[data-theme="dark"]{--ink:#16161F;--ink-2:#43434F;--ink-3:#71717F;--ink-4:#9A9AA6;
+    --rule:#E1E1E9;--rule-strong:#CBCBD6;--sunken:#EBEBF1;--grid:#E7E7EE;--axis:#C4C4D0;
+    --good-bg:#E6F3EC;--warn-bg:#FBF0DE;--crit-bg:#FAE9E7;--accent:#5546E0}
+  .card,.kpi,.note,.scnbox{background:#fff!important;box-shadow:none!important;border:1px solid #d5d5dd!important}
+  .kpi:first-child::after,.summary::before{display:none}
+  .summary .sum-k{background:none;color:#5546E0;-webkit-text-fill-color:#5546E0}
+  .summary{background:#fff!important;box-shadow:none!important;border:1px solid #d5d5dd}
   @page{size:A4 landscape;margin:11mm}
   .deck,.bar,.noprint{display:none!important}
   .app{display:block;height:auto}
@@ -351,8 +603,11 @@ svg{display:block;max-width:100%;overflow:visible}
   <!-- ================= CONTROL DECK ================= -->
   <aside class="deck">
     <div class="deck-head">
-      <div class="brandmark"><i class="tick"></i><h1>Spend Curve</h1></div>
-      <p>Set the budget and the rates you get. See what the next rupee actually buys.</p>
+      <div class="row">
+        <div class="brandmark"><i class="tick"></i><h1>Spend Curve</h1></div>
+        <label class="tipsw" title="Show the help text under every field"><button class="switch" id="tipsBtn" aria-pressed="false" aria-label="Show tips"></button>Tips</label>
+      </div>
+      <p>Pick your platforms, set a budget, see what the next rupee actually buys.</p>
     </div>
 
     <div class="grp">
@@ -373,7 +628,11 @@ svg{display:block;max-width:100%;overflow:visible}
 
     <div class="grp">
       <span class="lbl">Monthly budget — month 1</span>
-      <div class="budget-big"><span>₹</span><input type="number" id="budget" step="10000" min="0"></div>
+      <div class="budget-big"><span>₹</span><input type="number" id="budget" step="10000" min="0" aria-label="Monthly budget"><b class="bf" id="budFmt"></b></div>
+      <div class="chips" id="budChips" role="group" aria-label="Quick budgets">
+        <button data-b="100000">₹1L</button><button data-b="200000">₹2L</button><button data-b="300000">₹3L</button>
+        <button data-b="500000">₹5L</button><button data-b="1000000">₹10L</button><button data-b="2500000">₹25L</button>
+      </div>
       <input type="range" id="budgetRange" min="0" max="100" step="0.5" aria-label="Budget slider">
       <p class="fh">Total media spend in month 1, across every channel below.</p>
       <div class="row2" style="margin-top:12px">
@@ -392,18 +651,27 @@ svg{display:block;max-width:100%;overflow:visible}
     </div>
 
     <div class="grp">
+      <span class="lbl">Platforms</span>
+      <div class="plats" id="platPick" role="group" aria-label="Platforms"></div>
+      <div class="splitbar" id="platBar" aria-hidden="true"><i data-p="meta"></i><i data-p="google"></i><i data-p="linkedin"></i></div>
+      <p class="hintline" id="platNote" style="margin:0"></p>
+      <p class="fh" style="margin-top:7px">Tap to add or drop a platform. The budget splits equally across the ones
+        you pick; inside each platform the lines keep their ratio. Fine-tune any line below.</p>
+    </div>
+
+    <div class="grp">
       <span class="lbl">Unit economics</span>
       <div id="econFields"></div>
     </div>
 
     <div class="grp">
-      <span class="lbl">Channel mix</span>
+      <span class="lbl">Channel lines</span>
       <div class="field"><label>Rates below are true at <span class="hint">₹ / month</span></label>
         <input type="number" id="anchor" step="10000">
         <p class="fh">The budget your researched rates came from. At this number the plan uses your rates
           untouched; spend more than it and costs rise, less and they ease. Typing a new budget above
           resets this; moving the budget slider does not.</p></div>
-      <span class="lbl" style="display:block;margin:2px 0 7px">Enter channel spend as</span>
+      <span class="lbl sub" style="display:block;margin:2px 0 7px">Enter channel spend as</span>
       <div class="seg" id="unitSeg" role="group" aria-label="Channel spend unit">
         <button data-u="pct">Share %</button>
         <button data-u="abs">Rupees ₹</button>
@@ -413,7 +681,7 @@ svg{display:block;max-width:100%;overflow:visible}
       <p class="hintline" id="anchorNote"></p>
       <div class="alloc" id="allocBar"></div>
       <div id="chanList"></div>
-      <button class="linkbtn add" id="addChan">+ Add channel line</button>
+      <button class="linkbtn add" id="addChan">+ Add a line</button>
       <p class="fh" style="margin-top:8px">Shares should total 100%. Open a line to edit its rates.</p>
     </div>
 
@@ -471,10 +739,12 @@ const ARCH = {
   search_brand  : {aCost:.08, aCtr:.04, aCr:.04},   // capped by query volume, not by price
   search_generic: {aCost:.28, aCtr:.10, aCr:.14},
   pmax          : {aCost:.22, aCtr:.10, aCr:.14},
-  display       : {aCost:.16, aCtr:.20, aCr:.16}
+  display       : {aCost:.16, aCtr:.20, aCr:.16},
+  linkedin      : {aCost:.34, aCtr:.14, aCr:.12}    // small, pricey B2B pools: cost climbs fast
 };
 function inferArch(name){
   const n=String(name).toLowerCase();
+  if(/linkedin/.test(n)) return /retarget|remarket/.test(n) ? "meta_retarget" : "linkedin";
   if(/retarget|remarket|rtg|dpa|catalog/.test(n))        return "meta_retarget";
   if(/brand/.test(n) && !/non.?brand/.test(n))           return "search_brand";
   if(/pmax|performance max|shopping|demand gen/.test(n)) return "pmax";
@@ -482,8 +752,31 @@ function inferArch(name){
   if(/display|youtube|video|banner|gdn/.test(n))         return "display";
   return "meta_convert";
 }
-// Meta lines are named ones; anything that smells like Google search/PMax is Google.
-const inferPlatform = n => /brand|search|pmax|performance|shopping|google|youtube|demand gen/i.test(n) ? "google" : "meta";
+// LinkedIn lines say so; anything that smells like Google search/PMax is Google; the rest is Meta.
+const inferPlatform = n => /linkedin/i.test(n) ? "linkedin"
+  : /brand|search|pmax|performance|shopping|google|youtube|demand gen/i.test(n) ? "google" : "meta";
+
+// The three platforms a planner can pick. Picking one adds its default lines;
+// the budget is then split equally across the picked platforms.
+const PLATS = ["meta","google","linkedin"];
+const PLAT = {
+  meta:    {label:"Meta",     sub:"Facebook · Instagram", sells:"impressions", rate:"cpm",
+            add:{n:"Meta — New line", cpm:200, ctr:1.1, cr:4, rq:55}},
+  google:  {label:"Google",   sub:"Search · PMax · YouTube", sells:"clicks", rate:"cpc",
+            add:{n:"Search — New line", cpc:30, ctr:4, cr:4, rq:75}},
+  linkedin:{label:"LinkedIn", sub:"B2B · job titles", sells:"clicks", rate:"cpc",
+            add:{n:"LinkedIn — New line", cpc:120, ctr:.5, cr:8, rq:70}}
+};
+// India B2B LinkedIn: CPCs of ₹80–150, thin CTRs, but lead-gen forms convert well.
+function linkedinLines(v){
+  if(v==="ecommerce") return [{n:"LinkedIn — Sponsored content", pct:100, cpc:95, ctr:.45, cr:.8}];
+  if(v==="realestate") return [
+    {n:"LinkedIn — Lead gen form", pct:75, cpc:120, ctr:.50, cr:5},
+    {n:"LinkedIn — Retargeting",   pct:25, cpc:90,  ctr:.80, cr:7}];
+  return [
+    {n:"LinkedIn — Lead gen form", pct:75, cpc:110, ctr:.55, cr:9},
+    {n:"LinkedIn — Retargeting",   pct:25, cpc:80,  ctr:.90, cr:12}];
+}
 
 // Vertical definitions. `stages` are the post-click funnel steps.
 // Stage 0's rate lives on each channel row (click -> stage 0), so a plan can
@@ -503,7 +796,7 @@ const VERT = {
     valueHelp:"What one closed customer is worth. Drives revenue and ROAS.",
     targetHelp:"The most you can pay to win a customer and still make money.",
     stages:[{key:"s0",label:"Relevant leads",short:"Rel. leads"},{key:"s1",label:"Customers",short:"Customers"}],
-    leadLabel:"Relevant leads", saleLabel:"Customers",
+    leadLabel:"Relevant leads", saleLabel:"Customers", rawLabel:"Leads", rawCpl:"Cost per lead",
     cplLabel:"Cost per relevant lead", cacLabel:"Cost per customer",
     econ:[{k:"r1", label:"Rel. lead → customer rate", hint:"%", pct:true,
             help:"Of the qualified enquiries the ads deliver, the share sales actually closes."}]
@@ -515,7 +808,7 @@ const VERT = {
     stages:[{key:"s0",label:"Relevant leads",short:"Rel. leads"},
             {key:"s1",label:"Site visits",short:"Site visits"},
             {key:"s2",label:"Bookings",short:"Bookings"}],
-    leadLabel:"Relevant leads", saleLabel:"Bookings",
+    leadLabel:"Relevant leads", saleLabel:"Bookings", rawLabel:"Leads", rawCpl:"Cost per lead",
     cplLabel:"Cost per relevant lead", cacLabel:"Cost per booking",
     // Mid-funnel cost-per. Only 3-stage verticals have one; where it exists it
     // replaces ROAS in the month-on-month view, because a booking-cycle client
@@ -532,7 +825,20 @@ const VERT = {
 // for Google — those are the two numbers that exist in the wild — so each line carries
 // its platform's rate plus a CTR, and the missing rate is computed from the pair.
 // No standalone awareness line: performance accounts put the bulk into conversions.
-function defaults(v){
+// Lead-gen verticals count every form fill as a lead, then the share that is
+// actually relevant. The calibrated defaults were click → relevant lead, so the raw
+// click → lead rate is backed out of them: relevant-lead output stays the same.
+const RQ_DEFAULT = {meta:55, google:75, linkedin:70};
+function qualify(v, lines){
+  if(v==="ecommerce") return lines.map(c=>Object.assign(c,{rq:100}));
+  return lines.map(c=>{
+    if(c.rq!=null) return c;
+    const rq=RQ_DEFAULT[inferPlatform(c.n)];
+    return Object.assign(c,{rq, cr:+(c.cr*100/rq).toFixed(1)});
+  });
+}
+function defaults(v){ const d=rawDefaults(v); d.channels=qualify(v,d.channels); return d; }
+function rawDefaults(v){
   if(v==="ecommerce") return {
     vertical:"ecommerce", client:"E-commerce client", budget:300000, anchor:300000, growth:8, horizon:6,
     aov:2500, r1:100, r2:100, target:800, improve:3, monthly:[], spendMode:'pct',
@@ -568,7 +874,7 @@ function defaults(v){
 const chArch = ch => ARCH[inferArch(ch.n)] || ARCH.meta_convert;
 const ARCH_LABEL = {meta_convert:"scales steadily", meta_retarget:"saturates fastest",
   search_brand:"barely scales", search_generic:"scales steadily", pmax:"scales steadily",
-  display:"tires quickly"};
+  display:"tires quickly", linkedin:"small audience, pricey to scale"};
 const archLabel = ch => ARCH_LABEL[inferArch(ch.n)] || "scales steadily";
 const chPlat = ch => inferPlatform(ch.n);
 const chCtr  = ch => (+ch.ctr||0)/100;
@@ -584,6 +890,7 @@ function syncRates(ch){
 }
 // Plans saved before CTR was typed carry a CPM/CPC pair instead — read the CTR out of it.
 function normChan(ch){
+  if(ch.rq==null || !isFinite(+ch.rq)) ch.rq = 100;   // plans saved before the lead stage
   if(ch.ctr==null || !isFinite(+ch.ctr) || +ch.ctr<=0)
     ch.ctr = (+ch.cpc>0 && +ch.cpm>0) ? +((+ch.cpm)/(10*(+ch.cpc))).toFixed(3) : 1;
   return syncRates(ch);
@@ -594,7 +901,26 @@ const pctTotal  = () => S.channels.reduce((t,c)=>t+(+c.pct||0),0) || 100;
 const chanShare = ch => (+ch.pct||0)/pctTotal()*100;
 const chanAmt   = ch => S.budget * chanShare(ch)/100;
 
-let S = normPlan(defaults("leadgen"));
+// Budget split equally across the platforms that have lines; inside a platform the
+// lines keep the ratio they already had.
+function evenSplit(cfg){
+  const on = PLATS.filter(p=>cfg.channels.some(c=>inferPlatform(c.n)===p));
+  if(!on.length) return cfg;
+  const each = 100/on.length;
+  on.forEach(p=>{
+    const ls = cfg.channels.filter(c=>inferPlatform(c.n)===p);
+    const t = ls.reduce((s,c)=>s+(+c.pct||0),0);
+    ls.forEach(c=>c.pct = +((t>0 ? (+c.pct||0)/t : 1/ls.length)*each).toFixed(2));
+  });
+  return cfg;
+}
+const platOrder = c => PLATS.indexOf(inferPlatform(c.n));
+const freshPlan = v => evenSplit(normPlan(defaults(v)));
+const defaultLines = (v,p) => p==="linkedin" ? qualify(v,linkedinLines(v))
+  : defaults(v).channels.filter(c=>inferPlatform(c.n)===p);
+let stash = {};   // lines of a platform switched off, so switching it back restores your edits
+
+let S = freshPlan("leadgen");
 let scenarios = [null,null,null];
 let tab = "plan";
 let printAll = false;   // true while printing: render() fills every tab
@@ -653,10 +979,12 @@ function runLine(ch, spend, anchorSpend, monthIdx, cfg){
 
   const clicks = cpc>0 ? spend/cpc : 0;
   const impr   = ctr>0 ? clicks/ctr : 0;
-  const s0     = clicks * cr;
+  const leads  = clicks * cr;
+  // e-commerce has no relevance step: click -> order is the whole story
+  const s0     = cfg.vertical==="ecommerce" ? leads : leads * clamp((+ch.rq||0)/100, 0, 1);
 
-  return {spend, impr, clicks, s0, cpm:impr>0?spend/impr*1000:0, cpc:clicks>0?spend/clicks:0,
-          ctr:impr>0?clicks/impr:0, cr:clicks>0?s0/clicks:0,
+  return {spend, impr, clicks, leads, s0, cpm:impr>0?spend/impr*1000:0, cpc:clicks>0?spend/clicks:0,
+          ctr:impr>0?clicks/impr:0, cr:clicks>0?leads/clicks:0, rq:leads>0?s0/leads:0,
           anchorSpend, load: anchorSpend>0 ? spend/anchorSpend : 0};
 }
 
@@ -672,17 +1000,19 @@ function runMonth(cfg, monthIdx, totalBudget){
 
   const V = VERT[cfg.vertical];
   const agg = k => lines.reduce((s,l)=>s+l[k],0);
-  const spend=agg("spend"), impr=agg("impr"), clicks=agg("clicks"), s0=agg("s0");
+  const spend=agg("spend"), impr=agg("impr"), clicks=agg("clicks"), s0=agg("s0"), leads=agg("leads");
   const r1 = V.stages.length>1 ? cfg.r1/100 : 1;
   const r2 = V.stages.length>2 ? cfg.r2/100 : 1;
   const s1 = s0*r1, s2 = s1*r2;
   const sales = V.stages.length>2 ? s2 : (V.stages.length>1 ? s1 : s0);
   const revenue = sales * cfg.aov;
 
-  return {monthIdx, lines, spend, impr, clicks, s0, s1, s2, sales, revenue,
+  return {monthIdx, lines, spend, impr, clicks, leads, s0, s1, s2, sales, revenue,
+    cpLead: leads>0?spend/leads:NaN, rq: leads>0?s0/leads:0,
     cpm: impr>0?spend/impr*1000:0, cpc: clicks>0?spend/clicks:0,
     ctr: impr>0?clicks/impr:0, cvr: clicks>0?s0/clicks:0,
-    cpl: s0>0?spend/s0:0, cac: sales>0?spend/sales:0, cps1: s1>0?spend/s1:0,
+    // nothing bought means the cost is undefined — NaN renders "—"; 0 would read as free
+    cpl: s0>0?spend/s0:NaN, cac: sales>0?spend/sales:NaN, cps1: s1>0?spend/s1:NaN,
     roas: spend>0?revenue/spend:0, profit: revenue-spend};
 }
 
@@ -776,9 +1106,13 @@ function yAxis(F,dom,fmt){
   }).join("");
 }
 function line(pts,F,dx,dy){
+  pts=pts.filter(p=>isFinite(p[0])&&isFinite(p[1]));
+  if(!pts.length) return "M0 0";
   return pts.map((p,i)=>(i?"L":"M")+F.x(p[0],dx).toFixed(1)+" "+F.y(p[1],dy).toFixed(1)).join(" ");
 }
 function area(pts,F,dx,dy,base){
+  pts=pts.filter(p=>isFinite(p[0])&&isFinite(p[1]));
+  if(!pts.length) return "M0 0";
   const b=F.y(base,dy).toFixed(1);
   return line(pts,F,dx,dy)+` L${F.x(pts[pts.length-1][0],dx).toFixed(1)} ${b} L${F.x(pts[0][0],dx).toFixed(1)} ${b} Z`;
 }
@@ -977,6 +1311,7 @@ function chartPayback(plan, W, H){
 function chartFunnel(m, W){
   const V=VERT[S.vertical];
   const steps=[{l:"Impressions",v:m.impr},{l:"Clicks",v:m.clicks}];
+  if(V.rawLabel) steps.push({l:V.rawLabel, v:m.leads});
   steps.push({l:V.stages[0].label, v:m.s0});
   if(V.stages.length>1) steps.push({l:V.stages[1].label, v:m.s1});
   if(V.stages.length>2) steps.push({l:V.stages[2].label, v:m.s2});
@@ -1033,15 +1368,16 @@ function chartCompare(sc, key, fmt, label, W, H, invert){
   const live=sc.filter(Boolean);
   if(live.length<2) return "";
   const F=frame(W,H,{l:60,r:22,t:16,b:34});
-  const vals=live.map(s=>s.k[key]);
-  const dy=[0, Math.max(...vals)*1.16];
+  const vals=live.map(s=>s.k[key]).filter(isFinite);
+  const dy=[0, (vals.length?Math.max(...vals):1)*1.16];
   const bw=Math.min(58, F.iw/live.length*0.5);
-  const best = invert ? Math.max(...vals) : Math.min(...vals);
+  // a scenario that buys nothing has no cost, and must never win "cheapest"
+  const best = !vals.length ? null : invert ? Math.max(...vals) : Math.min(...vals);
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)} by scenario">
   ${yAxis(F,dy,fmt===inr?axisInr(dy[1]):fmt)}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
   ${live.map((s,i)=>{
-    const cx=F.M.l+F.iw*(i+0.5)/live.length, v=s.k[key], y=F.y(v,dy), h=H-F.M.b-y;
+    const cx=F.M.l+F.iw*(i+0.5)/live.length, v=s.k[key], y=isFinite(v)?F.y(v,dy):H-F.M.b, h=H-F.M.b-y;
     const isBest = v===best;
     return `<rect x="${cx-bw/2}" y="${y}" width="${bw}" height="${Math.max(2,h)}" rx="4"
        fill="${cvar(s.slot)}" opacity="${isBest?"1":".55"}"/>
@@ -1083,6 +1419,73 @@ function renderAlloc(){
   if(nb) nb.onclick=()=>{ const t=sum||1; S.channels.forEach(c=>c.pct=+((c.pct/t)*100).toFixed(1)); render(); };
 }
 
+/* ---------- platform picker ---------- */
+const ICON = {
+  meta:`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"><path d="M12 12c-1.9-3-3.5-4.6-5.3-4.6C4.4 7.4 3 9.6 3 12.1c0 2.3 1.2 4.3 3.3 4.3 2 0 3.5-2.1 5.7-5.6 2.2-3.5 3.7-5.6 5.7-5.6"/><path d="M12 12c1.9 3 3.5 4.6 5.3 4.6 2.3 0 3.7-2.2 3.7-4.7 0-2.3-1.2-4.3-3.3-4.3"/></svg>`,
+  google:`<svg viewBox="0 0 24 24"><path d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z" fill="#4285F4"/><path d="M12 22c2.7 0 5-.9 6.6-2.5l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z" fill="#34A853"/><path d="M6.4 13.9a6 6 0 0 1 0-3.8V7.5H3.1a10 10 0 0 0 0 9z" fill="#FBBC05"/><path d="M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.5l3.3 2.6C7.2 7.8 9.4 6 12 6z" fill="#EA4335"/></svg>`,
+  linkedin:`<svg viewBox="0 0 24 24" fill="#fff"><rect x="4" y="9.5" width="3.2" height="10" rx=".6"/><circle cx="5.6" cy="5.8" r="1.9"/><path d="M10 9.5h3v1.5c.6-1 1.8-1.8 3.5-1.8 2.7 0 3.5 1.8 3.5 4.4v5.9h-3.2v-5.2c0-1.3-.3-2.4-1.7-2.4s-1.9 1.1-1.9 2.4v5.2H10z"/></svg>`
+};
+const ICON_BG = {meta:"linear-gradient(135deg,#0866FF,#6A5BFF)", google:"#fff", linkedin:"#0A66C2"};
+const platOn = p => S.channels.some(c=>chPlat(c)===p);
+const platShare = p => S.channels.filter(c=>chPlat(c)===p).reduce((t,c)=>t+(+c.pct||0),0)/pctTotal()*100;
+
+function togglePlat(p, btn){
+  if(platOn(p)){
+    const keep=S.channels.filter(c=>chPlat(c)!==p);
+    if(!keep.length){   // a plan needs at least one platform
+      btn.classList.remove("nope"); void btn.offsetWidth; btn.classList.add("nope");
+      $("#platNote").innerHTML=`Keep at least one platform on — pick another before dropping ${PLAT[p].label}.`;
+      return;
+    }
+    stash[p]=S.channels.filter(c=>chPlat(c)===p);
+    S.channels=keep;
+  } else {
+    const add=(stash[p]||defaultLines(S.vertical,p)).map(c=>normChan(Object.assign({},c)));
+    S.channels=S.channels.concat(add).sort((a,b)=>platOrder(a)-platOrder(b));
+    delete stash[p];
+  }
+  evenSplit(S); render();
+}
+
+// Built once, then only attributes and text change — so the split bar and the
+// check marks animate between states instead of being swapped out.
+function renderPlat(){
+  const host=$("#platPick");
+  if(!host.childElementCount){
+    host.innerHTML=PLATS.map(p=>`<button class="plat" data-p="${p}" aria-pressed="false">
+        <span class="ic" style="background:${ICON_BG[p]}${p==="google"?";box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)":""}">${ICON[p]}</span>
+        <span class="pn">${PLAT[p].label}</span><span class="ps">${PLAT[p].sub}</span>
+        <span class="pa"></span>
+        <i class="ck"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5"/></svg></i>
+      </button>`).join("");
+    host.onclick=e=>{ const b=e.target.closest(".plat"); if(b) togglePlat(b.dataset.p, b); };
+  }
+  const on=PLATS.filter(platOn);
+  PLATS.forEach(p=>{
+    const b=host.querySelector(`[data-p="${p}"]`), live=on.includes(p), sh=live?platShare(p):0;
+    b.setAttribute("aria-pressed", live);
+    b.setAttribute("aria-label", `${PLAT[p].label}: ${live?"on":"off"}`);
+    b.querySelector(".pa").textContent = live ? `${inr(S.budget*sh/100)} · ${sh.toFixed(0)}%` : "+ Add";
+    $(`#platBar [data-p="${p}"]`).style.flexGrow = live ? sh.toFixed(3) : "0";
+  });
+  const even = on.every(p=>Math.abs(platShare(p)-100/on.length)<0.6);
+  const names = on.map(p=>PLAT[p].label);
+  const list = names.length>1 ? names.slice(0,-1).join(", ")+" and "+names[names.length-1] : names[0];
+  $("#platNote").innerHTML = on.length===1
+    ? `All of ${inr(S.budget)} goes to <b>${list}</b>. Add a platform to split it.`
+    : even
+      ? `${inr(S.budget)} split equally — <b>${inr(S.budget/on.length)}</b> each to ${list}.`
+      : `Split is uneven after your edits. <button class="evenbtn" id="evenBtn">Split equally again</button>`;
+  const eb=$("#evenBtn"); if(eb) eb.onclick=()=>{ evenSplit(S); render(); };
+}
+
+// Budget readouts that move with every keystroke and slider step.
+function renderBudgetBits(){
+  $("#budFmt").textContent = inr(S.budget)+"/mo";
+  $("#budChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", +b.dataset.b===Math.round(S.budget)));
+  const r=$("#budgetRange"); r.style.setProperty("--fill", r.value+"%");
+}
+
 function renderDeck(){
   const V=VERT[S.vertical];
   $("#clientName").value=S.client;
@@ -1112,7 +1515,7 @@ function renderDeck(){
   V.econ.forEach(e=>{ const el=$("#"+e.k); if(el) el.oninput=ev=>{S[e.k]=+ev.target.value||0; render(false);}; });
 
   [...$("#unitSeg").children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.u===S.spendMode));
-  renderAlloc();
+  renderAlloc(); renderPlat(); renderBudgetBits();
 
   $("#chanList").innerHTML = S.channels.map((c,i)=>{
     const ctr=chCtr(c), isMeta=chPlat(c)==="meta";
@@ -1120,13 +1523,14 @@ function renderDeck(){
       <summary class="chan-hd">
         <i class="swatch" style="background:${cvar(i)}"></i>
         <span class="chan-nm">${esc(c.n)}</span>
+        <span class="chan-tag">${PLAT[chPlat(c)].label}</span>
         <span class="chan-pc">${(+c.pct||0).toFixed(0)}%</span>
       </summary>
       <div class="chan-bd">
         <div class="mini"><span>Name</span><input data-f="n" type="text" value="${esc(c.n)}">
-          <p class="fh">Words in the name set the type. <b>brand</b>, <b>search</b>, <b>pmax</b> and
-            <b>shopping</b> read as Google; <b>retargeting</b> marks the small warm audience. Everything
-            else is treated as Meta prospecting.</p></div>
+          <p class="fh">Words in the name set the type. <b>linkedin</b> reads as LinkedIn; <b>brand</b>,
+            <b>search</b>, <b>pmax</b> and <b>shopping</b> read as Google; <b>retargeting</b> marks the small warm
+            audience. Everything else is treated as Meta prospecting.</p></div>
         ${S.spendMode==='abs'
           ? `<div class="mini"><span>Monthly spend ₹</span>
                <input data-f="amt" type="number" step="5000" value="${Math.round(chanAmt(c))}">
@@ -1139,22 +1543,31 @@ function renderDeck(){
             ? `<div class="mini"><span>CPM ₹</span><input data-f="cpm" type="number" step="5" value="${c.cpm}">
                  <p class="fh">Cost per 1,000 impressions — the rate Meta quotes and the one you can research.</p></div>`
             : `<div class="mini"><span>CPC ₹</span><input data-f="cpc" type="number" step="1" value="${c.cpc}">
-                 <p class="fh">Cost per click — the rate Google quotes and the one you can research.</p></div>`}
+                 <p class="fh">Cost per click — the rate ${PLAT[chPlat(c)].label} quotes and the one you can research.</p></div>`}
           <div class="mini"><span>CTR %</span><input data-f="ctr" type="number" step="0.05" value="${c.ctr}">
             <p class="fh">Share of impressions that click. Benchmark it for the channel and the creative format.</p></div>
         </div>
-        <div class="mini"><span>Click → ${esc(VERT[S.vertical].stages[0].short)} %</span>
+        ${VERT[S.vertical].rawLabel ? `<div class="row2">
+          <div class="mini"><label for="cr-${i}"><span>Click → lead %</span></label>
+            <input id="cr-${i}" data-f="cr" type="number" step="0.1" value="${c.cr}" aria-describedby="crh-${i}">
+            <p class="fh" id="crh-${i}">Of the people who click, the share that fill the form. Your landing page or lead form rate.</p></div>
+          <div class="mini"><label for="rq-${i}"><span>Lead → relevant %</span></label>
+            <input id="rq-${i}" data-f="rq" type="number" step="1" min="0" max="100" value="${c.rq}" aria-describedby="rqh-${i}">
+            <p class="fh" id="rqh-${i}">Of those leads, the share sales calls relevant — right budget, location, intent. Meta forms run lower than search.</p></div>
+        </div>
+        <div class="derived"><span>Cost per lead <b class="num" data-cpl>—</b></span><span>per relevant <b class="num" data-cprl>—</b></span></div>`
+        : `<div class="mini"><span>Click → ${esc(VERT[S.vertical].stages[0].short)} %</span>
           <input data-f="cr" type="number" step="0.1" value="${c.cr}">
           <p class="fh">Of the people who click, the share that become
-            ${esc(VERT[S.vertical].stages[0].label.toLowerCase())}. Your landing page or lead form rate.</p></div>
+            ${esc(VERT[S.vertical].stages[0].label.toLowerCase())}. Your landing page or checkout rate.</p></div>`}
         <div class="derived">
-          <span>${isMeta?"CPC":"CPM"} <b class="num">${rate(isMeta?c.cpc:c.cpm)}</b></span>
-          <span>${isMeta?"Meta":"Google"}</span>
+          <span>${isMeta?"CPC":"CPM"} <b class="num" data-rate>${rate(isMeta?c.cpc:c.cpm)}</b></span>
+          <span>${PLAT[chPlat(c)].label}</span>
         </div>
         <p class="fh">${isMeta
           ? `CPC is not typed — CPM ÷ (CTR × 1,000) fixes it. Meta sells impressions, so the click price
              is whatever your creative's CTR turns that CPM into.`
-          : `CPM is not typed — CPC × CTR × 1,000 fixes it. Google sells clicks, so the impression price
+          : `CPM is not typed — CPC × CTR × 1,000 fixes it. ${PLAT[chPlat(c)].label} is priced on clicks here, so the impression price
              falls out of the pair.`} If this number looks wrong for the channel, the CTR above is off.</p>
         <div class="chan-foot">
           <span class="lbl">${esc(archLabel(c))}</span>
@@ -1220,7 +1633,9 @@ function viewPlan(plan){
 
   const kpis = `<div class="kpis">
     ${kpi("Monthly spend", inr(m.spend), `${plan.length}-month total ${inr(plan.reduce((s,x)=>s+x.spend,0))}`)}
-    ${kpi(V.leadLabel+" / mo", num(m.s0), `M${plan.length}: ${num(last.s0)}`)}
+    ${V.rawLabel?kpi(V.rawLabel+" / mo", num(m.leads), `M${plan.length}: ${num(last.leads)}`):""}
+    ${V.rawLabel?kpi(V.rawCpl, inr(m.cpLead), `M${plan.length} ${inr(last.cpLead)} · ${delta(last.cpLead,m.cpLead).replace(/<\/?span[^>]*>/g,"")}`):""}
+    ${kpi(V.leadLabel+" / mo", num(m.s0), V.rawLabel?`${pct(m.rq,0)} of leads · M${plan.length}: ${num(last.s0)}`:`M${plan.length}: ${num(last.s0)}`)}
     ${twoStage?kpi(V.cplLabel, inr(m.cpl), `M${plan.length} ${inr(last.cpl)} · ${delta(last.cpl,m.cpl).replace(/<\/?span[^>]*>/g,"")}`):""}
     ${twoStage?kpi(V.saleLabel+" / mo", num(m.sales), `M${plan.length}: ${num(last.sales)}`):""}
     ${kpi(V.cacLabel, inr(m.cac), `M${plan.length} ${inr(last.cac)} · ${delta(last.cac,m.cac).replace(/<\/?span[^>]*>/g,"")}`)}
@@ -1228,33 +1643,33 @@ function viewPlan(plan){
     ${kpi("ROAS", xx(m.roas), `M${plan.length} ${xx(last.roas)}`,"inv")}
   </div>`;
 
-  const platforms = ["meta","google"].map(p=>{
+  const platforms = PLATS.map(p=>{
     const ls=m.lines.filter(l=>chPlat(l.ch)===p); if(!ls.length) return null;
     const sp=ls.reduce((s,l)=>s+l.spend,0), im=ls.reduce((s,l)=>s+l.impr,0),
-          ck=ls.reduce((s,l)=>s+l.clicks,0), s0=ls.reduce((s,l)=>s+l.s0,0);
-    return {p, sp, im, ck, s0, li: ls.some(l=>/linkedin/i.test(l.ch.n))};
+          ck=ls.reduce((s,l)=>s+l.clicks,0), s0=ls.reduce((s,l)=>s+l.s0,0), ld=ls.reduce((s,l)=>s+l.leads,0);
+    return {p, sp, im, ck, s0, ld};
   }).filter(Boolean);
 
   const table = `<div class="tw"><table>
     <thead><tr><th>Channel line</th><th>Spend</th><th>Mix</th><th>Impr.</th><th>CTR</th>
-      <th>CPC</th><th>CPM</th><th>Clicks</th><th>CVR</th><th>${esc(V.stages[0].short)}</th>
+      <th>CPC</th><th>CPM</th><th>Clicks</th><th>CVR</th>${V.rawLabel?`<th>Leads</th><th>CPL</th><th>Rel. %</th>`:""}<th>${esc(V.stages[0].short)}</th>
       <th>${esc(V.cplLabel.replace(/^Cost per /,"CP "))}</th><th>Headroom</th></tr></thead>
     <tbody>${m.lines.map((l,i)=>`<tr>
       <td><span class="cellname"><i class="swatch" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</span></td>
       <td>${inr(l.spend)}</td><td>${(l.spend/m.spend*100).toFixed(0)}%</td>
       <td>${num(l.impr)}</td><td>${pct(l.ctr,2)}</td><td>${inrFull(l.cpc)}</td><td>${inrFull(l.cpm)}</td>
-      <td>${num(l.clicks)}</td><td>${pct(l.cr,2)}</td><td>${num(l.s0)}</td>
+      <td>${num(l.clicks)}</td><td>${pct(l.cr,2)}</td>${V.rawLabel?`<td>${num(l.leads)}</td><td>${inr(l.leads>0?l.spend/l.leads:NaN)}</td><td>${pct(l.rq,0)}</td>`:""}<td>${num(l.s0)}</td>
       <td>${inr(l.s0>0?l.spend/l.s0:NaN)}</td><td>${satPill(l.load)}</td></tr>`).join("")}
       ${platforms.map(x=>`<tr class="sub">
-        <td style="padding-left:17px">${x.p==="meta"?(x.li?"Meta &amp; LinkedIn subtotal":"Meta subtotal"):"Google subtotal"}</td>
+        <td style="padding-left:17px">${PLAT[x.p].label} subtotal</td>
         <td>${inr(x.sp)}</td><td>${(x.sp/m.spend*100).toFixed(0)}%</td><td>${num(x.im)}</td>
         <td>${pct(x.im>0?x.ck/x.im:0,2)}</td><td>${inrFull(x.ck>0?x.sp/x.ck:0)}</td>
         <td>${inrFull(x.im>0?x.sp/x.im*1000:0)}</td><td>${num(x.ck)}</td>
-        <td>${pct(x.ck>0?x.s0/x.ck:0,2)}</td><td>${num(x.s0)}</td>
+        <td>${pct(x.ck>0?x.ld/x.ck:0,2)}</td>${V.rawLabel?`<td>${num(x.ld)}</td><td>${inr(x.ld>0?x.sp/x.ld:NaN)}</td><td>${pct(x.ld>0?x.s0/x.ld:0,0)}</td>`:""}<td>${num(x.s0)}</td>
         <td>${inr(x.s0>0?x.sp/x.s0:NaN)}</td><td></td></tr>`).join("")}
       <tr class="tot"><td>Total — month 1</td><td>${inr(m.spend)}</td><td>100%</td>
         <td>${num(m.impr)}</td><td>${pct(m.ctr,2)}</td><td>${inrFull(m.cpc)}</td><td>${inrFull(m.cpm)}</td>
-        <td>${num(m.clicks)}</td><td>${pct(m.cvr,2)}</td><td>${num(m.s0)}</td>
+        <td>${num(m.clicks)}</td><td>${pct(m.clicks>0?m.leads/m.clicks:0,2)}</td>${V.rawLabel?`<td>${num(m.leads)}</td><td>${inr(m.cpLead)}</td><td>${pct(m.rq,0)}</td>`:""}<td>${num(m.s0)}</td>
         <td>${inr(m.cpl)}</td><td></td></tr>
     </tbody></table></div>`;
 
@@ -1274,12 +1689,23 @@ function viewPlan(plan){
   if(overs.length) advice += `<div class="note crit"><i class="k"></i><div><b>${overs.map(l=>esc(l.ch.n)).join(", ")}</b> ${overs.length>1?"are":"is"} carrying well over ${overs.length>1?"their":"its"} share — every extra rupee here buys more expensive inventory. Shift budget to a line with headroom before raising the total.</div></div>`;
   if(unders.length) advice += `<div class="note"><i class="k"></i><div><b>${unders.map(l=>esc(l.ch.n)).join(", ")}</b> ${unders.length>1?"have":"has"} unused headroom. This is where the next rupee is cheapest.</div></div>`;
 
+  const on=PLATS.filter(p=>m.lines.some(l=>chPlat(l.ch)===p)).map(p=>PLAT[p].label);
+  const where = on.length>1 ? on.slice(0,-1).join(", ")+" and "+on[on.length-1] : on[0];
+  const said = V.rawLabel
+    ? `<b>${num(m.leads)} leads</b> at <b>${inr(m.cpLead)}</b> each, of which <b>${num(m.s0)} relevant</b> at <b>${inr(m.cpl)}</b>`
+      + ` → <b>${num(m.sales)} ${esc(V.saleLabel.toLowerCase())}</b> at ${inr(m.cac)}`
+    : `<b>${num(m.s0)} ${esc(V.saleLabel.toLowerCase())}</b> at <b>${inr(m.cac)}</b> each, ROAS <b>${xx(m.roas)}</b>`;
+  const summary = `<div class="summary"><span class="sum-k">In plain words</span>
+    <p><b>${inr(m.spend)}</b> a month on ${esc(where)} buys about ${said} in month 1.
+    ${plan.length>1?`By month ${plan.length}, ${esc(V.cacLabel.toLowerCase())} is ${inr(last.cac)}.`:""}</p></div>`;
+
   return `
+  ${summary}
   ${kpis}
   <div class="card">
     <div class="card-hd"><div>
       <h2>Month 1 plan — ${esc(S.client)}</h2>
-      <p>You type a CPM for Meta, a CPC for Google, and a CTR on every line; the missing rate falls out of the pair. Every rate below is the <em>effective</em> rate at this budget — equal to what you typed when the plan sits at ${inr(S.anchor)}/mo, worse above it.</p>
+      <p>You type a CPM for Meta, a CPC for Google and LinkedIn, and a CTR on every line; the missing rate falls out of the pair. Every rate below is the <em>effective</em> rate at this budget — equal to what you typed when the plan sits at ${inr(S.anchor)}/mo, worse above it.</p>
     </div></div>
     ${table}
   </div>
@@ -1397,12 +1823,12 @@ function viewMonths(plan){
   const mid=V.stages.length>2, midStage=V.stages[1];
   const totSpend=plan.reduce((s,x)=>s+x.spend,0), totRev=plan.reduce((s,x)=>s+x.revenue,0),
         totSales=plan.reduce((s,x)=>s+x.sales,0), totLeads=plan.reduce((s,x)=>s+x.s0,0),
-        totMid=plan.reduce((s,x)=>s+x.s1,0);
+        totMid=plan.reduce((s,x)=>s+x.s1,0), totRaw=plan.reduce((s,x)=>s+x.leads,0);
 
   const rows=plan.map((m,i)=>`<tr>
     <td><span class="cellname">Month ${i+1}</span></td><td>${inr(m.spend)}</td>
     <td>${num(m.impr)}</td><td>${num(m.clicks)}</td><td>${inrFull(m.cpc)}</td>
-    <td>${num(m.s0)}</td><td>${inr(m.cpl)}</td>
+    ${V.rawLabel?`<td>${num(m.leads)}</td><td>${inr(m.cpLead)}</td>`:""}<td>${num(m.s0)}</td><td>${inr(m.cpl)}</td>
     ${mid?`<td>${num(m.s1)}</td><td>${inr(m.cps1)}</td>`:""}
     ${two?`<td>${num(m.sales)}</td><td>${inr(m.cac)}</td>`:""}
     <td>${inr(m.revenue)}</td>${mid?"":`<td>${xx(m.roas)}</td>`}</tr>`).join("");
@@ -1435,6 +1861,7 @@ function viewMonths(plan){
   ${budgetRow}
   <div class="kpis">
     ${kpi("Total spend — "+plan.length+" mo", inr(totSpend), `${inr(m1.spend)} → ${inr(mn.spend)}`)}
+    ${V.rawLabel?kpi("Total "+V.rawLabel.toLowerCase(), num(totRaw), `${inr(totSpend/totRaw)} each · ${num(m1.leads)} → ${num(mn.leads)}/mo`):""}
     ${kpi("Total "+V.leadLabel.toLowerCase(), num(totLeads), `${num(m1.s0)} → ${num(mn.s0)} per month`)}
     ${two ? kpi("Total "+V.saleLabel.toLowerCase(), num(totSales), `${num(m1.sales)} → ${num(mn.sales)} per month`)
           : kpi("Blended "+V.cacLabel.toLowerCase(), inr(totSales>0?totSpend/totSales:NaN), `${inr(m1.cac)} → ${inr(mn.cac)}`)}
@@ -1475,13 +1902,13 @@ function viewMonths(plan){
         : `the budget changing ${S.growth>=0?"+":""}${S.growth}% a month pushes every line further past the rates it was quoted at`}, while ${S.improve}% monthly improvement pulls costs back down and CTR up as the campaigns learn.</p></div></div>
     <div class="tw"><table>
       <thead><tr><th>Period</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>CPC</th>
-        <th>${esc(V.leadLabel)}</th><th>${esc(V.cplLabel)}</th>
+        ${V.rawLabel?`<th>${esc(V.rawLabel)}</th><th>${esc(V.rawCpl)}</th>`:""}<th>${esc(V.leadLabel)}</th><th>${esc(V.cplLabel)}</th>
         ${mid?`<th>${esc(midStage.short||midStage.label)}</th><th>${esc(V.midLabel)}</th>`:""}
         ${two?`<th>${esc(V.saleLabel)}</th><th>${esc(V.cacLabel)}</th>`:""}
         <th>Revenue</th>${mid?"":"<th>ROAS</th>"}</tr></thead>
       <tbody>${rows}<tr class="tot"><td>Total</td><td>${inr(totSpend)}</td>
         <td>${num(plan.reduce((s,x)=>s+x.impr,0))}</td><td>${num(plan.reduce((s,x)=>s+x.clicks,0))}</td>
-        <td>${inrFull(totSpend/plan.reduce((s,x)=>s+x.clicks,0))}</td><td>${num(totLeads)}</td>
+        <td>${inrFull(totSpend/plan.reduce((s,x)=>s+x.clicks,0))}</td>${V.rawLabel?`<td>${num(totRaw)}</td><td>${inr(totSpend/totRaw)}</td>`:""}<td>${num(totLeads)}</td>
         <td>${inr(totSpend/totLeads)}</td>
         ${mid?`<td>${num(totMid)}</td><td>${inr(totSpend/totMid)}</td>`:""}
         ${two?`<td>${num(totSales)}</td><td>${inr(totSpend/totSales)}</td>`:""}
@@ -1569,14 +1996,21 @@ function render(rebuildDeck=true){
     S.channels.forEach((c,i)=>{
       const el=$(`.chan[data-i="${i}"] .chan-pc`); if(el) el.textContent=(+c.pct||0).toFixed(0)+"%";
       // keep the derived rate live while a rate or CTR is being typed
-      const dv=$(`.chan[data-i="${i}"] .derived .num`);
+      const dv=$(`.chan[data-i="${i}"] [data-rate]`);
       if(dv) dv.textContent=rate(chPlat(c)==="meta" ? c.cpc : c.cpm);
     });
     $("#budget").value=Math.round(S.budget);
     $("#anchor").value=Math.round(S.anchor);
     $("#anchorNote").innerHTML=anchorNote();
-    renderAlloc();
+    $("#budgetRange").value = clamp(Math.log10(Math.max(10000,S.budget)/10000)/Math.log10(500)*100,0,100);
+    renderAlloc(); renderPlat(); renderBudgetBits();
   }
+  // per-line cost per lead / relevant lead in the channel editor, live while typing
+  plan[0].lines.forEach((l,i)=>{
+    const a=$(`.chan[data-i="${i}"] [data-cpl]`), b=$(`.chan[data-i="${i}"] [data-cprl]`);
+    if(a) a.textContent=inr(l.leads>0?l.spend/l.leads:NaN);
+    if(b) b.textContent=inr(l.s0>0?l.spend/l.s0:NaN);
+  });
   const on=t=>printAll || tab===t;
   $("#v-plan").innerHTML    = on("plan")    ? viewPlan(plan)    : "";
   $("#v-curve").innerHTML   = on("curve")   ? viewCurve(plan)   : "";
@@ -1608,7 +2042,7 @@ function bindReadout(){
     el.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); el.blur(); } };
   });
   document.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>{
-    S=JSON.parse(JSON.stringify(scenarios[+b.dataset.restore].cfg)); render();
+    S=normPlan(JSON.parse(JSON.stringify(scenarios[+b.dataset.restore].cfg))); stash={}; render();
   });
 
   // per-month budget overrides
@@ -1632,10 +2066,30 @@ function bindReadout(){
 
 /* deck events */
 $("#clientName").oninput=e=>{S.client=e.target.value; render(false);};
+// Switching vertical reloads its defaults but keeps the platforms you picked.
 $("#vertSeg").onclick=e=>{
-  const b=e.target.closest("[data-v]"); if(!b) return;
-  S=normPlan(defaults(b.dataset.v)); render();
+  const b=e.target.closest("[data-v]"); if(!b || b.dataset.v===S.vertical) return;
+  const on=PLATS.filter(platOn), v=b.dataset.v;
+  const keep={client:S.client};
+  S=normPlan(defaults(v));
+  S.channels=on.flatMap(p=>defaultLines(v,p).map(c=>normChan(Object.assign({},c))));
+  if(!S.channels.length) S.channels=normPlan(defaults(v)).channels;
+  if(keep.client && !/client$/i.test(keep.client)) S.client=keep.client;
+  stash={}; evenSplit(S); render();
 };
+$("#budChips").onclick=e=>{
+  const b=e.target.closest("[data-b]"); if(!b) return;
+  S.budget=+b.dataset.b; S.anchor=S.budget; render(false);
+};
+const deckEl=$(".deck");
+try{ if(localStorage.getItem("sc-tips")==="1"){ deckEl.classList.add("tips"); $("#tipsBtn").setAttribute("aria-pressed","true"); } }catch(e){}
+$("#tipsBtn").onclick=e=>{
+  e.preventDefault();
+  const on=!deckEl.classList.contains("tips");
+  deckEl.classList.toggle("tips", on); $("#tipsBtn").setAttribute("aria-pressed", on);
+  try{ localStorage.setItem("sc-tips", on?"1":"0"); }catch(err){}
+};
+document.querySelectorAll(".deck .grp").forEach((g,i)=>g.style.setProperty("--i",i));
 // Typing a budget means "this is the plan", so the quoted rates re-anchor to it.
 // The slider deliberately does not — it is the way to walk the curve away from the
 // anchor, which is what the curve is for. (It took over that job from the handle
@@ -1644,6 +2098,7 @@ $("#budget").oninput=e=>{S.budget=+e.target.value||0; S.anchor=S.budget; render(
 $("#budgetRange").oninput=e=>{
   S.budget=Math.round(10000*Math.pow(500, e.target.value/100)/1000)*1000;
   render(false);
+  e.target.value=clamp(Math.log10(Math.max(10000,S.budget)/10000)/Math.log10(500)*100,0,100);
 };
 $("#growth").oninput=e=>{S.growth=+e.target.value||0; render(false);};
 $("#horizon").onchange=e=>{S.horizon=+e.target.value; render(false);};
@@ -1654,10 +2109,12 @@ $("#unitSeg").onclick=e=>{
   S.spendMode=b.dataset.u; render();
 };
 $("#addChan").onclick=()=>{
-  S.channels.push(normChan({n:"New line", pct:10, cpm:200, ctr:1.1, cr:2}));
+  const p=PLATS.find(platOn)||"meta";
+  S.channels.push(normChan(Object.assign({pct:10}, PLAT[p].add, S.vertical==="ecommerce"?{rq:100}:{})));
+  S.channels.sort((a,b)=>platOrder(a)-platOrder(b));
   render();
 };
-$("#resetBtn").onclick=()=>{S=normPlan(defaults(S.vertical)); render();};
+$("#resetBtn").onclick=()=>{S=freshPlan(S.vertical); stash={}; render();};
 $("#saveBtn").onclick=()=>{
   const blob=new Blob([JSON.stringify({v:1,plan:S,scenarios},null,2)],{type:"application/json"});
   const a=document.createElement("a");
@@ -1671,7 +2128,7 @@ $("#fileIn").onchange=e=>{
   const r=new FileReader();
   r.onload=()=>{ try{
       const d=JSON.parse(r.result);
-      if(d.plan){ S=normPlan(d.plan); scenarios=(d.scenarios||[null,null,null]).map(s=>s?normPlan(s):null); render(); }
+      if(d.plan){ S=normPlan(d.plan); stash={}; scenarios=(d.scenarios||[null,null,null]).map((s,i)=>s&&s.cfg ? makeScenario(i, normPlan(s.cfg), +s.budget||+s.cfg.budget||0) : null); render(); }
     }catch(err){ alert("That file isn't a saved plan."); } };
   r.readAsText(f); e.target.value="";
 };
@@ -1685,12 +2142,97 @@ $("#themeBtn").onclick=()=>{
   document.documentElement.setAttribute("data-theme", cur==="dark"?"light":"dark");
   render(false);
 };
+const STILL = matchMedia("(prefers-reduced-motion: reduce)");
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  if(tab===b.dataset.t) return;
   tab=b.dataset.t;
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected", x===b));
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("on", v.id==="v-"+tab));
   render(false);
+  const v=$("#v-"+tab);
+  if(!STILL.matches && v.animate) v.animate([{opacity:0,transform:"translateY(6px)"},{opacity:1,transform:"none"}],
+    {duration:200,easing:"cubic-bezier(.2,.8,.2,1)"});
 });
 
+/* =====================================================================
+   8. LIQUID-GLASS LENS
+   One glass pill per control. It rests on the selected item and springs to
+   whatever the mouse is over, stretching along its travel with speed.
+   Port of the Neo rail / Tempo GlassLens recipe, with the review fixes:
+   fixed-step integrator, area-preserving capped stretch, mouse-only hover,
+   press squash reset on cancel/blur, re-aim on resize and on selection change.
+   ===================================================================== */
+function glassLens(host, sel, isActive){
+  const lens=document.createElement("i");
+  lens.className="lens"; lens.setAttribute("aria-hidden","true");
+  host.prepend(lens); host.classList.add("has-lens");
+  const sp=(k,c)=>({x:0,v:0,t:0,k,c});
+  // position near-critically damped (tiny settle), size critically damped, press playful
+  const L={x:sp(520,40), y:sp(520,40), w:sp(520,45.6), h:sp(520,45.6), p:sp(600,32)};
+  L.p.x=L.p.t=1;
+  let hover=null, focus=null, raf=0, last=0, placed=false, op=0, opT=0, px=null, py=null;
+  const springs=Object.values(L);
+  const items=()=>[...host.querySelectorAll(sel)];
+  const box=b=>{ const r=host.getBoundingClientRect(), q=b.getBoundingClientRect();
+    return {x:q.left-r.left+host.scrollLeft, y:q.top-r.top+host.scrollTop, w:q.width, h:q.height}; };
+
+  function aim(snap){
+    const act=items().find(isActive);
+    const pick=[focus,hover].find(b=>b && host.contains(b)) || act;
+    if(!pick || !pick.offsetParent){ opT=0; kick(); return; }
+    const b=box(pick);
+    if(!b.w){ return; }
+    L.x.t=b.x; L.y.t=b.y; L.w.t=b.w; L.h.t=b.h; opT=1;
+    lens.dataset.state = pick===act ? "on" : "hover";
+    if(!placed || snap || STILL.matches){ ["x","y","w","h"].forEach(k=>{L[k].x=L[k].t; L[k].v=0;}); placed=true; }
+    kick();
+  }
+  function frame(now){
+    const dt0=Math.min(.05, last ? (now-last)/1000 : 1/60); last=now;
+    let dt=dt0; const H=1/240;
+    while(dt>1e-6){ const h=Math.min(H,dt); dt-=h;
+      for(const s of springs){ const a=-s.k*(s.x-s.t)-s.c*s.v; s.v+=a*h; s.x+=s.v*h; } }
+    if(STILL.matches) springs.forEach(s=>{s.x=s.t; s.v=0;});
+    // opacity is a plain ~120ms ease, not a spring — it must not bounce
+    op += (opT-op)*Math.min(1, dt0/0.12*2.2);
+    if(Math.abs(opT-op)<.01) op=opT;
+    const vx=Math.abs(L.x.v), vy=Math.abs(L.y.v), horiz=vx>=vy;
+    const st=STILL.matches ? 1 : 1+Math.min((horiz?vx:vy)/3000, .1);
+    const sx=(horiz?st:1/st)*L.p.x, sy=(horiz?1/st:st)*L.p.x;
+    lens.style.width=L.w.x+"px"; lens.style.height=L.h.x+"px"; lens.style.opacity=op.toFixed(3);
+    lens.style.transform=`translate(${L.x.x.toFixed(2)}px,${L.y.x.toFixed(2)}px) scale(${sx.toFixed(4)},${sy.toFixed(4)})`;
+    if(px!=null && L.w.x>0 && L.h.x>0){
+      const r=host.getBoundingClientRect();
+      lens.style.setProperty("--hx", clamp((px-r.left+host.scrollLeft-L.x.x)/L.w.x*100,0,100).toFixed(1)+"%");
+      lens.style.setProperty("--hy", clamp((py-r.top+host.scrollTop-L.y.x)/L.h.x*100,0,100).toFixed(1)+"%");
+    }
+    const moving=springs.some(s=>Math.abs(s.x-s.t)>.05||Math.abs(s.v)>.05) || op!==opT;
+    raf = moving ? requestAnimationFrame(frame) : 0; if(!moving) last=0;
+  }
+  const kick=()=>{ if(!raf) raf=requestAnimationFrame(frame); };
+  const setHover=b=>{ if(b===hover) return; hover?.classList.remove("lift"); hover=b; b?.classList.add("lift"); aim(); };
+
+  host.addEventListener("pointermove",e=>{
+    if(e.pointerType!=="mouse") return;
+    setHover(e.target.closest(sel));
+    px=e.clientX; py=e.clientY; kick();
+  });
+  host.addEventListener("pointerleave",e=>{ if(e.pointerType==="mouse"){ px=py=null; setHover(null); } });
+  host.addEventListener("pointerdown",e=>{ if(e.button===0 && e.target.closest(sel)){ L.p.t=.94; kick(); } });
+  const release=()=>{ if(L.p.t!==1){ L.p.t=1; kick(); } };
+  addEventListener("pointerup",release); addEventListener("pointercancel",release); addEventListener("blur",release);
+  host.addEventListener("focusin",e=>{ const b=e.target.closest(sel); if(b && b.matches(":focus-visible")){ focus=b; aim(); } });
+  host.addEventListener("focusout",()=>{ focus=null; aim(); });
+  host.addEventListener("scroll",()=>aim(true),{passive:true});
+  new MutationObserver(()=>aim()).observe(host,{subtree:true,childList:true,attributes:true,
+    attributeFilter:["aria-pressed","aria-selected"]});
+  new ResizeObserver(()=>aim(true)).observe(host);
+  aim(true);
+}
+
 render();
+const tabsEl=$(".tabs");
+glassLens(tabsEl, "button", b=>b.getAttribute("aria-selected")==="true");
+glassLens($("#vertSeg"), "button", b=>b.getAttribute("aria-pressed")==="true");
+glassLens($("#unitSeg"), "button", b=>b.getAttribute("aria-pressed")==="true");
 </script>
