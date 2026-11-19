@@ -1094,7 +1094,7 @@ function axisInr(max){
   const v=Math.abs(max);
   if(v>=1e7) return x=>"₹"+(x/1e7).toFixed(x/1e7>=10?1:2)+"Cr";
   if(v>=1e5) return x=>"₹"+(x/1e5).toFixed(x/1e5>=10?1:2)+"L";
-  if(v>=1e4) return x=>"₹"+(x/1000).toFixed(0)+"k";
+  if(v>=1e4) return x=>x===0?"₹0":"₹"+(x/1000).toFixed(0)+"k";
   return x=>"₹"+Math.round(x).toLocaleString("en-IN");
 }
 function num(x){
@@ -1413,8 +1413,8 @@ function chartFunnel(m, W){
   if(V.stages.length>2) steps.push({l:V.stages[2].label, v:m.s2, u:"each"});
   // A centred funnel. Widths follow a compressed scale (impressions dwarf bookings by
   // 10^5) with a floor wide enough to hold the count, so late steps never shrink to dots.
-  const L=120, R=96, BH=36, GAP=30, PITCH=BH+GAP, top=steps[0].v||1;
-  const fw=W-L-R, cx=L+fw/2, wMin=Math.max(78, fw*0.2), wMax=fw;
+  const L=170, R=150, BH=40, GAP=32, PITCH=BH+GAP, top=steps[0].v||1;
+  const fw=W-L-R, cx=L+fw/2, wMin=Math.max(84, fw*0.13), wMax=fw;
   const wOf=v=>wMin+(wMax-wMin)*Math.pow(clamp(Math.max(v,0)/top,0,1),0.28);
   const H=steps.length*PITCH-GAP+28;
   const g=uid; nid();
@@ -1429,19 +1429,20 @@ function chartFunnel(m, W){
     let conn="";
     if(i<steps.length-1){
       const n=steps[i+1], w2=wOf(n.v), y2=y+PITCH, rate=st.v>0?n.v/st.v:0;
-      const lab=pct(rate, rate<0.01?2:1), cw=lab.length*7.3+18, my=y+BH+GAP/2;
+      const lab=pct(rate, rate<0.01?2:1), cw=lab.length*7+20, my=y+BH+GAP/2;
       conn=`<path d="M${x+6} ${y+BH} L${x+w-6} ${y+BH} L${cx+w2/2-6} ${y2} L${cx-w2/2+6} ${y2} Z" fill="url(#fc${i}${g})"/>
-        <rect x="${cx-cw/2}" y="${my-10}" width="${cw}" height="20" rx="10" fill="var(--surface)" stroke="var(--rule-strong)" stroke-width="1"/>
-        <text class="axis-t" x="${cx}" y="${my+4}" text-anchor="middle" style="fill:var(--ink-2);font-weight:650;font-size:11.75px">↓ ${lab}</text>`;
+        <rect x="${cx-cw/2}" y="${my-11}" width="${cw}" height="22" rx="11" fill="var(--surface)" stroke="var(--rule-strong)" stroke-width="1"/>
+        <text class="axis-t" x="${cx}" y="${my+4}" text-anchor="middle" style="fill:var(--ink-2);font-weight:650;font-size:11.5px">↓ ${lab}</text>`;
     }
     return `${conn}
-      <text x="0" y="${y+BH/2+5}" style="font-size:13.75px;font-weight:600;fill:var(--ink-2)">${esc(st.l)}</text>
+      <text x="0" y="${y+BH/2-1}" style="font-size:13.5px;font-weight:600;fill:var(--ink-2)">${esc(st.l)}</text>
+      <text class="axis-t" x="0" y="${y+BH/2+14}" style="fill:var(--ink-4);font-size:10.5px">${i===0?"100%":(()=>{const x=st.v/top*100; return (x>=1?x.toFixed(1):+x.toPrecision(2))+"%";})()} of impressions</text>
       <rect x="${x}" y="${y}" width="${w}" height="${BH}" rx="11" fill="url(#fb${i}${g})"
         style="filter:drop-shadow(0 6px 10px color-mix(in srgb,${cvar(i)} 28%,transparent))"
         data-tip="${esc(`<div class='th'>${st.l}</div><div class='tr'><span class='l'>Volume</span><b>${num(st.v)}</b></div><div class='tr'><span class='l'>Cost ${st.u}</span><b>${cost}</b></div>`)}"/>
-      <text class="dlab" x="${cx}" y="${y+BH/2+4.8}" text-anchor="middle" style="fill:#fff;font-size:13.75px;pointer-events:none">${num(st.v)}</text>
-      <text class="dlab" x="${W}" y="${y+BH/2+1}" text-anchor="end" fill="var(--ink)" style="font-size:13.75px">${cost}</text>
-      <text class="axis-t" x="${W}" y="${y+BH/2+14.5}" text-anchor="end" style="fill:var(--ink-3);font-size:10.75px">${st.u}</text>`;
+      <text class="dlab" x="${cx}" y="${y+BH/2+4.8}" text-anchor="middle" style="fill:#fff;font-size:13.5px;pointer-events:none">${num(st.v)}</text>
+      <text class="dlab" x="${W}" y="${y+BH/2+1}" text-anchor="end" fill="var(--ink)" style="font-size:13.5px">${cost}</text>
+      <text class="axis-t" x="${W}" y="${y+BH/2+14.5}" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px">${st.u}</text>`;
   }).join("");
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Funnel from impressions to ${esc(V.saleLabel)}">
   <defs>${defs}</defs>
@@ -1456,7 +1457,7 @@ function chartScatter(m, W, H){
   const pts=m.lines.map((l,i)=>({i, x:l.s0>0?l.spend/l.s0:0, y:l.s0, r:l.spend, n:l.ch.n}))
                    .filter(p=>p.x>0&&p.y>0);
   if(!pts.length) return `<p class="foot">No volume at this budget.</p>`;
-  const F=frame(W,H,{l:58,r:46,t:38,b:40});
+  const F=frame(W,H,{l:62,r:150,t:40,b:42});
   const xhi=Math.max(...pts.map(p=>p.x)), yhi=Math.max(...pts.map(p=>p.y));
   const dx=[0, xhi*1.22], dy=[0, yhi*1.22];   // headroom so bubbles never clip the frame
   const rmax=Math.max(...pts.map(p=>p.r));
@@ -1472,11 +1473,30 @@ function chartScatter(m, W, H){
   ${isFinite(bx)?`<line x1="${bx}" x2="${bx}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--ink-4)" stroke-width="1" stroke-dasharray="3 4"/>
   ${pillLabel(bx+6, F.M.t+2, "blended "+inr(blend), "var(--ink-3)", "start")}`:""}
   ${pts.slice().sort((a,b)=>b.r-a.r).map(p=>{
-    const cx=F.x(p.x,dx), cy=F.y(p.y,dy), r=8+Math.sqrt(p.r/rmax)*17;
+    const cx=F.x(p.x,dx), cy=F.y(p.y,dy), r=10+Math.sqrt(p.r/rmax)*24;
     return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#sc${p.i}${gid})"
        stroke="var(--surface)" stroke-width="2" style="filter:drop-shadow(0 4px 8px rgba(22,22,60,.18))"
        data-tip="${esc(`<div class='th'>${p.n}</div><div class='tr'><span class='l'>${V.cplLabel}</span><b>${inr(p.x)}</b></div><div class='tr'><span class='l'>${V.leadLabel}</span><b>${num(p.y)}</b></div><div class='tr'><span class='l'>Spend</span><b>${inr(p.r)}</b></div>`)}"/>`;
   }).join("")}
+  ${(()=>{ // name each bubble: try right, left, above, below — first spot that clears every bubble and label
+    const B=pts.map(p=>({x:F.x(p.x,dx), y:F.y(p.y,dy), r:10+Math.sqrt(p.r/rmax)*24, n:p.n}));
+    const placed=[], out=[];
+    const hit=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
+    const circHit=(R,c)=>{ const nx=clamp(c.x,R.x,R.x+R.w), ny=clamp(c.y,R.y,R.y+R.h); return (nx-c.x)**2+(ny-c.y)**2 < (c.r+2)**2; };
+    B.slice().sort((a,b)=>b.r-a.r).forEach(c=>{
+      const w=c.n.length*6.6+4, h=14;
+      const cands=[{x:c.x+c.r+6,y:c.y-h/2},{x:c.x-w/2,y:c.y-c.r-h-4},{x:c.x-w/2,y:c.y+c.r+4},
+        {x:c.x+c.r*0.7+6,y:c.y-c.r-h+2},{x:c.x+c.r*0.7+6,y:c.y+c.r-2},{x:c.x-c.r-6-w,y:c.y-h/2}];
+      // score every spot: off-canvas is worst, then each bubble or label it touches
+      const cost=R=>{ const Q={x:R.x,y:R.y,w,h};
+        return (R.x<F.M.l-4||R.x+w>W||R.y<F.M.t-10||R.y+h>H-F.M.b ? 100 : 0)
+          + B.filter(o=>o!==c && circHit(Q,o)).length*3 + (circHit(Q,c)?3:0) + placed.filter(q=>hit(Q,q)).length*4; };
+      let R=cands.reduce((best,R)=>cost(R)<cost(best)?R:best, cands[0]);
+      R={x:R.x,y:R.y,w,h}; placed.push(R);
+      out.push(`<text x="${R.x}" y="${R.y+h-3}" style="font-size:11.5px;font-weight:600;fill:var(--ink-2);pointer-events:none">${esc(c.n)}</text>`);
+    });
+    return out.join("");
+  })()}
   <text class="axis-l" x="${F.M.l}" y="${H-4}">${esc(V.cplLabel)} →  ·  bubble = spend</text>
   <text class="axis-l" x="0" y="${F.M.t-14}">${esc(V.leadLabel)} ↑</text>
 </svg>`;
@@ -1948,18 +1968,16 @@ function viewPlan(plan){
     </div></div>
     ${table}
   </div>
-  <div class="grid2">
-    <div class="card">
-      <div class="card-hd"><div><h2>Where the money goes</h2>
-        <p>Impressions through to ${esc(V.saleLabel.toLowerCase())}, with the drop-off at each step.</p></div></div>
-      ${chartFunnel(m, 600)}
-    </div>
-    <div class="card">
-      <div class="card-hd"><div><h2>Which channel earns its share</h2>
-        <p>Left and high is the channel to fund. Right of the dashed line is dragging the blended number up.</p></div></div>
-      ${chartScatter(m, 620, 320)}
-      <div class="legend">${m.lines.map((l,i)=>`<div class="li"><i class="sw dot" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</div>`).join("")}</div>
-    </div>
+  <div class="card">
+    <div class="card-hd"><div><h2>Where the money goes</h2>
+      <p>Impressions through to ${esc(V.saleLabel.toLowerCase())}. Each bar is what survives the step above it — the chip shows how much carries through, and the right column what each one costs.</p></div></div>
+    ${chartFunnel(m, 1000)}
+  </div>
+  <div class="card">
+    <div class="card-hd"><div><h2>Which channel earns its share</h2>
+      <p>Left and high is the channel to fund. Right of the dashed line is dragging the blended number up. Bubble size is spend.</p></div></div>
+    ${chartScatter(m, 1000, 420)}
+    <div class="legend">${m.lines.map((l,i)=>`<div class="li"><i class="sw dot" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</div>`).join("")}</div>
   </div>
   <div class="card">
     <div class="card-hd"><div><h2>Headroom by channel</h2>
