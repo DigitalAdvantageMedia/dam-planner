@@ -11,7 +11,7 @@
   --accent:#5546E0; --accent-soft:#EEECFC;
   --good:#1F8A55; --warn:#B5730F; --crit:#C2382B;
   --good-bg:#E6F3EC; --warn-bg:#FBF0DE; --crit-bg:#FAE9E7;
-  --c1:#5546E0; --c2:#E90A79; --c3:#B8801E; --c4:#12907E; --c5:#A56BD6;
+  --c1:#5546E0; --c2:#E90A79; --c3:#F59E0B; --c4:#10A38B; --c5:#9B5DE5; --c6:#0EA5E9; --c7:#F97362; --c8:#84B819;
   --grid:#E7E7EE; --axis:#C4C4D0;
   --shadow:0 1px 2px rgba(22,22,31,.05), 0 8px 24px -12px rgba(22,22,31,.14);
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,"Helvetica Neue",Arial,sans-serif;
@@ -26,7 +26,7 @@
     --accent:#7B6BF0; --accent-soft:#22213A;
     --good:#3FB47C; --warn:#D69A34; --crit:#E2685B;
     --good-bg:#16281F; --warn-bg:#2A2115; --crit-bg:#2B1A18;
-    --c1:#7B6BF0; --c2:#EC4189; --c3:#B5852A; --c4:#1E9C8B; --c5:#A874D4;
+    --c1:#8B7CFF; --c2:#F0509A; --c3:#FBBF24; --c4:#2DD4BF; --c5:#B98AF0; --c6:#38BDF8; --c7:#FB8A7A; --c8:#A3D63A;
     --grid:#282826; --axis:#3A3A38;
     --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
   }
@@ -38,7 +38,7 @@
   --accent:#7B6BF0; --accent-soft:#22213A;
   --good:#3FB47C; --warn:#D69A34; --crit:#E2685B;
   --good-bg:#16281F; --warn-bg:#2A2115; --crit-bg:#2B1A18;
-  --c1:#7B6BF0; --c2:#EC4189; --c3:#B5852A; --c4:#1E9C8B; --c5:#A874D4;
+  --c1:#8B7CFF; --c2:#F0509A; --c3:#FBBF24; --c4:#2DD4BF; --c5:#B98AF0; --c6:#38BDF8; --c7:#FB8A7A; --c8:#A3D63A;
   --grid:#282826; --axis:#3A3A38;
   --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
 }
@@ -49,7 +49,7 @@
   --accent:#5546E0; --accent-soft:#EEECFC;
   --good:#1F8A55; --warn:#B5730F; --crit:#C2382B;
   --good-bg:#E6F3EC; --warn-bg:#FBF0DE; --crit-bg:#FAE9E7;
-  --c1:#5546E0; --c2:#E90A79; --c3:#B8801E; --c4:#12907E; --c5:#A56BD6;
+  --c1:#5546E0; --c2:#E90A79; --c3:#F59E0B; --c4:#10A38B; --c5:#9B5DE5; --c6:#0EA5E9; --c7:#F97362; --c8:#84B819;
   --grid:#E7E7EE; --axis:#C4C4D0;
   --shadow:0 1px 2px rgba(22,22,31,.05), 0 8px 24px -12px rgba(22,22,31,.14);
 }
@@ -238,7 +238,7 @@ th{text-align:right;padding:0 0 8px;font-family:var(--mono);font-size:9.5px;
 th:first-child,td:first-child{text-align:left}
 td{padding:8px 0;border-bottom:1px solid var(--rule);text-align:right;
   font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-th+th,td+td{padding-left:14px}
+th+th,td+td{padding-left:11px}
 tbody tr:last-child td{border-bottom:none}
 tr.tot td{border-top:1px solid var(--rule-strong);font-weight:650;border-bottom:none;padding-top:9px}
 tr.sub td{color:var(--ink-3)}
@@ -264,11 +264,23 @@ tr.sub td{color:var(--ink-3)}
 @media (max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
 
 svg{display:block;max-width:100%;overflow:visible}
-.axis-t{font-family:var(--mono);font-size:9.5px;fill:var(--ink-3);font-variant-numeric:tabular-nums}
-.axis-l{font-family:var(--mono);font-size:9px;fill:var(--ink-4);letter-spacing:.07em;text-transform:uppercase}
-.gl{stroke:var(--grid);stroke-width:1}
+.axis-t{font-family:var(--mono);font-size:10.5px;fill:var(--ink-3);font-variant-numeric:tabular-nums}
+.axis-l{font-family:var(--mono);font-size:9.5px;fill:var(--ink-4);letter-spacing:.08em;text-transform:uppercase}
+.gl{stroke:var(--grid);stroke-width:1;stroke-dasharray:2 5;stroke-linecap:round}
 .al{stroke:var(--axis);stroke-width:1}
-.dlab{font-family:var(--mono);font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.dlab{font-family:var(--mono);font-size:11px;font-weight:650;font-variant-numeric:tabular-nums}
+.ln{fill:none;stroke-width:2.75;stroke-linecap:round;stroke-linejoin:round}
+.ln.glow{filter:drop-shadow(0 4px 6px color-mix(in srgb,currentColor 30%,transparent))}
+.dot{stroke:var(--surface);stroke-width:2.5}
+.halo{opacity:.18}
+.pilltx{font-family:var(--mono);font-size:10.5px;font-weight:650;font-variant-numeric:tabular-nums;fill:#fff}
+.xhair{pointer-events:none;opacity:0;transition:opacity .12s}
+svg:hover .xhair.on{opacity:1}
+.bar-r{transition:opacity .2s}
+@media print{.ln.glow{filter:none}}
+.theme-swap::view-transition-old(root),.theme-swap::view-transition-new(root){animation:none;mix-blend-mode:normal}
+.theme-swap::view-transition-new(root){z-index:2}
+.theme-swap *,.theme-swap *::before,.theme-swap *::after{transition:none!important;animation-play-state:paused!important}
 
 /* saturation bars */
 .satrow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--rule)}
@@ -392,9 +404,12 @@ body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none
   box-shadow:0 3px 8px -3px rgba(233,10,121,.55)}
 
 /* help text: shown for the field you are in, or everywhere with Tips on */
-.deck .fh{display:none}
-.deck.tips .fh,.deck .field:focus-within .fh,.deck .mini:focus-within .fh{display:block;animation:fhIn .18s ease-out}
-@keyframes fhIn{from{opacity:0;transform:translateY(-2px)}}
+/* Folds away 250ms after you leave the field, never instantly: an instant collapse
+   shifted the controls below mid-click, so the first click after typing missed. */
+.deck .fh{max-height:0;opacity:0;overflow:hidden;margin-top:0!important;margin-bottom:0;
+  transition:max-height .22s ease .25s,opacity .15s ease .22s,margin .22s ease .25s}
+.deck.tips .fh,.deck .field:focus-within .fh,.deck .mini:focus-within .fh{max-height:240px;opacity:1;margin-top:3px!important;
+  transition:max-height .25s ease,opacity .2s ease .05s,margin .2s ease}
 .tipsw{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-3);cursor:pointer;user-select:none}
 .tipsw .switch{width:32px;height:18px}
 .tipsw .switch::after{width:14px;height:14px}
@@ -749,7 +764,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
    1. MODEL
    ===================================================================== */
 
-const CAT = ["--c1","--c2","--c3","--c4","--c5"];
+const CAT = ["--c1","--c2","--c3","--c4","--c5","--c6","--c7","--c8"];
 const cvar = i => `var(${CAT[i % CAT.length]})`;
 
 // How hard each kind of campaign fights back when you push more money through it.
@@ -1128,17 +1143,47 @@ function yAxis(F,dom,fmt){
       <text class="axis-t" x="${F.M.l-8}" y="${y+3}" text-anchor="end">${fmt(t)}</text>`;
   }).join("");
 }
-function line(pts,F,dx,dy){
-  pts=pts.filter(p=>isFinite(p[0])&&isFinite(p[1]));
-  if(!pts.length) return "M0 0";
-  return pts.map((p,i)=>(i?"L":"M")+F.x(p[0],dx).toFixed(1)+" "+F.y(p[1],dy).toFixed(1)).join(" ");
+// Monotone cubic (Fritsch–Carlson): smooth, but never overshoots the data, so a
+// curve can't invent a dip or peak that isn't in the numbers.
+function smooth(P){
+  const n=P.length; if(!n) return "M0 0";
+  if(n<3) return P.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const d=[], m=new Array(n);
+  for(let i=0;i<n-1;i++) d.push((P[i+1][1]-P[i][1])/((P[i+1][0]-P[i][0])||1e-9));
+  m[0]=d[0]; m[n-1]=d[n-2];
+  for(let i=1;i<n-1;i++) m[i]= d[i-1]*d[i]<=0 ? 0 : (d[i-1]+d[i])/2;
+  for(let i=0;i<n-1;i++){
+    if(d[i]===0){ m[i]=m[i+1]=0; continue; }
+    const a=m[i]/d[i], b=m[i+1]/d[i], h=a*a+b*b;
+    if(h>9){ const t=3/Math.sqrt(h); m[i]=t*a*d[i]; m[i+1]=t*b*d[i]; }
+  }
+  let out="M"+P[0][0].toFixed(1)+" "+P[0][1].toFixed(1);
+  for(let i=0;i<n-1;i++){
+    const h=(P[i+1][0]-P[i][0])/3;
+    out+=` C${(P[i][0]+h).toFixed(1)} ${(P[i][1]+m[i]*h).toFixed(1)} ${(P[i+1][0]-h).toFixed(1)} ${(P[i+1][1]-m[i+1]*h).toFixed(1)} ${P[i+1][0].toFixed(1)} ${P[i+1][1].toFixed(1)}`;
+  }
+  return out;
 }
+const px=(pts,F,dx,dy)=>pts.filter(p=>isFinite(p[0])&&isFinite(p[1])).map(p=>[F.x(p[0],dx),F.y(p[1],dy)]);
+function line(pts,F,dx,dy){ return smooth(px(pts,F,dx,dy)); }
 function area(pts,F,dx,dy,base){
-  pts=pts.filter(p=>isFinite(p[0])&&isFinite(p[1]));
-  if(!pts.length) return "M0 0";
+  const P=px(pts,F,dx,dy); if(!P.length) return "M0 0";
   const b=F.y(base,dy).toFixed(1);
-  return line(pts,F,dx,dy)+` L${F.x(pts[pts.length-1][0],dx).toFixed(1)} ${b} L${F.x(pts[0][0],dx).toFixed(1)} ${b} Z`;
+  return smooth(P)+` L${P[P.length-1][0].toFixed(1)} ${b} L${P[0][0].toFixed(1)} ${b} Z`;
 }
+// A value label in a rounded pill, so it reads over gridlines and fills.
+function pillLabel(x,y,text,fill,anchor="middle"){
+  const w=String(text).length*6.7+14, h=19;
+  const x0 = anchor==="end" ? x-w : anchor==="start" ? x : x-w/2;
+  return `<g><rect x="${x0.toFixed(1)}" y="${(y-h/2).toFixed(1)}" width="${w.toFixed(1)}" height="${h}" rx="9.5" fill="${fill}"/>
+    <text class="pilltx" x="${(x0+w/2).toFixed(1)}" y="${(y+3.8).toFixed(1)}" text-anchor="middle">${esc(text)}</text></g>`;
+}
+function grad(id,colour,top=.30,bot=0){
+  return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${colour}" stop-opacity="${top}"/>
+    <stop offset="1" stop-color="${colour}" stop-opacity="${bot}"/></linearGradient>`;
+}
+const dotAt=(x,y,c,r=5)=>`<circle class="halo" cx="${x}" cy="${y}" r="${r+5}" fill="${c}"/><circle class="dot" cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
 
 /* tooltip */
 const TIP=document.getElementById("tip");
@@ -1173,40 +1218,55 @@ function ceilingAt(sw, target){
 
 function chartResponse(sw, cur, W, H, target){
   const V=VERT[S.vertical], twoStage = V.stages.length>1;
-  const F=frame(W,H,{l:64,r:24,t:20,b:36});
+  const F=frame(W,H,{l:64,r:24,t:30,b:38});
   const dx=[sw[0].budget, sw[sw.length-1].budget];
   const vals=sw.flatMap(d=>twoStage?[d.cpl,d.cac]:[d.cac]).filter(isFinite);
   const dy=padDom(0, Math.max(Math.max(...vals), target||0));
-  const id=nid();
+  const id=nid(), g1=nid(), g2=nid(), gz=nid();
 
   const cplPts=sw.map(d=>[d.budget,d.cpl]), cacPts=sw.map(d=>[d.budget,d.cac]);
   const curX=F.x(cur,dx), c0=runMonth(S,0,cur);   // exact, not the nearest sample
   const ceil=ceilingAt(sw,target);
   const ty=target>0?F.y(target,dy):null;
+  const cx=ceil&&ceil.inside?F.x(ceil.budget,dx):null;
+  const fx=axisInr(dx[1]);
+  // hover columns: one per sample, each carrying the numbers at that budget
+  const colW=F.iw/(sw.length-1);
+  const cols=sw.map(d=>{
+    const x=F.x(d.budget,dx);
+    const tip=`<div class='th'>${inr(d.budget)} / month</div>`
+      +(twoStage?`<div class='tr'><span class='l'>${V.cplLabel}</span><b>${inr(d.cpl)}</b></div>`:"")
+      +`<div class='tr'><span class='l'>${V.cacLabel}</span><b>${inr(d.cac)}</b></div>`
+      +`<div class='tr'><span class='l'>${V.saleLabel} / mo</span><b>${num(d.sales)}</b></div>`;
+    return `<rect class="hitrect" data-xh="${x.toFixed(1)}" x="${(x-colW/2).toFixed(1)}" y="${F.M.t}" width="${colW.toFixed(1)}" height="${F.ih}" data-tip="${esc(tip)}"/>`;
+  }).join("");
 
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cost per outcome against monthly budget">
-  <defs><clipPath id="${id}"><rect x="${F.M.l}" y="${F.M.t}" width="${F.iw}" height="${F.ih}"/></clipPath></defs>
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cost per outcome against monthly budget" class="resp">
+  <defs><clipPath id="${id}"><rect x="${F.M.l}" y="${F.M.t-6}" width="${F.iw}" height="${F.ih+6}"/></clipPath>
+    ${grad(g1,"var(--c1)",.18)}${grad(g2,"var(--c2)",.22)}
+    <linearGradient id="${gz}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--crit)" stop-opacity=".02"/><stop offset="1" stop-color="var(--crit)" stop-opacity=".12"/></linearGradient></defs>
+  ${cx!=null?`<rect x="${cx}" y="${F.M.t}" width="${F.w-F.M.r-cx}" height="${F.ih}" fill="url(#${gz})"/>
+    <text class="axis-l" x="${F.w-F.M.r-8}" y="${H-F.M.b-8}" text-anchor="end" style="fill:var(--crit)">past the ceiling</text>`:""}
   ${yAxis(F,dy,axisInr(dy[1]))}
-  ${ticks(dx[0],dx[1],7).map(t=>`<text class="axis-t" x="${F.x(t,dx)}" y="${H-F.M.b+15}" text-anchor="middle">${axisInr(dx[1])(t)}</text>`).join("")}
+  ${ticks(dx[0],dx[1],7).map(t=>`<text class="axis-t" x="${F.x(t,dx)}" y="${H-F.M.b+17}" text-anchor="middle">${fx(t)}</text>`).join("")}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
-  ${ty!=null?`<line x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${ty}" y2="${ty}"
-     stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="4 4"/>
-   <text class="dlab" x="${F.w-F.M.r}" y="${ty-7}" text-anchor="end" fill="var(--warn)">Target ${esc(V.cacLabel.toLowerCase())} ${inr(target)}</text>`:""}
-  ${ceil&&ceil.inside?`<line x1="${F.x(ceil.budget,dx)}" x2="${F.x(ceil.budget,dx)}" y1="${F.M.t}" y2="${H-F.M.b}"
-     stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="3 4" opacity=".9"/>
-   <text class="dlab" x="${F.x(ceil.budget,dx)+7}" y="${F.M.t+11}" fill="var(--warn)">Ceiling ${inr(ceil.budget)}/mo</text>`:""}
+  ${ty!=null?`<line x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${ty}" y2="${ty}" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 5" stroke-linecap="round"/>
+   ${pillLabel(F.w-F.M.r, ty-14, "Target "+inr(target), "var(--warn)", "end")}`:""}
+  ${cx!=null?`<line x1="${cx}" x2="${cx}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="4 5" stroke-linecap="round"/>
+   ${pillLabel(cx+6, F.M.t+4, "Ceiling "+inr(ceil.budget)+"/mo", "var(--warn)", "start")}`:""}
   <g clip-path="url(#${id})">
-    ${twoStage?`<path d="${line(cplPts,F,dx,dy)}" fill="none" stroke="var(--c1)" stroke-width="2" stroke-linejoin="round"/>`:""}
-    <path d="${line(cacPts,F,dx,dy)}" fill="none" stroke="var(--c2)" stroke-width="2" stroke-linejoin="round"/>
+    ${twoStage?`<path d="${area(cplPts,F,dx,dy,dy[0])}" fill="url(#${g1})"/>`:""}
+    <path d="${area(cacPts,F,dx,dy,dy[0])}" fill="url(#${g2})"/>
+    ${twoStage?`<path class="ln glow" style="color:var(--c1)" d="${line(cplPts,F,dx,dy)}" stroke="var(--c1)"/>`:""}
+    <path class="ln glow" style="color:var(--c2)" d="${line(cacPts,F,dx,dy)}" stroke="var(--c2)"/>
   </g>
-  <line x1="${curX}" x2="${curX}" y1="${F.M.t-4}" y2="${H-F.M.b}" stroke="var(--accent)" stroke-width="1.5"/>
-  ${twoStage?`<circle cx="${curX}" cy="${F.y(c0.cpl,dy)}" r="5" fill="var(--c1)" stroke="var(--surface)" stroke-width="2"/>`:""}
-  <circle cx="${curX}" cy="${F.y(c0.cac,dy)}" r="5" fill="var(--c2)" stroke="var(--surface)" stroke-width="2"/>
-  <g class="marker">
-    <rect x="${curX-9}" y="${F.M.t-14}" width="18" height="11" rx="3" fill="var(--accent)"/>
-    <circle cx="${curX}" cy="${F.M.t-8.5}" r="1.9" fill="#fff"/>
-  </g>
-  <text class="axis-l" x="${F.M.l}" y="${H-4}">Monthly budget →  move it with the budget slider</text>
+  <line x1="${curX}" x2="${curX}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--accent)" stroke-width="1.5" opacity=".8"/>
+  ${twoStage?dotAt(curX,F.y(c0.cpl,dy),"var(--c1)"):""}
+  ${dotAt(curX,F.y(c0.cac,dy),"var(--c2)")}
+  ${pillLabel(curX, F.M.t-14, "Now "+inr(cur), "var(--accent)")}
+  <line class="xhair" x1="0" x2="0" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="2 3"/>
+  ${cols}
+  <text class="axis-l" x="${F.M.l}" y="${H-3}">Monthly budget →  hover for the numbers at any budget</text>
 </svg>
 <div class="legend">
   ${twoStage?`<div class="li"><i class="sw" style="background:var(--c1)"></i>${esc(V.cplLabel)} — <span class="num">${inr(c0.cpl)}</span></div>`:""}
@@ -1224,24 +1284,22 @@ function chartMarginal(sw, cur, W, H){
     const dS = sw[i].sales - sw[i-1].sales;
     pts.push([sw[i].budget, step>0 ? dS/step*100000 : 0]);
   }
-  const F=frame(W,H,{l:56,r:24,t:16,b:34});
+  const F=frame(W,H,{l:56,r:24,t:22,b:36});
   const dx=[sw[0].budget, sw[sw.length-1].budget];
   const dy=padDom(0, Math.max(...pts.map(p=>p[1])));
   const curX=F.x(cur,dx);
   const at = pts.reduce((a,b)=>Math.abs(b[0]-cur)<Math.abs(a[0]-cur)?b:a);
-  const id=nid();
+  const id=nid(), ax=F.x(at[0],dx), ay=F.y(at[1],dy), lab=at[1].toFixed(1)+" per ₹1L";
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Extra ${esc(V.saleLabel)} bought by each additional lakh of spend">
-  <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="var(--c4)" stop-opacity=".26"/>
-    <stop offset="1" stop-color="var(--c4)" stop-opacity=".02"/></linearGradient></defs>
+  <defs>${grad(id,"var(--c4)",.32)}</defs>
   ${yAxis(F,dy,v=>v>=10?Math.round(v):v.toFixed(1))}
-  ${ticks(dx[0],dx[1],5).map(t=>`<text class="axis-t" x="${F.x(t,dx)}" y="${H-F.M.b+15}" text-anchor="middle">${axisInr(dx[1])(t)}</text>`).join("")}
+  ${ticks(dx[0],dx[1],5).map(t=>`<text class="axis-t" x="${F.x(t,dx)}" y="${H-F.M.b+17}" text-anchor="middle">${axisInr(dx[1])(t)}</text>`).join("")}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
   <path d="${area(pts,F,dx,dy,dy[0])}" fill="url(#${id})"/>
-  <path d="${line(pts,F,dx,dy)}" fill="none" stroke="var(--c4)" stroke-width="2" stroke-linejoin="round"/>
-  <line x1="${curX}" x2="${curX}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--accent)" stroke-width="1.5"/>
-  <circle cx="${F.x(at[0],dx)}" cy="${F.y(at[1],dy)}" r="5" fill="var(--c4)" stroke="var(--surface)" stroke-width="2"/>
-  <text class="dlab" x="${F.x(at[0],dx)+9}" y="${F.y(at[1],dy)-7}" fill="var(--ink)">${at[1].toFixed(1)} per ₹1L</text>
+  <path class="ln glow" style="color:var(--c4)" d="${line(pts,F,dx,dy)}" stroke="var(--c4)"/>
+  <line x1="${curX}" x2="${curX}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--accent)" stroke-width="1.5" opacity=".8"/>
+  ${dotAt(ax,ay,"var(--c4)")}
+  ${pillLabel(ax+12, ay-16, lab, "var(--c4)", ax+12+lab.length*6.7+14>F.w-F.M.r?"end":"start")}
   <text class="axis-l" x="${F.M.l}" y="${H-3}">Monthly budget →</text>
 </svg>`;
 }
@@ -1249,23 +1307,23 @@ function chartMarginal(sw, cur, W, H){
 /* --- 4c. Month-on-month single-metric line --- */
 function chartMonths(plan, key, colour, fmt, W, H, label){
   const pts=plan.map((m,i)=>[i+1, m[key]]);
-  const F=frame(W,H,{l:58,r:20,t:16,b:30});
-  const dx=[1, plan.length], dy=padDomFill(Math.min(...pts.map(p=>p[1])), Math.max(...pts.map(p=>p[1])));
+  const F=frame(W,H,{l:58,r:24,t:26,b:30});
+  const fin=pts.map(p=>p[1]).filter(isFinite);
+  const dx=[1, plan.length], dy=padDomFill(Math.min(...fin), Math.max(...fin));
   const id=nid();
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)} by month">
-  <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="${colour}" stop-opacity=".22"/>
-    <stop offset="1" stop-color="${colour}" stop-opacity=".02"/></linearGradient></defs>
+  <defs>${grad(id,colour,.30)}</defs>
   ${yAxis(F,dy,fmt===inr?axisInr(dy[1]):fmt)}
-  ${plan.map((m,i)=>`<text class="axis-t" x="${F.x(i+1,dx)}" y="${H-F.M.b+15}" text-anchor="middle">M${i+1}</text>`).join("")}
+  ${plan.map((m,i)=>`<text class="axis-t" x="${F.x(i+1,dx)}" y="${H-F.M.b+16}" text-anchor="middle">M${i+1}</text>`).join("")}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
   <path d="${area(pts,F,dx,dy,dy[0])}" fill="url(#${id})"/>
-  <path d="${line(pts,F,dx,dy)}" fill="none" stroke="${colour}" stroke-width="2" stroke-linejoin="round"/>
+  <path class="ln glow" style="color:${colour}" d="${line(pts,F,dx,dy)}" stroke="${colour}"/>
   ${pts.map((p,i)=>{
+    if(!isFinite(p[1])) return "";
     const cx=F.x(p[0],dx), cy=F.y(p[1],dy), last=i===pts.length-1;
-    return `<circle cx="${cx}" cy="${cy}" r="${last?5:3.5}" fill="${colour}" stroke="var(--surface)" stroke-width="2"/>`
-     + (last ? `<text class="dlab" x="${cx-2}" y="${cy-11}" text-anchor="end" fill="var(--ink)">${fmt(p[1])}</text>`:"")
-     + `<rect class="hitrect" x="${cx-14}" y="${F.M.t}" width="28" height="${F.ih}"
+    return (last ? dotAt(cx,cy,colour,5) + pillLabel(cx-4, cy-17, fmt(p[1]), colour, "end")
+                 : `<circle class="dot" cx="${cx}" cy="${cy}" r="3.5" fill="${colour}"/>`)
+     + `<rect class="hitrect" x="${cx-16}" y="${F.M.t}" width="32" height="${F.ih}"
          data-tip="${esc(`<div class='th'>Month ${i+1}</div><div class='tr'><span class='l'>${label}</span><b>${fmt(p[1])}</b></div>`)}"/>`;
   }).join("")}
 </svg>`;
@@ -1275,23 +1333,26 @@ function chartMonths(plan, key, colour, fmt, W, H, label){
 function chartStack(plan, W, H){
   const F=frame(W,H,{l:58,r:20,t:16,b:30});
   const dx=[1,plan.length], top=Math.max(...plan.map(m=>m.spend));
-  const dy=[0, top*1.06];
+  const dy=[0, top*1.08];
   const nL=plan[0].lines.length;
-  const bands=[];
+  const bands=[], defs=[];
   for(let li=0; li<nL; li++){
     const lo=[],hi=[];
     plan.forEach((m,i)=>{
       let acc=0; for(let k=0;k<li;k++) acc+=m.lines[k].spend;
       lo.push([i+1,acc]); hi.push([i+1,acc+m.lines[li].spend]);
     });
-    const path = line(hi,F,dx,dy)+" "+lo.slice().reverse().map((p,j)=>(j?"L":"L")+F.x(p[0],dx).toFixed(1)+" "+F.y(p[1],dy).toFixed(1)).join(" ")+" Z";
-    bands.push(`<path d="${path}" fill="${cvar(li)}" opacity=".82" stroke="var(--surface)" stroke-width="2" stroke-linejoin="round"/>`);
+    const back=smooth(px(lo,F,dx,dy).reverse()).replace(/^M/,"L");
+    const gid=nid(); defs.push(grad(gid,cvar(li),.95,.70));
+    bands.push(`<path d="${line(hi,F,dx,dy)} ${back} Z" fill="url(#${gid})" stroke="var(--surface)" stroke-width="1.5" stroke-linejoin="round"/>`);
   }
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly spend by channel">
+  <defs>${defs.join("")}</defs>
   ${yAxis(F,dy,axisInr(dy[1]))}
-  ${plan.map((m,i)=>`<text class="axis-t" x="${F.x(i+1,dx)}" y="${H-F.M.b+15}" text-anchor="middle">M${i+1}</text>`).join("")}
+  ${plan.map((m,i)=>`<text class="axis-t" x="${F.x(i+1,dx)}" y="${H-F.M.b+16}" text-anchor="middle">M${i+1}</text>`).join("")}
   ${bands.join("")}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
+  ${pillLabel(F.x(plan.length,dx), F.y(plan[plan.length-1].spend,dy)-14, inr(plan[plan.length-1].spend), "var(--ink-2)", "end")}
   ${plan.map((m,i)=>`<rect class="hitrect" x="${F.x(i+1,dx)-16}" y="${F.M.t}" width="32" height="${F.ih}"
      data-tip="${esc(`<div class='th'>Month ${i+1} — ${inr(m.spend)}</div>`+m.lines.map((l,k)=>`<div class='tr'><span class='l'>${l.ch.n}</span><b>${inr(l.spend)}</b></div>`).join(""))}"/>`).join("")}
 </svg>`;
@@ -1301,27 +1362,28 @@ function chartStack(plan, W, H){
 function chartPayback(plan, W, H){
   let cs=0, cr=0; const sp=[], rv=[];
   plan.forEach((m,i)=>{ cs+=m.spend; cr+=m.revenue; sp.push([i+1,cs]); rv.push([i+1,cr]); });
-  const F=frame(W,H,{l:62,r:20,t:16,b:30});
+  const F=frame(W,H,{l:62,r:20,t:24,b:30});
   const dx=[1,plan.length], dy=padDom(0, Math.max(cs,cr));
-  const id=nid();
+  const id=nid(), id2=nid();
   let cross=null;
   for(let i=1;i<plan.length;i++){ if(rv[i-1][1]<sp[i-1][1] && rv[i][1]>=sp[i][1]){cross=i+1;break;} }
+  const ex=F.x(plan.length,dx), ry=F.y(cr,dy), sy=F.y(cs,dy);
+  const close=Math.abs(ry-sy)<24;
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative revenue against cumulative spend">
-  <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="var(--c4)" stop-opacity=".2"/>
-    <stop offset="1" stop-color="var(--c4)" stop-opacity=".02"/></linearGradient></defs>
+  <defs>${grad(id,"var(--c4)",.32)}${grad(id2,"var(--c3)",.16)}</defs>
   ${yAxis(F,dy,axisInr(dy[1]))}
-  ${plan.map((m,i)=>`<text class="axis-t" x="${F.x(i+1,dx)}" y="${H-F.M.b+15}" text-anchor="middle">M${i+1}</text>`).join("")}
+  ${plan.map((m,i)=>`<text class="axis-t" x="${F.x(i+1,dx)}" y="${H-F.M.b+16}" text-anchor="middle">M${i+1}</text>`).join("")}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
   <path d="${area(rv,F,dx,dy,dy[0])}" fill="url(#${id})"/>
-  <path d="${line(rv,F,dx,dy)}" fill="none" stroke="var(--c4)" stroke-width="2.2" stroke-linejoin="round"/>
-  <path d="${line(sp,F,dx,dy)}" fill="none" stroke="var(--c3)" stroke-width="2" stroke-dasharray="5 3" stroke-linejoin="round"/>
-  ${cross?`<line x1="${F.x(cross,dx)}" x2="${F.x(cross,dx)}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="3 3"/>
-    <text class="dlab" x="${F.x(cross,dx)+6}" y="${F.M.t+11}" fill="var(--good)">Breaks even M${cross}</text>`:""}
-  <circle cx="${F.x(plan.length,dx)}" cy="${F.y(cr,dy)}" r="5" fill="var(--c4)" stroke="var(--surface)" stroke-width="2"/>
-  <text class="dlab" x="${F.x(plan.length,dx)-8}" y="${F.y(cr,dy)-10}" text-anchor="end" fill="var(--ink)">${inr(cr)}</text>
-  <circle cx="${F.x(plan.length,dx)}" cy="${F.y(cs,dy)}" r="4" fill="var(--c3)" stroke="var(--surface)" stroke-width="2"/>
-  <text class="dlab" x="${F.x(plan.length,dx)-8}" y="${F.y(cs,dy)-9}" text-anchor="end" fill="var(--ink-2)">${inr(cs)}</text>
+  <path d="${area(sp,F,dx,dy,dy[0])}" fill="url(#${id2})"/>
+  <path class="ln glow" style="color:var(--c4)" d="${line(rv,F,dx,dy)}" stroke="var(--c4)"/>
+  <path class="ln" d="${line(sp,F,dx,dy)}" stroke="var(--c3)" stroke-dasharray="6 5"/>
+  ${cross?`<line x1="${F.x(cross,dx)}" x2="${F.x(cross,dx)}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="3 4"/>
+    ${pillLabel(F.x(cross,dx)+6, F.M.t+4, "Breaks even M"+cross, "var(--good)", "start")}`:""}
+  ${dotAt(ex,ry,"var(--c4)")}${pillLabel(ex-10, ry-(close?18:16), inr(cr), "var(--c4)", "end")}
+  ${dotAt(ex,sy,"var(--c3)",4)}${pillLabel(ex-10, sy+(close?18:-16), inr(cs), "var(--c3)", "end")}
+  ${plan.map((m,i)=>`<rect class="hitrect" x="${F.x(i+1,dx)-16}" y="${F.M.t}" width="32" height="${F.ih}"
+     data-tip="${esc(`<div class='th'>By month ${i+1}</div><div class='tr'><span class='l'>Revenue</span><b>${inr(rv[i][1])}</b></div><div class='tr'><span class='l'>Media spend</span><b>${inr(sp[i][1])}</b></div>`)}"/>`).join("")}
 </svg>
 <div class="legend">
   <div class="li"><i class="sw" style="background:var(--c4)"></i>Cumulative revenue — <span class="num">${inr(cr)}</span></div>
@@ -1338,21 +1400,23 @@ function chartFunnel(m, W){
   steps.push({l:V.stages[0].label, v:m.s0});
   if(V.stages.length>1) steps.push({l:V.stages[1].label, v:m.s1});
   if(V.stages.length>2) steps.push({l:V.stages[2].label, v:m.s2});
-  const RH=54, PADR=104;
-  const H=steps.length*RH+22, bw=W-140-PADR, top=steps[0].v||1;
-  const scale=v=>Math.max(3, Math.pow(v/top, 0.34)*bw);
+  const RH=56, L=128, PADR=96;
+  const H=steps.length*RH+24, bw=W-L-PADR-70, top=steps[0].v||1;
+  const scale=v=>Math.max(6, Math.pow(Math.max(v,0)/top, 0.34)*bw);
+  const defs=steps.map((s,i)=>`<linearGradient id="fn${i}${uid}" x1="0" x2="1"><stop offset="0" stop-color="${cvar(i)}"/><stop offset="1" stop-color="${cvar(i)}" stop-opacity=".55"/></linearGradient>`).join("");
+  const gid=uid; nid();
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Funnel from impressions to ${esc(V.saleLabel)}">
-  <text class="axis-l" x="${W}" y="10" text-anchor="end">Cost each</text>
+  <defs>${defs}</defs>
+  <text class="axis-l" x="${W}" y="12" text-anchor="end">Cost each</text>
   ${steps.map((s,i)=>{
-    const y=i*RH+22, w=scale(s.v), prev=i?steps[i-1].v:null;
+    const y=i*RH+24, w=scale(s.v), prev=i?steps[i-1].v:null;
     const rate=prev?(prev>0?s.v/prev:0):null;
     const unit = s.v>0 ? m.spend/s.v : NaN;
-    return `<text class="axis-t" x="0" y="${y+18}" style="font-size:11.5px;fill:var(--ink-2)">${esc(s.l)}</text>
-      <rect x="122" y="${y+3}" width="${w}" height="23" rx="4" fill="${cvar(i)}" opacity=".9"/>
-      <text class="dlab" x="${122+w+9}" y="${y+19}" fill="var(--ink)">${num(s.v)}</text>
-      <text class="dlab" x="${W}" y="${y+19}" text-anchor="end" fill="var(--ink-2)">${i===0?inr(unit*1000)+"/k":inr(unit)}</text>
-      ${rate!=null?`<text class="axis-t" x="122" y="${y-6}" style="fill:var(--ink-4)">↓ ${pct(rate,rate<0.01?3:1)} carry through</text>`:""}
-      <line class="gl" x1="0" x2="${W}" y1="${y+RH-13}" y2="${y+RH-13}" opacity="${i===steps.length-1?0:.7}"/>`;
+    return `<text x="0" y="${y+19}" style="font-size:12px;font-weight:600;fill:var(--ink-2)">${esc(s.l)}</text>
+      <rect x="${L}" y="${y+4}" width="${w}" height="24" rx="12" fill="url(#fn${i}${gid})"/>
+      <text class="dlab" x="${L+w+10}" y="${y+20}" fill="var(--ink)">${num(s.v)}</text>
+      ${pillLabel(W, y+16, i===0?inr(unit*1000)+"/k":inr(unit), cvar(i), "end")}
+      ${rate!=null?`<text class="axis-t" x="${L}" y="${y-5}" style="fill:var(--ink-4);font-size:10px">↳ ${pct(rate,rate<0.01?2:1)} carry through</text>`:""}`;
   }).join("")}
 </svg>`;
 }
@@ -1363,26 +1427,29 @@ function chartScatter(m, W, H){
   const pts=m.lines.map((l,i)=>({i, x:l.s0>0?l.spend/l.s0:0, y:l.s0, r:l.spend, n:l.ch.n}))
                    .filter(p=>p.x>0&&p.y>0);
   if(!pts.length) return `<p class="foot">No volume at this budget.</p>`;
-  const F=frame(W,H,{l:58,r:46,t:38,b:38});
+  const F=frame(W,H,{l:58,r:46,t:38,b:40});
   const xhi=Math.max(...pts.map(p=>p.x)), yhi=Math.max(...pts.map(p=>p.y));
   const dx=[0, xhi*1.22], dy=[0, yhi*1.22];   // headroom so bubbles never clip the frame
   const rmax=Math.max(...pts.map(p=>p.r));
-  const blend=m.cpl;
+  const blend=m.cpl, bx=F.x(blend,dx);
+  const defs=pts.map(p=>`<radialGradient id="sc${p.i}${uid}" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="${cvar(p.i)}" stop-opacity=".85"/><stop offset="1" stop-color="${cvar(p.i)}" stop-opacity=".95"/></radialGradient>`).join("");
+  const gid=uid; nid();
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Channel cost per ${esc(V.leadLabel)} against volume">
+  <defs>${defs}</defs>
+  ${isFinite(bx)?`<rect x="${bx}" y="${F.M.t}" width="${Math.max(0,F.w-F.M.r-bx)}" height="${F.ih}" fill="var(--crit)" opacity=".05"/>`:""}
   ${yAxis(F,dy,num)}
-  ${ticks(dx[0],dx[1],5).map(t=>`<text class="axis-t" x="${F.x(t,dx)}" y="${H-F.M.b+15}" text-anchor="middle">${axisInr(dx[1])(t)}</text>`).join("")}
+  ${ticks(dx[0],dx[1],5).map(t=>`<text class="axis-t" x="${F.x(t,dx)}" y="${H-F.M.b+17}" text-anchor="middle">${axisInr(dx[1])(t)}</text>`).join("")}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
-  <line x1="${F.x(blend,dx)}" x2="${F.x(blend,dx)}" y1="${F.M.t}" y2="${H-F.M.b}"
-    stroke="var(--ink-4)" stroke-width="1" stroke-dasharray="3 3"/>
-  <text class="axis-t" x="${F.x(blend,dx)+5}" y="${F.M.t+9}" style="fill:var(--ink-3)">blended ${inr(blend)}</text>
-  ${pts.map(p=>{
+  ${isFinite(bx)?`<line x1="${bx}" x2="${bx}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--ink-4)" stroke-width="1" stroke-dasharray="3 4"/>
+  ${pillLabel(bx+6, F.M.t+2, "blended "+inr(blend), "var(--ink-3)", "start")}`:""}
+  ${pts.slice().sort((a,b)=>b.r-a.r).map(p=>{
     const cx=F.x(p.x,dx), cy=F.y(p.y,dy), r=8+Math.sqrt(p.r/rmax)*17;
-    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${cvar(p.i)}" opacity=".62"
-       stroke="var(--surface)" stroke-width="2"
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#sc${p.i}${gid})"
+       stroke="var(--surface)" stroke-width="2" style="filter:drop-shadow(0 4px 8px rgba(22,22,60,.18))"
        data-tip="${esc(`<div class='th'>${p.n}</div><div class='tr'><span class='l'>${V.cplLabel}</span><b>${inr(p.x)}</b></div><div class='tr'><span class='l'>${V.leadLabel}</span><b>${num(p.y)}</b></div><div class='tr'><span class='l'>Spend</span><b>${inr(p.r)}</b></div>`)}"/>`;
   }).join("")}
   <text class="axis-l" x="${F.M.l}" y="${H-4}">${esc(V.cplLabel)} →  ·  bubble = spend</text>
-  <text class="axis-l" x="0" y="${F.M.t-12}">${esc(V.leadLabel)} ↑</text>
+  <text class="axis-l" x="0" y="${F.M.t-14}">${esc(V.leadLabel)} ↑</text>
 </svg>`;
 }
 
@@ -1390,23 +1457,29 @@ function chartScatter(m, W, H){
 function chartCompare(sc, key, fmt, label, W, H, invert){
   const live=sc.filter(Boolean);
   if(live.length<2) return "";
-  const F=frame(W,H,{l:60,r:22,t:16,b:34});
+  const F=frame(W,H,{l:60,r:22,t:34,b:36});
   const vals=live.map(s=>s.k[key]).filter(isFinite);
-  const dy=[0, (vals.length?Math.max(...vals):1)*1.16];
-  const bw=Math.min(58, F.iw/live.length*0.5);
-  // a scenario that buys nothing has no cost, and must never win "cheapest"
-  const best = !vals.length ? null : invert ? Math.max(...vals) : Math.min(...vals);
+  const dy=[0, (vals.length?Math.max(...vals):1)*1.12];
+  const bw=Math.min(72, F.iw/live.length*0.46);
+  // a scenario that buys nothing has no cost, and must never win "cheapest";
+  // when every scenario is equal there is no winner to badge
+  const tie = vals.length>1 && Math.max(...vals)-Math.min(...vals) < 1e-9*Math.max(1,Math.abs(vals[0]));
+  const best = !vals.length||tie ? null : invert ? Math.max(...vals) : Math.min(...vals);
+  const defs=live.map(s=>`<linearGradient id="cb${s.slot}${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cvar(s.slot)}"/><stop offset="1" stop-color="${cvar(s.slot)}" stop-opacity=".6"/></linearGradient>`).join("");
+  const gid=uid; nid();
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)} by scenario">
+  <defs>${defs}</defs>
   ${yAxis(F,dy,fmt===inr?axisInr(dy[1]):fmt)}
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
   ${live.map((s,i)=>{
-    const cx=F.M.l+F.iw*(i+0.5)/live.length, v=s.k[key], y=isFinite(v)?F.y(v,dy):H-F.M.b, h=H-F.M.b-y;
-    const isBest = v===best;
-    return `<rect x="${cx-bw/2}" y="${y}" width="${bw}" height="${Math.max(2,h)}" rx="4"
-       fill="${cvar(s.slot)}" opacity="${isBest?"1":".55"}"/>
-      <text class="dlab" x="${cx}" y="${y-7}" text-anchor="middle" fill="var(--ink)">${fmt(v)}</text>
-      <text class="axis-t" x="${cx}" y="${H-F.M.b+15}" text-anchor="middle">${esc(s.short)}</text>
-      ${isBest?`<circle cx="${cx}" cy="${y-25}" r="3" fill="var(--good)"/>`:""}`;
+    const cx=F.M.l+F.iw*(i+0.5)/live.length, v=s.k[key], y=isFinite(v)?F.y(v,dy):H-F.M.b, h=Math.max(3,H-F.M.b-y);
+    const isBest = best!=null && v===best, r=Math.min(10,bw/2,h);
+    const x0=cx-bw/2, yb=H-F.M.b;
+    const bar=`M${x0} ${yb} L${x0} ${yb-h+r} Q${x0} ${yb-h} ${x0+r} ${yb-h} L${x0+bw-r} ${yb-h} Q${x0+bw} ${yb-h} ${x0+bw} ${yb-h+r} L${x0+bw} ${yb} Z`;
+    return `<path class="bar-r" d="${bar}" fill="url(#cb${s.slot}${gid})" opacity="${best==null||isBest?"1":".5"}"/>
+      ${pillLabel(cx, y-14, isFinite(v)?fmt(v):"—", isBest?"var(--good)":cvar(s.slot))}
+      ${isBest?`<text class="axis-l" x="${cx}" y="${y-30}" text-anchor="middle" style="fill:var(--good);font-weight:700">★ best</text>`:""}
+      <text class="axis-t" x="${cx}" y="${H-F.M.b+17}" text-anchor="middle">${esc(s.short)}</text>`;
   }).join("")}
 </svg>`;
 }
@@ -1850,7 +1923,8 @@ function viewPlan(plan){
 function viewCurve(plan){
   const V=VERT[S.vertical], cur=S.budget;
   const sw=sweep(S, Math.max(cur*0.15, 10000), cur*2.8, 70);
-  const at=b=>sw.reduce((a,x)=>Math.abs(x.budget-b)<Math.abs(a.budget-b)?x:a);
+  // exact at each budget, not the nearest sweep sample (which put "current plan" at ₹4.91L for ₹5L)
+  const at=b=>Object.assign({budget:b}, runMonth(S,0,b));
   const now=at(cur), half=at(cur*0.5), dbl=at(cur*2);
 
   const rows=[0.5,0.75,1,1.25,1.5,2,2.5].map(f=>{
@@ -2072,13 +2146,13 @@ function viewCompare(){
     const base=live[0];
     body = `<div class="grid2">
       ${two?`<div class="card"><div class="card-hd"><div><h2>${esc(V.cplLabel)}</h2>
-        <p>Lower is better. Dot marks the winner.</p></div></div>
+        <p>Lower is better. ★ marks the cheapest.</p></div></div>
         ${chartCompare(live,"cpl",inr,V.cplLabel,640,250,false)}</div>`:""}
       <div class="card"><div class="card-hd"><div><h2>${esc(V.saleLabel)} per month</h2>
         <p>Volume bought at each budget.</p></div></div>
         ${chartCompare(live,"sales",num,V.saleLabel,640,250,true)}</div>
       <div class="card"><div class="card-hd"><div><h2>${esc(V.cacLabel)}</h2>
-        <p>Lower is better. Dot marks the winner.</p></div></div>
+        <p>Lower is better. ★ marks the cheapest.</p></div></div>
         ${chartCompare(live,"cac",inr,V.cacLabel,640,250,false)}</div>
       <div class="card"><div class="card-hd"><div><h2>ROAS</h2></div></div>
         ${chartCompare(live,"roas",xx,"ROAS",640,250,true)}</div>
@@ -2138,8 +2212,10 @@ function render(rebuildDeck=true){
 
 function bindReadout(){
   document.querySelectorAll("[data-tip]").forEach(el=>{
-    el.onmousemove=e=>showTip(e, el.dataset.tip);
-    el.onmouseleave=hideTip;
+    const xh=el.dataset.xh!=null ? el.closest("svg").querySelector(".xhair") : null;
+    el.onmousemove=e=>{ showTip(e, el.dataset.tip);
+      if(xh){ xh.setAttribute("x1",el.dataset.xh); xh.setAttribute("x2",el.dataset.xh); xh.classList.add("on"); } };
+    el.onmouseleave=()=>{ hideTip(); if(xh) xh.classList.remove("on"); };
   });
   document.querySelectorAll("[data-cap]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.cap;
@@ -2252,11 +2328,26 @@ $("#pdfBtn").onclick=()=>window.print();
 // Hooked to the print events, not the button, so Cmd+P gets the full PDF too.
 addEventListener("beforeprint",()=>{ printAll=true; render(false); });
 addEventListener("afterprint", ()=>{ printAll=false; render(false); });
-$("#themeBtn").onclick=()=>{
-  const cur=document.documentElement.getAttribute("data-theme")
-    || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
-  document.documentElement.setAttribute("data-theme", cur==="dark"?"light":"dark");
-  render(false);
+// Theme switch = Neo's: the new theme is revealed by a circle growing out of the
+// button. Only clip-path animates, with literal px, via WAAPI on the view-transition
+// snapshot; colour transitions are frozen during the swap so nothing re-rasterises.
+const ROOT=document.documentElement;
+try{ const t=localStorage.getItem("sc-theme"); if(t==="dark"||t==="light") ROOT.setAttribute("data-theme",t); }catch(e){}
+$("#themeBtn").onclick=e=>{
+  const cur=ROOT.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  const next=cur==="dark"?"light":"dark";
+  const apply=()=>{ ROOT.setAttribute("data-theme",next); try{localStorage.setItem("sc-theme",next);}catch(err){} render(false); };
+  if(!document.startViewTransition || STILL.matches) return apply();
+  const r=e.currentTarget.getBoundingClientRect();
+  const x=r.left+r.width/2, y=r.top+r.height/2;
+  const end=Math.hypot(Math.max(x,innerWidth-x), Math.max(y,innerHeight-y));
+  ROOT.classList.add("theme-swap");
+  const v=document.startViewTransition(apply);
+  v.ready.then(()=>ROOT.animate(
+    {clipPath:[`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`]},
+    {duration:1000, easing:"cubic-bezier(0.4, 0, 0.2, 1)", pseudoElement:"::view-transition-new(root)"}
+  )).catch(()=>{});
+  v.finished.finally(()=>ROOT.classList.remove("theme-swap"));
 };
 const STILL = matchMedia("(prefers-reduced-motion: reduce)");
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
