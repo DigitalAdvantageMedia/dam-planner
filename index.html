@@ -1495,8 +1495,7 @@ function chartFunnel(m, W){
         <text class="axis-t" x="${cx}" y="${my+4}" text-anchor="middle" style="fill:var(--ink-2);font-weight:650;font-size:11.5px">↓ ${lab}</text>`;
     }
     return `${conn}
-      <text x="0" y="${y+BH/2-1}" style="font-size:13.5px;font-weight:600;fill:var(--ink-2)">${esc(st.l)}</text>
-      <text class="axis-t" x="0" y="${y+BH/2+14}" style="fill:var(--ink-4);font-size:10.5px">${i===0?"100%":(()=>{const x=st.v/top*100; return (x>=1?x.toFixed(1):+x.toPrecision(2))+"%";})()} of impressions</text>
+      <text x="0" y="${y+BH/2+5}" style="font-size:13.5px;font-weight:600;fill:var(--ink-2)">${esc(st.l)}</text>
       <rect x="${x}" y="${y}" width="${w}" height="${BH}" rx="11" fill="url(#fb${i}${g})"
         style="filter:drop-shadow(0 6px 10px color-mix(in srgb,${cvar(i)} 28%,transparent))"
         data-tip="${esc(`<div class='th'>${st.l}</div><div class='tr'><span class='l'>Volume</span><b>${num(st.v)}</b></div><div class='tr'><span class='l'>Cost ${st.u}</span><b>${cost}</b></div>`)}"/>
@@ -1537,7 +1536,7 @@ function chartScatter(m, W, H){
   ${isFinite(bx)?`<line x1="${bx}" x2="${bx}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--ink-4)" stroke-width="1" stroke-dasharray="3 4"/>
   ${pillLabel(bx+6, F.M.t+2, "blended "+inr(blend), "var(--ink-3)", "start")}`:""}
   <text class="axis-l" x="${F.M.l+8}" y="${F.M.t+14}" style="fill:var(--good);opacity:.8">↖ cheap &amp; big — fund more</text>
-  <text class="axis-l" x="${F.w-F.M.r-8}" y="${H-F.M.b-8}" text-anchor="end" style="fill:var(--crit);opacity:.8">pricey &amp; small — fix or cut ↘</text>
+  <text class="axis-l" x="${F.w-F.M.r-8}" y="${H-F.M.b-8}" text-anchor="end" style="fill:var(--crit);opacity:.8">pricey &amp; small ↘</text>
   ${pts.slice().sort((a,b)=>b.r-a.r).map(p=>{
     const cx=F.x(p.x,dx), cy=F.y(p.y,dy), r=10+Math.sqrt(p.r/rmax)*24;
     return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#sc${p.i}${gid})"
@@ -1990,17 +1989,14 @@ function rankList(m){
   const rows=m.lines.map((l,i)=>({i, n:l.ch.n, c:l.s0>0?l.spend/l.s0:NaN, v:l.s0, sh:m.spend>0?l.spend/m.spend:0}))
     .sort((a,b)=>(isFinite(a.c)?a.c:1e18)-(isFinite(b.c)?b.c:1e18));
   const cmax=Math.max(...rows.map(r=>r.c).filter(isFinite), 1);
-  const verdict=r=>!isFinite(r.c)||!isFinite(blend) ? ["mut","no volume"]
-    : r.c<=blend ? ["good","fund"] : r.c<=blend*1.25 ? ["warn","hold"] : ["crit","fix or cut"];
   return `<div class="rank"><div class="rank-hd"><span class="lbl">Ranked by ${esc(V.cplLabel.toLowerCase())}</span>
       <span class="lbl">blended ${inr(blend)}</span></div>
-    ${rows.map((r,k)=>{ const [cls,txt]=verdict(r); return `<div class="rk">
+    ${rows.map((r,k)=>`<div class="rk">
       <span class="rk-n">${k+1}</span>
       <div class="rk-b"><div class="rk-t"><span class="rk-name"><i class="swatch" style="background:${cvar(r.i)}"></i>${esc(r.n)}</span>
         <b class="num">${inr(r.c)}</b></div>
         <div class="rk-bar"><i style="width:${isFinite(r.c)?Math.max(4,r.c/cmax*100):0}%;background:${cvar(r.i)}"></i></div>
-        <div class="rk-s"><span>${num(r.v)} ${esc(V.leadLabel.toLowerCase())} · ${(r.sh*100).toFixed(0)}% of spend</span>
-          <span class="pill ${cls}">${txt}</span></div></div></div>`; }).join("")}
+        <div class="rk-s"><span>${num(r.v)} ${esc(V.leadLabel.toLowerCase())} · ${(r.sh*100).toFixed(0)}% of spend</span></div></div></div>`).join("")}
   </div>`;
 }
 function viewPlan(plan){
