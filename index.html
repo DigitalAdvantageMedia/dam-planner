@@ -1413,7 +1413,7 @@ function chartFunnel(m, W){
   if(V.stages.length>2) steps.push({l:V.stages[2].label, v:m.s2, u:"each"});
   // A centred funnel. Widths follow a compressed scale (impressions dwarf bookings by
   // 10^5) with a floor wide enough to hold the count, so late steps never shrink to dots.
-  const L=124, R=100, BH=40, GAP=34, PITCH=BH+GAP, top=steps[0].v||1;
+  const L=120, R=96, BH=36, GAP=30, PITCH=BH+GAP, top=steps[0].v||1;
   const fw=W-L-R, cx=L+fw/2, wMin=Math.max(78, fw*0.2), wMax=fw;
   const wOf=v=>wMin+(wMax-wMin)*Math.pow(clamp(Math.max(v,0)/top,0,1),0.28);
   const H=steps.length*PITCH-GAP+28;
@@ -1429,19 +1429,19 @@ function chartFunnel(m, W){
     let conn="";
     if(i<steps.length-1){
       const n=steps[i+1], w2=wOf(n.v), y2=y+PITCH, rate=st.v>0?n.v/st.v:0;
-      const lab=pct(rate, rate<0.01?2:1), cw=lab.length*7.6+22, my=y+BH+GAP/2;
+      const lab=pct(rate, rate<0.01?2:1), cw=lab.length*7.3+18, my=y+BH+GAP/2;
       conn=`<path d="M${x+6} ${y+BH} L${x+w-6} ${y+BH} L${cx+w2/2-6} ${y2} L${cx-w2/2+6} ${y2} Z" fill="url(#fc${i}${g})"/>
-        <rect x="${cx-cw/2}" y="${my-11}" width="${cw}" height="22" rx="11" fill="var(--surface)" stroke="var(--rule-strong)" stroke-width="1"/>
-        <text class="axis-t" x="${cx}" y="${my+4.3}" text-anchor="middle" style="fill:var(--ink-2);font-weight:650;font-size:12.5px">↓ ${lab}</text>`;
+        <rect x="${cx-cw/2}" y="${my-10}" width="${cw}" height="20" rx="10" fill="var(--surface)" stroke="var(--rule-strong)" stroke-width="1"/>
+        <text class="axis-t" x="${cx}" y="${my+4}" text-anchor="middle" style="fill:var(--ink-2);font-weight:650;font-size:11.75px">↓ ${lab}</text>`;
     }
     return `${conn}
-      <text x="0" y="${y+BH/2+5}" style="font-size:14px;font-weight:600;fill:var(--ink-2)">${esc(st.l)}</text>
+      <text x="0" y="${y+BH/2+5}" style="font-size:13.75px;font-weight:600;fill:var(--ink-2)">${esc(st.l)}</text>
       <rect x="${x}" y="${y}" width="${w}" height="${BH}" rx="11" fill="url(#fb${i}${g})"
         style="filter:drop-shadow(0 6px 10px color-mix(in srgb,${cvar(i)} 28%,transparent))"
         data-tip="${esc(`<div class='th'>${st.l}</div><div class='tr'><span class='l'>Volume</span><b>${num(st.v)}</b></div><div class='tr'><span class='l'>Cost ${st.u}</span><b>${cost}</b></div>`)}"/>
-      <text class="dlab" x="${cx}" y="${y+BH/2+5.5}" text-anchor="middle" style="fill:#fff;font-size:16px;pointer-events:none">${num(st.v)}</text>
-      <text class="dlab" x="${W}" y="${y+BH/2+1}" text-anchor="end" fill="var(--ink)" style="font-size:15px">${cost}</text>
-      <text class="axis-t" x="${W}" y="${y+BH/2+16}" text-anchor="end" style="fill:var(--ink-3);font-size:11px">${st.u}</text>`;
+      <text class="dlab" x="${cx}" y="${y+BH/2+4.8}" text-anchor="middle" style="fill:#fff;font-size:13.75px;pointer-events:none">${num(st.v)}</text>
+      <text class="dlab" x="${W}" y="${y+BH/2+1}" text-anchor="end" fill="var(--ink)" style="font-size:13.75px">${cost}</text>
+      <text class="axis-t" x="${W}" y="${y+BH/2+14.5}" text-anchor="end" style="fill:var(--ink-3);font-size:10.75px">${st.u}</text>`;
   }).join("");
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Funnel from impressions to ${esc(V.saleLabel)}">
   <defs>${defs}</defs>
@@ -1952,7 +1952,7 @@ function viewPlan(plan){
     <div class="card">
       <div class="card-hd"><div><h2>Where the money goes</h2>
         <p>Impressions through to ${esc(V.saleLabel.toLowerCase())}, with the drop-off at each step.</p></div></div>
-      ${chartFunnel(m, 480)}
+      ${chartFunnel(m, 600)}
     </div>
     <div class="card">
       <div class="card-hd"><div><h2>Which channel earns its share</h2>
