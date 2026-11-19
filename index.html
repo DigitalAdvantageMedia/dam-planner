@@ -570,6 +570,63 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#fff;borde
 @media (prefers-reduced-motion:reduce){body::before{animation:none}.grp{animation:none}}
 
 /* read-out */
+.hr{padding:12px 0 6px;border-bottom:1px solid var(--rule)}
+.hr:last-of-type{border-bottom:none}
+.hr-top{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.hr-top .nm{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-top .nm .swatch{width:10px;height:10px;border-radius:50%;flex:none}
+.hr-top .vv{font-family:var(--mono);font-size:12px;font-weight:600;white-space:nowrap}
+.hr-top .vv .dim{color:var(--ink-3);font-weight:500}
+.hr-edit{border:none;background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge);border-radius:999px;
+  padding:4px 11px;font-size:11px;font-weight:600;color:var(--accent);cursor:pointer}
+.hr-track{position:relative;height:14px;border-radius:7px;background:var(--sunken);overflow:visible}
+.hz{position:absolute;top:0;bottom:0;display:block}
+.hz:first-child{border-radius:7px 0 0 7px}
+.z-low{background:color-mix(in srgb,var(--warn) 30%,transparent)}
+.z-head{background:color-mix(in srgb,var(--good) 16%,transparent)}
+.z-ok{background:color-mix(in srgb,var(--good) 38%,transparent)}
+.z-str{background:color-mix(in srgb,var(--warn) 38%,transparent)}
+.z-over{background:color-mix(in srgb,var(--crit) 36%,transparent);border-radius:0 7px 7px 0}
+.hfill{position:absolute;left:0;top:5px;height:4px;border-radius:2px;display:block;background:var(--good);opacity:.95}
+.hfill.warn{background:var(--warn)}.hfill.crit{background:var(--crit)}.hfill.mut{background:var(--ink-4)}
+.hm{position:absolute;top:-4px;width:2px;height:22px;margin-left:-1px;border-radius:1px;display:block;cursor:help;
+  background:transparent;border-left:2px dashed var(--ink-3)}
+.hm.own{border-left-style:solid;border-left-color:var(--ink)}
+.hm-opt{border-left-color:var(--good)}.hm-opt.own{border-left-color:var(--good)}
+.hknob{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;display:block;
+  background:#fff;box-shadow:0 0 0 3px var(--good),0 3px 8px rgba(0,0,0,.25)}
+.hknob.warn{box-shadow:0 0 0 3px var(--warn),0 3px 8px rgba(0,0,0,.25)}
+.hknob.crit{box-shadow:0 0 0 3px var(--crit),0 3px 8px rgba(0,0,0,.25)}
+.hr-caps{position:relative;height:18px;margin-top:5px}
+.hc{position:absolute;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--ink-3);white-space:nowrap}
+.hc:first-child{transform:none}
+.hlegend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 0 4px;font-size:11px;color:var(--ink-3)}
+.hlegend span{display:flex;align-items:center;gap:6px}
+.hlegend i{width:16px;height:9px;border-radius:3px;display:inline-block}
+.hlegend .lg-mk{width:0;height:12px;border-left:2px dashed var(--ink-3);border-radius:0}
+.hed{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0 8px;padding:12px;border-radius:12px;
+  background:var(--glass-lo);box-shadow:inset 0 0 0 1px var(--glass-edge)}
+.hed-f{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:600;color:var(--ink-2)}
+.hed-f input{padding:6px 8px;font-size:12px}
+.hed-f em{font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--ink-4);font-weight:500}
+.hed-why{grid-column:1/-1;margin:2px 0 0;font-size:11px;line-height:1.5;color:var(--ink-3)}
+.hed .linkbtn{grid-column:1/-1;justify-self:start}
+@media (max-width:820px){.hed{grid-template-columns:1fr 1fr}.hr-top{flex-wrap:wrap}}
+.scat{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(260px,1fr);gap:22px;align-items:start}
+@media (max-width:1180px){.scat{grid-template-columns:1fr}}
+.rank{display:flex;flex-direction:column;gap:4px}
+.rank-hd{display:flex;justify-content:space-between;padding:4px 2px 8px;border-bottom:1px solid var(--rule)}
+.rk{display:flex;gap:11px;padding:9px 2px;border-bottom:1px solid var(--rule)}
+.rk:last-child{border-bottom:none}
+.rk-n{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink-4);width:14px;padding-top:1px}
+.rk-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.rk-t{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.rk-name{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-name .swatch{width:9px;height:9px;border-radius:50%;flex:none}
+.rk-t b{font-size:13px}
+.rk-bar{height:5px;border-radius:3px;background:var(--sunken);overflow:hidden}
+.rk-bar i{display:block;height:100%;border-radius:3px;opacity:.85}
+.rk-s{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
 .summary{position:relative;padding:16px 20px;border-radius:18px;background:var(--glass-hi);box-shadow:var(--glass-shadow);overflow:hidden}
 .summary::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;
   background:linear-gradient(120deg,#5546E0,#E90A79 60%,#FFC969);
@@ -1457,9 +1514,13 @@ function chartScatter(m, W, H){
   const pts=m.lines.map((l,i)=>({i, x:l.s0>0?l.spend/l.s0:0, y:l.s0, r:l.spend, n:l.ch.n}))
                    .filter(p=>p.x>0&&p.y>0);
   if(!pts.length) return `<p class="foot">No volume at this budget.</p>`;
-  const F=frame(W,H,{l:62,r:150,t:40,b:42});
-  const xhi=Math.max(...pts.map(p=>p.x)), yhi=Math.max(...pts.map(p=>p.y));
-  const dx=[0, xhi*1.22], dy=[0, yhi*1.22];   // headroom so bubbles never clip the frame
+  const F=frame(W,H,{l:58,r:28,t:40,b:42});
+  // Fit the axes to the bubbles (not from ₹0), padded so the biggest bubble and its
+  // label never clip — the plot fills the card instead of leaving a dead corner.
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  const xlo=Math.min(...xs, m.cpl||Infinity), xhi=Math.max(...xs, m.cpl||0), span=Math.max(xhi-xlo, xhi*0.25);
+  const dx=[Math.max(0, xlo-span*0.22), xhi+span*0.30];
+  const yhi=Math.max(...ys), dy=[0, yhi*1.25];
   const rmax=Math.max(...pts.map(p=>p.r));
   const blend=m.cpl, bx=F.x(blend,dx);
   const defs=pts.map(p=>`<radialGradient id="sc${p.i}${uid}" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="${cvar(p.i)}" stop-opacity=".85"/><stop offset="1" stop-color="${cvar(p.i)}" stop-opacity=".95"/></radialGradient>`).join("");
@@ -1472,6 +1533,8 @@ function chartScatter(m, W, H){
   <line class="al" x1="${F.M.l}" x2="${F.w-F.M.r}" y1="${H-F.M.b}" y2="${H-F.M.b}"/>
   ${isFinite(bx)?`<line x1="${bx}" x2="${bx}" y1="${F.M.t}" y2="${H-F.M.b}" stroke="var(--ink-4)" stroke-width="1" stroke-dasharray="3 4"/>
   ${pillLabel(bx+6, F.M.t+2, "blended "+inr(blend), "var(--ink-3)", "start")}`:""}
+  <text class="axis-l" x="${F.M.l+8}" y="${F.M.t+14}" style="fill:var(--good);opacity:.8">↖ cheap &amp; big — fund more</text>
+  <text class="axis-l" x="${F.w-F.M.r-8}" y="${H-F.M.b-8}" text-anchor="end" style="fill:var(--crit);opacity:.8">pricey &amp; small — fix or cut ↘</text>
   ${pts.slice().sort((a,b)=>b.r-a.r).map(p=>{
     const cx=F.x(p.x,dx), cy=F.y(p.y,dy), r=10+Math.sqrt(p.r/rmax)*24;
     return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#sc${p.i}${gid})"
@@ -1737,6 +1800,7 @@ function growthNoteHtml(){
 }
 function renderDeck(){
   const V=VERT[S.vertical];
+  gOpen.clear();   // line indexes may have shifted
   $("#clientName").value=S.client;
   [...$("#vertSeg").children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===S.vertical));
   $("#budget").value=Math.round(S.budget);
@@ -1876,16 +1940,66 @@ function delta(a,b,inv){
   const good = inv ? up : dn;
   return `<span class="${good?"down":(up||dn)?"up":"flat"}">${up?"▲":dn?"▼":"·"} ${Math.abs(d).toFixed(1)}%</span>`;
 }
-function satPill(load){
-  if(load<=0)   return `<span class="pill mut">—</span>`;
-  if(load<0.85) return `<span class="pill good">headroom</span>`;
-  if(load<1.25) return `<span class="pill good">on rate</span>`;
-  if(load<1.8)  return `<span class="pill warn">stretched</span>`;
-  return `<span class="pill crit">over-funded</span>`;
+/* ---------- spend guardrails: minimum / optimal / stretched / over-funded ----------
+   Every line has four markers. Defaults are platform benchmarks worked out from the
+   line's own rates; the planner can override any of them (ch.guard), and a blank box
+   goes back to the benchmark. They drive the status pills and advice, not the cost model. */
+const GUARD_KEYS=["min","opt","str","over"];
+const GUARD_LABEL={min:"Minimum", opt:"Optimal", str:"Stretched at", over:"Over-funded at"};
+function guardBench(l){
+  const ch=l.ch, opt=l.anchorSpend||0, a=inferArch(ch.n), plat=chPlat(ch);
+  const r = opt>0 ? runLine(ch,opt,opt,0,S) : null;
+  const perResult = r && r.leads>0 ? opt/r.leads : NaN;
+  const cpc = r && r.clicks>0 ? opt/r.clicks : (+ch.cpc||0);
+  let min, why;
+  if(plat==="linkedin"){ min=Math.max(25500, 15*30*cpc); why="LinkedIn: ₹850/day platform floor, and ~15 clicks a day to learn"; }
+  else if(plat==="meta"){
+    min = isFinite(perResult) ? 50*4.33*perResult : 0;
+    why = "Meta: ~50 results a week per ad set to leave the learning phase"; }
+  else if(a==="pmax"){ min = isFinite(perResult) ? 3*30*perResult : 0; why="Performance Max: daily budget of at least 3× the cost per conversion"; }
+  else if(a==="display"){ min=20*30*cpc; why="Display/YouTube: ~20 clicks a day to read anything"; }
+  else { min=10*30*cpc; why="Search: ~10 clicks a day for the bidding to learn"; }
+  return {min, opt, str:opt*1.25, over:opt*1.8, why,
+    whyOpt:"the spend your rates were quoted at (its share of the anchor budget)",
+    whyStr:"rates hold to ~125% of the quoted spend", whyOver:"past ~180% the cost curve steepens sharply"};
 }
-const satColour = l => l<1.25?"var(--good)":l<1.8?"var(--warn)":"var(--crit)";
+function guardOf(l){
+  const b=guardBench(l), g=l.ch.guard||{}, out={bench:b, own:{}};
+  GUARD_KEYS.forEach(k=>{ const v=g[k]; const mine=v!=null && v!=="" && isFinite(+v); out[k]=mine?+v:b[k]; out.own[k]=mine; });
+  return out;
+}
+function guardStatus(l){
+  const g=guardOf(l), x=l.spend;
+  if(!(x>0))             return ["mut","—"];
+  if(g.min>0 && x<g.min) return ["warn","below minimum"];
+  if(x<g.opt*0.85)       return ["good","headroom"];
+  if(x<g.str)            return ["good","on target"];
+  if(x<g.over)           return ["warn","stretched"];
+  return ["crit","over-funded"];
+}
+function satPill(l){ const [c,t]=guardStatus(l); return `<span class="pill ${c}">${t}</span>`; }
+const gOpen=new Set();   // which headroom rows have their marker editor open
 
 /* ---------- PLAN ---------- */
+// Channels ranked by cost per qualified outcome, against the blend — the reading of the bubble chart in words.
+function rankList(m){
+  const V=VERT[S.vertical], blend=m.cpl;
+  const rows=m.lines.map((l,i)=>({i, n:l.ch.n, c:l.s0>0?l.spend/l.s0:NaN, v:l.s0, sh:m.spend>0?l.spend/m.spend:0}))
+    .sort((a,b)=>(isFinite(a.c)?a.c:1e18)-(isFinite(b.c)?b.c:1e18));
+  const cmax=Math.max(...rows.map(r=>r.c).filter(isFinite), 1);
+  const verdict=r=>!isFinite(r.c)||!isFinite(blend) ? ["mut","no volume"]
+    : r.c<=blend ? ["good","fund"] : r.c<=blend*1.25 ? ["warn","hold"] : ["crit","fix or cut"];
+  return `<div class="rank"><div class="rank-hd"><span class="lbl">Ranked by ${esc(V.cplLabel.toLowerCase())}</span>
+      <span class="lbl">blended ${inr(blend)}</span></div>
+    ${rows.map((r,k)=>{ const [cls,txt]=verdict(r); return `<div class="rk">
+      <span class="rk-n">${k+1}</span>
+      <div class="rk-b"><div class="rk-t"><span class="rk-name"><i class="swatch" style="background:${cvar(r.i)}"></i>${esc(r.n)}</span>
+        <b class="num">${inr(r.c)}</b></div>
+        <div class="rk-bar"><i style="width:${isFinite(r.c)?Math.max(4,r.c/cmax*100):0}%;background:${cvar(r.i)}"></i></div>
+        <div class="rk-s"><span>${num(r.v)} ${esc(V.leadLabel.toLowerCase())} · ${(r.sh*100).toFixed(0)}% of spend</span>
+          <span class="pill ${cls}">${txt}</span></div></div></div>`; }).join("")}
+  </div>`;
+}
 function viewPlan(plan){
   const V=VERT[S.vertical], m=plan[0], last=plan[plan.length-1];
   const twoStage=V.stages.length>1;
@@ -1918,7 +2032,7 @@ function viewPlan(plan){
       <td>${inr(l.spend)}</td><td>${(m.spend>0?l.spend/m.spend*100:0).toFixed(0)}%</td>
       <td>${num(l.impr)}</td><td>${pct(l.ctr,2)}</td><td>${inrFull(l.cpc)}</td><td>${inrFull(l.cpm)}</td>
       <td>${num(l.clicks)}</td><td>${pct(l.cr,2)}</td>${V.rawLabel?`<td>${num(l.leads)}</td><td>${inr(l.leads>0?l.spend/l.leads:NaN)}</td><td>${pct(l.rq,0)}</td>`:""}<td>${num(l.s0)}</td>
-      <td>${inr(l.s0>0?l.spend/l.s0:NaN)}</td><td>${satPill(l.load)}</td></tr>`).join("")}
+      <td>${inr(l.s0>0?l.spend/l.s0:NaN)}</td><td>${satPill(l)}</td></tr>`).join("")}
       ${platforms.map(x=>`<tr class="sub">
         <td style="padding-left:17px">${PLAT[x.p].label} subtotal</td>
         <td>${inr(x.sp)}</td><td>${(m.spend>0?x.sp/m.spend*100:0).toFixed(0)}%</td><td>${num(x.im)}</td>
@@ -1933,19 +2047,40 @@ function viewPlan(plan){
     </tbody></table></div>`;
 
   const sat = m.lines.map((l,i)=>{
-    const w=clamp(l.load,0,2.4)/2.4*100, kneePos=l.load>0?(1/2.4*100):null;
-    return `<div class="satrow">
-      <span class="nm"><i class="swatch" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</span>
-      <div class="sattrack"><div class="satfill" style="width:${w}%;background:${satColour(l.load)}"></div>
-        ${kneePos!=null?`<div class="satknee" style="left:${kneePos}%"></div>`:""}</div>
-      <span class="vv">${inr(l.spend)} / ${inr(l.anchorSpend)} · ${(l.load*100).toFixed(0)}%</span>
-      ${satPill(l.load)}</div>`;
+    const g=guardOf(l), x=l.spend, [cls,st]=guardStatus(l);
+    const top=Math.max(g.over*1.18, x*1.08, g.min*1.15, 1);
+    const P=v=>clamp(v/top*100,0,100).toFixed(2)+"%";
+    const zone=(a,b,c)=>b>a?`<i class="hz ${c}" style="left:${P(a)};width:calc(${P(b)} - ${P(a)})"></i>`:"";
+    const mk=GUARD_KEYS.filter(k=>g[k]>0).map(k=>`<i class="hm hm-${k}${g.own[k]?" own":""}" style="left:${P(g[k])}"
+      data-tip="${esc(`<div class='th'>${GUARD_LABEL[k]} ${inr(g[k])}</div><div class='tr'><span class='l'>${g.own[k]?"set by you":"benchmark"}</span><b></b></div>`)}"></i>`).join("");
+    // marker captions under the bar, dropped when they'd collide with the previous one
+    let last=-99; const caps=GUARD_KEYS.filter(k=>g[k]>0).sort((a,b)=>g[a]-g[b]).map(k=>{ const p=g[k]/top*100; if(p-last<11) return ""; last=p;
+      return `<span class="hc" style="left:${P(g[k])}">${{min:"min",opt:"optimal",str:"stretched",over:"over"}[k]} ${inr(g[k])}</span>`; }).join("");
+    const ed = gOpen.has(i) ? `<div class="hed noprint">
+        ${GUARD_KEYS.map(k=>`<label class="hed-f"><span>${GUARD_LABEL[k]} ₹</span>
+          <input id="g-${i}-${k}" type="number" min="0" step="1000" data-g="${k}" data-gi="${i}"
+            value="${g.own[k]?Math.round(g[k]):""}" placeholder="${Math.round(g.bench[k])}">
+          <em>${g.own[k]?"yours · benchmark "+inr(g.bench[k]):"benchmark"}</em></label>`).join("")}
+        <p class="hed-why"><b>Benchmarks:</b> minimum — ${esc(g.bench.why)}; optimal — ${esc(g.bench.whyOpt)};
+          stretched — ${esc(g.bench.whyStr)}; over-funded — ${esc(g.bench.whyOver)}. Leave a box blank to use the benchmark.</p>
+        <button class="linkbtn" data-greset="${i}">Use benchmarks for this line</button></div>` : "";
+    return `<div class="hr">
+      <div class="hr-top"><span class="nm"><i class="swatch" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</span>
+        <span class="vv">${inr(x)} <span class="dim">of ${inr(g.opt)} optimal</span></span>
+        <span class="pill ${cls}">${st}</span>
+        <button class="hr-edit noprint" data-gedit="${i}" aria-expanded="${gOpen.has(i)}">${gOpen.has(i)?"Done":"Adjust"}</button></div>
+      <div class="hr-track">${zone(0,g.min,"z-low")}${zone(g.min,g.opt*0.85,"z-head")}${zone(Math.max(g.min,g.opt*0.85),g.str,"z-ok")}
+        ${zone(g.str,g.over,"z-str")}${zone(g.over,top,"z-over")}
+        <i class="hfill ${cls}" style="width:${P(x)}"></i>${mk}<i class="hknob ${cls}" style="left:${P(x)}"></i></div>
+      <div class="hr-caps">${caps}</div>${ed}</div>`;
   }).join("");
 
-  const overs = m.lines.filter(l=>l.load>1.5);
-  const unders = m.lines.filter(l=>l.load>0 && l.load<0.6);
+  const sts=m.lines.map(l=>[l,guardStatus(l)[1]]);
+  const pick=t=>sts.filter(x=>x[1]===t).map(x=>x[0]);
+  const overs=pick("over-funded").concat(pick("stretched")), lows=pick("below minimum"), unders=pick("headroom");
   let advice="";
-  if(overs.length) advice += `<div class="note crit"><i class="k"></i><div><b>${overs.map(l=>esc(l.ch.n)).join(", ")}</b> ${overs.length>1?"are":"is"} carrying well over ${overs.length>1?"their":"its"} share — every extra rupee here buys more expensive inventory. Shift budget to a line with headroom before raising the total.</div></div>`;
+  if(overs.length) advice += `<div class="note crit"><i class="k"></i><div><b>${overs.map(l=>esc(l.ch.n)).join(", ")}</b> ${overs.length>1?"are":"is"} past ${overs.length>1?"their":"its"} stretched marker — every extra rupee here buys more expensive inventory. Shift budget to a line with headroom before raising the total.</div></div>`;
+  if(lows.length) advice += `<div class="note warn"><i class="k"></i><div><b>${lows.map(l=>esc(l.ch.n)).join(", ")}</b> ${lows.length>1?"are":"is"} below the minimum spend to learn. Fund ${lows.length>1?"them":"it"} up to the minimum, or fold the money into a stronger line.</div></div>`;
   if(unders.length) advice += `<div class="note"><i class="k"></i><div><b>${unders.map(l=>esc(l.ch.n)).join(", ")}</b> ${unders.length>1?"have":"has"} unused headroom. This is where the next rupee is cheapest.</div></div>`;
 
   const on=PLATS.filter(p=>m.lines.some(l=>chPlat(l.ch)===p)).map(p=>PLAT[p].label);
@@ -1976,12 +2111,16 @@ function viewPlan(plan){
   <div class="card">
     <div class="card-hd"><div><h2>Which channel earns its share</h2>
       <p>Left and high is the channel to fund. Right of the dashed line is dragging the blended number up. Bubble size is spend.</p></div></div>
-    ${chartScatter(m, 1000, 420)}
-    <div class="legend">${m.lines.map((l,i)=>`<div class="li"><i class="sw dot" style="background:${cvar(i)}"></i>${esc(l.ch.n)}</div>`).join("")}</div>
+    <div class="scat">
+      <div>${chartScatter(m, 700, Math.max(420, 150+m.lines.length*62))}</div>
+      ${rankList(m)}
+    </div>
   </div>
   <div class="card">
     <div class="card-hd"><div><h2>Headroom by channel</h2>
-      <p>The tick marks what each line gets at ${inr(S.anchor)}/mo — the budget your rates were quoted at. Bars past the tick are buying inventory above the rate you typed.</p></div></div>
+      <p>Each bar runs through four markers — <b>minimum</b> spend to learn, <b>optimal</b> (what the line gets at ${inr(S.anchor)}/mo, where your rates were quoted), <b>stretched</b> and <b>over-funded</b>. They start at platform benchmarks; <b>Adjust</b> any line to set your own.</p></div>
+      <button class="barbtn noprint" data-greset="all" style="flex:none">Reset all to benchmarks</button></div>
+    <div class="hlegend"><span><i class="z-low"></i>below minimum</span><span><i class="z-head"></i>headroom</span><span><i class="z-ok"></i>on target</span><span><i class="z-str"></i>stretched</span><span><i class="z-over"></i>over-funded</span><span><i class="lg-mk"></i>marker · solid = yours</span></div>
     ${sat}
     ${advice?`<div style="display:flex;flex-direction:column;gap:9px;margin-top:14px">${advice}</div>`:""}
   </div>`;
@@ -2289,6 +2428,8 @@ function render(rebuildDeck=true){
     if(a) a.textContent=inr(l.leads>0?l.spend/l.leads:NaN);
     if(b) b.textContent=inr(l.s0>0?l.spend/l.s0:NaN);
   });
+  // re-rendering swaps the read-out's inputs; put the caret back where it was
+  const fid = document.activeElement && document.activeElement.closest && document.activeElement.closest(".readout") ? document.activeElement.id : "";
   const on=t=>printAll || tab===t;
   $("#v-plan").innerHTML    = on("plan")    ? viewPlan(plan)    : "";
   $("#v-curve").innerHTML   = on("curve")   ? viewCurve(plan)   : "";
@@ -2296,6 +2437,7 @@ function render(rebuildDeck=true){
   // Compare only earns a page once a scenario has been captured
   $("#v-compare").innerHTML = (printAll ? scenarios.some(Boolean) : tab==="compare") ? viewCompare() : "";
   bindReadout();
+  if(fid){ const el=document.getElementById(fid); if(el) el.focus({preventScroll:true}); }
 }
 
 function bindReadout(){
@@ -2323,6 +2465,29 @@ function bindReadout(){
   });
   document.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>{
     S=normPlan(JSON.parse(JSON.stringify(scenarios[+b.dataset.restore].cfg))); stash={}; render();
+  });
+
+  // headroom markers
+  document.querySelectorAll("[data-gedit]").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.gedit; gOpen.has(i)?gOpen.delete(i):gOpen.add(i); render(false);
+    if(gOpen.has(i)){ const f=document.getElementById(`g-${i}-min`); if(f) f.focus({preventScroll:true}); }
+  });
+  document.querySelectorAll("[data-g]").forEach(el=>{
+    el.onchange=()=>{
+      const ch=S.channels[+el.dataset.gi]; if(!ch) return;
+      ch.guard=Object.assign({}, ch.guard);
+      const v=el.value.trim();
+      if(v===""||!isFinite(+v)) delete ch.guard[el.dataset.g]; else ch.guard[el.dataset.g]=clamp(+v,0,1e9);
+      if(!Object.keys(ch.guard).length) delete ch.guard;
+      // change fires before Tab moves focus — redraw after it lands, so focus follows to the next box
+      setTimeout(()=>render(false));
+    };
+    el.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); el.blur(); } };
+  });
+  document.querySelectorAll("[data-greset]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.greset;
+    if(k==="all") S.channels.forEach(c=>delete c.guard); else if(S.channels[+k]) delete S.channels[+k].guard;
+    render(false);
   });
 
   // per-month budget overrides

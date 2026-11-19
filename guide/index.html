@@ -433,18 +433,32 @@ footer{max-width:1180px;margin:0 auto;padding:26px;border-top:1px solid var(--ru
   </table></div>
 
   <figure>
-    <img src="img/plan-charts.png" alt="Funnel chart and channel efficiency scatter">
+    <img src="img/plan-charts.png" alt="Funnel from impressions to the final outcome, with the carry-through rate between steps">
     <figcaption><b>Where the money goes</b> is the funnel with the drop-off at each step.
-      <b>Which channel earns its share</b> plots cost against volume — bubble size is spend, and
-      anything right of the dashed line is dragging the blended cost up.</figcaption>
+      Below it, <b>Which channel earns its share</b> plots cost against volume (bubble size is spend; right of
+      the dashed line drags the blended cost up), with a ranked list beside it — cheapest first, each tagged
+      <b>fund</b>, <b>hold</b> or <b>fix or cut</b> against the blended cost.</figcaption>
   </figure>
 
   <figure>
-    <img src="img/plan-headroom.png" alt="Headroom by channel bars with saturation ticks">
-    <figcaption>The tick on each bar marks what that line gets at the anchor budget. Bars past their
-      tick are buying inventory above the rate you typed. The notes underneath name the specific lines
-      to shift money between.</figcaption>
+    <img src="img/plan-headroom.png" alt="Headroom by channel: each line's spend against minimum, optimal, stretched and over-funded markers">
+    <figcaption>Each line's spend (the white knob) against four markers, with the zones between them coloured.</figcaption>
   </figure>
+  <p><b>Headroom markers.</b> Every line has four spend markers, and the status pill comes from where its spend sits:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Marker</th><th>Benchmark it starts at</th></tr></thead>
+    <tbody>
+      <tr><td><b>Minimum</b></td><td>Meta: ~50 results a week per ad set (to leave learning). Search: ~10 clicks a day.
+        Performance Max: daily budget ≥ 3× cost per conversion. Display/YouTube: ~20 clicks a day. LinkedIn: ₹850/day floor or ~15 clicks a day.
+        Worked out from the line's own rates.</td></tr>
+      <tr><td><b>Optimal</b></td><td>What the line gets at the anchor budget — where your rates were quoted.</td></tr>
+      <tr><td><b>Stretched at</b></td><td>125% of optimal — rates start costing more.</td></tr>
+      <tr><td><b>Over-funded at</b></td><td>180% of optimal — the cost curve steepens sharply.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Hit <b>Adjust</b> on any line to type your own values; leave a box blank to go back to its benchmark, or use
+    <b>Reset all to benchmarks</b>. Your markers save with the plan. Markers drive the pills (below minimum, headroom,
+    on target, stretched, over-funded) and the advice notes — they don't change the cost model itself.</p>
 </section>
 
 <!-- ============================================= -->
