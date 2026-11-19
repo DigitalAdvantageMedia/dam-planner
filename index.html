@@ -1580,7 +1580,7 @@ function renderPlat(){
     const b=host.querySelector(`[data-p="${p}"]`), live=on.includes(p), sh=live?platShare(p):0;
     b.setAttribute("aria-pressed", live);
     b.setAttribute("aria-label", `${PLAT[p].label}: ${live?"on":"off"}`);
-    b.querySelector(".pa").textContent = live ? `${inr(S.budget*sh/100)} · ${sh.toFixed(0)}%` : "+ Add";
+    b.querySelector(".pa").textContent = live ? `${inr(S.budget*sh/100)} · ${+sh.toFixed(1)}%` : "+ Add";
     $(`#platBar [data-p="${p}"]`).style.flexGrow = live ? sh.toFixed(3) : "0";
   });
   const even = on.every(p=>Math.abs(platShare(p)-100/on.length)<0.6);
